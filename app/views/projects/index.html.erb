@@ -1,0 +1,20 @@
+</br><%= button_to "Import projects from JIRA", { action: "retrieve_projects" }, method: :post, class: "btn btn-warning mb-4" %>
+Total users: <%= @projects.count %></br>
+<table class="table">
+  <thead>
+    <tr>
+      <th>JIRA ID</th>
+      <th>Name</th>
+      <th>Lead</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @projects.each do |project| %>
+      <tr>
+        <td><%= project.id %></td>
+        <td><%= project.name %></td>
+        <td><%=  %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

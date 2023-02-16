@@ -1,8 +1,10 @@
 Rails.application.routes.draw do
   devise_for :users
   root to: "pages#home"
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  get 'admin_actions/assignees', to: 'admin_actions#assignees'
+  post 'admin_actions/retrieve_assignees'
+
+  resources :projects, only: [:index, :show]
+  post 'projects/retrieve_projects'
 end
