@@ -11,9 +11,9 @@ Total users: <%= @projects.count %></br>
   <tbody>
     <% @projects.each do |project| %>
       <tr>
-        <td><%= project.id %></td>
+        <td><%= project.jira_id %></td>
         <td><%= project.name %></td>
-        <td><%=  %></td>
+        <td><%= project.lead %></td>
       </tr>
     <% end %>
   </tbody>
