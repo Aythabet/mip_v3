@@ -2,9 +2,12 @@ Rails.application.routes.draw do
   devise_for :users
   root to: "pages#home"
 
-  get 'admin_actions/assignees', to: 'admin_actions#assignees'
-  post 'admin_actions/retrieve_assignees'
+  get 'assignees/assignees', to: 'assignees#assignees'
+  post 'assignees/retrieve_assignees'
 
   resources :projects, only: [:index, :show]
   post 'projects/retrieve_projects'
+
+  resources :tasks, only: [:index, :show]
+  post 'tasks/retrieve_tasks'
 end

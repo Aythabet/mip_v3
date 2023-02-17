@@ -1,0 +1,24 @@
+</br><%= button_to "Import tasks from JIRA", { action: "retrieve_tasks" }, method: :post, class: "btn btn-warning mb-4" %>
+Total tickets: <%= @tasks.count %></br>
+<div class="row row-cols-1 row-cols-md-4 g-4">
+  <% @tasks.each do |task| %>
+    <div class="col">
+      <div class="card">
+        <div class="card-header fw-bold text-muted">
+          <%= task.jira_id %>
+        </div>
+        <div class="card-body">
+          <h5 class="card-title"><%= task.project.name %></h5>
+          <p class="card-text"><%= task.status %></p>
+          <p class="card-text"><%= task.time_forecast %></p>
+          <p class="card-text"><%= task.time_spent %></p>
+        </div>
+        <div class="card-footer">
+          <small class="text-muted">
+            <%= task.assignee.name %>
+          </small>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

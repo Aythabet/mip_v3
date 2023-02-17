@@ -1,4 +1,4 @@
-class AdminActionsController < ApplicationController
+class AssigneesController < ApplicationController
   def assignees
     @assignees = Assignee.all
   end
@@ -18,10 +18,11 @@ class AdminActionsController < ApplicationController
     redirect_to admin_actions_assignees_path
   end
 
-  def find_or_create_assignee(assignee_name, assignee_email, admin=false)
-    Assignee.find_or_create_by(name: assignee_name) do |user|
+  def find_or_create_assignee(assignee_name, assignee_email, admin: false)
+    assignee = Assignee.find_or_create_by(name: assignee_name) do |user|
       user.email = assignee_email
       user.admin = admin
     end
+    assignee.save
   end
 end

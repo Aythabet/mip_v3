@@ -7,6 +7,13 @@
 #   Character.create(name: "Luke", movie: movies.first)
 
 
+Assignee.create([{
+                   'name': 'Assignee do not exist'
+}])
+
+Project.create([{
+                  'name': 'Project do not exist'
+}])
 
 User.create([
               {
