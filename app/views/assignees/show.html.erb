@@ -2,8 +2,8 @@
   <!-- Statistics -->
   <div class="row justify-content-between mb-4">
     <div class="col-12 col-md-6">
-      <h1 class="mb-2">Project #<%= @project.id %></h1>
-      <h2 class="fw-bold mb-3"><%= @project.name %></h2>
+      <h1 class="mb-2">Assignee #<%= @assignee.id %></h1>
+      <h2 class="fw-bold mb-3"><%= @assignee.name %></h2>
     </div>
     <div class="col-12 col-md-6">
       <h2 class="fw-bold mb-3">Stats</h2>
@@ -25,14 +25,14 @@
             JIRA ID: <%= task.jira_id %>
           </div>
           <div class="card-body">
-            <h5 class="card-title">Assigned to: <%= task.assignee.name %></h5>
+            <h5 class="card-title">Project: <%= task.project.name %></h5>
             <p class="card-text">Status: <%= task.status %></p>
             <p class="card-text">Time Estimation: <%= task.time_forecast %></p>
             <p class="card-text">Time spent: <%= task.time_spent %></p>
           </div>
           <div class="card-footer bg-light">
             <small class="text-muted">
-              Updated at: <%= task.project.updated_at %>
+              Updated at: <%= task.assignee.updated_at %>
             </small>
           </div>
         </div>

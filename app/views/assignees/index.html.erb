@@ -1,0 +1,24 @@
+</br><%= button_to "Import users from JIRA", { action: "retrieve_assignees" }, method: :post, class: "btn btn-secondary mb-4" %>
+Total users: <%= @assignees.count %></br>
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Email</th>
+      <th># Tickets</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @assignees.each do |assignee| %>
+      <tr>
+        <td><%= assignee.id %></td>
+        <td><%= assignee.name %></td>
+        <td><%= assignee.email %></td>
+        <td><%= assignee.tasks.count %></td>
+        <td><%= link_to "View", { action: "show", id: assignee.id }, class: "btn btn-secondary btn-sm" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

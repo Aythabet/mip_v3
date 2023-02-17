@@ -9,8 +9,8 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto">
         <% if user_signed_in? %>
-          <li class="nav-item active">
-            <%= link_to "Assignees", assignees_assignees_path, class: "nav-link" %>
+          <li class="nav-item">
+            <%= link_to "Assignees", assignees_path, class: "nav-link" %>
           </li>
           <li class="nav-item">
             <%= link_to "Projects", projects_path, class: "nav-link" %>

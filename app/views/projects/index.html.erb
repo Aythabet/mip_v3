@@ -1,11 +1,13 @@
 </br><%= button_to "Import projects from JIRA", { action: "retrieve_projects" }, method: :post, class: "btn btn-warning mb-4" %>
-Total users: <%= @projects.count %></br>
+Total projects: <%= @projects.count %></br>
 <table class="table">
   <thead>
     <tr>
       <th>JIRA ID</th>
       <th>Name</th>
       <th>Lead</th>
+      <th># Tickets</th>
+      <th></th>
     </tr>
   </thead>
   <tbody>
@@ -14,6 +16,8 @@ Total users: <%= @projects.count %></br>
         <td><%= project.jira_id %></td>
         <td><%= project.name %></td>
         <td><%= project.lead %></td>
+        <td><%= project.tasks.count %></td>
+        <td><%= link_to "View", { action: "show", id: project.id }, class: "btn btn-warning btn-sm" %></td>
       </tr>
     <% end %>
   </tbody>
