@@ -44,6 +44,8 @@ class TasksController < ApplicationController
 
     json_task = JSON.parse(response.body)
     fields = json_task['fields']
+    assignee_name = fields&.[]('assignee')&.[]('displayName')
+    pp("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#{assignee_name}")
     added_task = Task.find_or_create_by!(jira_id:) do |new_task|
       new_task.project_id = determine_the_project_id(json_task)
       new_task.assignee_id = determine_the_user_id(json_task)
@@ -58,9 +60,14 @@ class TasksController < ApplicationController
   def determine_the_user_id(json_task)
     fields = json_task['fields']
     assignee_name = fields&.[]('assignee')&.[]('displayName')
-    assignee = Assignee.find_or_create_by(name: assignee_name)
-    assignee.id || DEFAULT_USER_ID
+    if assignee_name.nil? || assignee_name.empty?
+      DEFAULT_USER_ID
+    else
+      assignee = Assignee.find_or_create_by(name: assignee_name)
+      assignee.id || DEFAULT_USER_ID
+    end
   end
+
 
   def determine_the_project_id(json_task)
     fields = json_task['fields']

@@ -9,6 +9,11 @@ class ProjectsController < ApplicationController
     redirect_to projects_path
   end
 
+  def show
+    @project = Project.find(params[:id])
+    @tasks = Task.where(project: @project)
+  end
+
   private
 
   def get_projects_data_with_pagination(startat)

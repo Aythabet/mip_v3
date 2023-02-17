@@ -8,11 +8,14 @@
 
 
 Assignee.create([{
-                   'name': 'Assignee do not exist'
+                   'name': 'Inspirenaute',
+                   'email': 'inspirenaute@inspiregroup.io'
 }])
 
 Project.create([{
-                  'name': 'Project do not exist'
+                  'name': 'Tasks without project',
+                  'jira_id': 'TWP',
+                  'lead': Assignee.find_by(id: 1).name
 }])
 
 User.create([
