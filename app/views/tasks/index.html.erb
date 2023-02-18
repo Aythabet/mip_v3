@@ -1,4 +1,7 @@
-</br><%= button_to "Import tasks from JIRA", { action: "retrieve_tasks" }, method: :post, class: "btn btn-success mb-4" %>
+</br>
+<div class="d-flex justify-content-start">
+  <%= button_to "Import tasks from JIRA", { action: "retrieve_tasks" }, method: :post, class: "btn btn-success mb-4" %>
+  <%= button_to "Delete all tasks", { action: "destroy_all" }, method: :post, class: "btn btn-warning mb-4 ml-2" %></div>
 Total tickets: <%= @tasks.count %></br>
 <div class="row row-cols-1 row-cols-md-4 g-4">
   <% @tasks.each do |task| %>

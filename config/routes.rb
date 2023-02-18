@@ -10,4 +10,5 @@ Rails.application.routes.draw do
 
   resources :tasks, only: [:index, :show]
   post 'tasks/retrieve_tasks'
+  post 'tasks/destroy_all'
 end
