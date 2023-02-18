@@ -12,6 +12,14 @@ class ProjectsController < ApplicationController
   def show
     @project = Project.find(params[:id])
     @tasks = Task.where(project: @project)
+
+    @total_time_estimation = 0
+    @total_time_spent = 0
+
+    @tasks.each do |task|
+      @total_time_estimation += task.time_forecast.to_i || 0
+      @total_time_spent += task.time_spent.to_i || 0
+    end
   end
 
   private
