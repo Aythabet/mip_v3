@@ -33,10 +33,26 @@ class AssigneesController < ApplicationController
   private
 
   def find_or_create_assignee(assignee_name, assignee_email, admin: false)
-    assignee = Assignee.find_or_create_by(name: assignee_name) do |user|
-      user.email = assignee_email
+    assignee_name = format_name(assignee_name)
+    assignee_email = assignee_email.present? ? assignee_email : format_email(assignee_name)
+    assignee = Assignee.find_or_create_by(email: assignee_email) do |user|
+      user.name = assignee_name
       user.admin = admin
     end
+
     assignee.save
+  end
+
+  def format_name(assignee_name)
+    formatted_str = assignee_name.gsub(/[^a-zA-Z]/, ' ')
+    words = formatted_str.split(' ')
+    words.map(&:capitalize).join(' ')
+  end
+
+  def format_email(assignee_name)
+    domain = 'inspiregroup.io'
+    email_prefix = assignee_name.sub(/\s/, '.').delete(' ').downcase
+    assignee_email = "#{email_prefix}@#{domain}"
+    return assignee_email
   end
 end

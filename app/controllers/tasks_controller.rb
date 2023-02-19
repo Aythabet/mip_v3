@@ -29,7 +29,7 @@ class TasksController < ApplicationController
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 1 # (total_issues_count / 50.0).ceil
+      total_pages = 2 # (total_issues_count / 50.0).ceil
       p("Total issues is #{total_issues_count}...")
 
       (1..total_pages).each do |i|
@@ -47,7 +47,7 @@ class TasksController < ApplicationController
     url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{jira_id}"
     response = call_jira_api(url)
     return unless response.code == '200'
-
+    task_counter = 0
     json_task = JSON.parse(response.body)
     fields = json_task['fields']
     added_task = Task.find_or_create_by!(jira_id:) do |new_task|
@@ -60,6 +60,7 @@ class TasksController < ApplicationController
       new_task.time_spent = retrieve_time_spent(url)
     end
     added_task.save
+    p("#{task_counter + 1} issues added!")
   end
 
   def determine_the_user_id(json_task)
