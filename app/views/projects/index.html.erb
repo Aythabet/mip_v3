@@ -1,4 +1,7 @@
-</br><%= button_to "Import projects from JIRA", { action: "retrieve_projects" }, method: :post, class: "btn btn-warning mb-4" %>
+</br>
+<div class="d-flex justify-content-start">
+  <%= button_to "Import projects from JIRA", { action: "retrieve_projects" }, method: :post, class: "btn btn-dark mb-4" %>
+  <%= button_to "Delete all Projects", { action: "destroy_all" }, method: :post, class: "btn btn-warning mb-4 ml-2" %></div>
 Total projects: <%= @projects.count %></br>
 <table class="table">
   <thead>

@@ -30,23 +30,20 @@ class AssigneesController < ApplicationController
     end
   end
 
+  def destroy_all
+    Assignee.destroy_all
+    redirect_to assignees_path
+  end
+
   private
 
   def find_or_create_assignee(assignee_name, assignee_email, admin: false)
     assignee_name = format_name(assignee_name)
     assignee_email = assignee_email.present? ? assignee_email : format_email(assignee_name)
-    assignee = Assignee.find_or_create_by(email: assignee_email) do |user|
+    Assignee.create(email: assignee_email) do |user|
       user.name = assignee_name
       user.admin = admin
     end
-
-    assignee.save
-  end
-
-  def format_name(assignee_name)
-    formatted_str = assignee_name.gsub(/[^a-zA-Z]/, ' ')
-    words = formatted_str.split(' ')
-    words.map(&:capitalize).join(' ')
   end
 
   def format_email(assignee_name)

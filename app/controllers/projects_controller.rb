@@ -22,6 +22,11 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def destroy_all
+    Project.destroy_all
+    redirect_to projects_path
+  end
+
   private
 
   def get_projects_data_with_pagination(startat)

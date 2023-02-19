@@ -25,11 +25,13 @@ class TasksController < ApplicationController
   def collect_all_task_jira_ids
     jira_ids = []
     start_at = 0
-    response = call_jira_api("https://agenceinspire.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20Created&startAt=#{start_at}&maxResults=50")
+    max_results = 50
+    total_pages = 1 # (total_issues_count / 50.0).ceil
+
+    response = call_jira_api("https://agenceinspire.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20Created&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 2 # (total_issues_count / 50.0).ceil
       p("Total issues is #{total_issues_count}...")
 
       (1..total_pages).each do |i|
@@ -47,10 +49,10 @@ class TasksController < ApplicationController
     url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{jira_id}"
     response = call_jira_api(url)
     return unless response.code == '200'
-    task_counter = 0
+
     json_task = JSON.parse(response.body)
     fields = json_task['fields']
-    added_task = Task.find_or_create_by!(jira_id:) do |new_task|
+    added_task = Task.find_or_create_by(jira_id:) do |new_task|
       new_task.project_id = determine_the_project_id(json_task)
       new_task.assignee_id = determine_the_user_id(json_task)
       new_task.time_forecast = fields['timeoriginalestimate']
@@ -60,7 +62,6 @@ class TasksController < ApplicationController
       new_task.time_spent = retrieve_time_spent(url)
     end
     added_task.save
-    p("#{task_counter + 1} issues added!")
   end
 
   def determine_the_user_id(json_task)
@@ -69,6 +70,7 @@ class TasksController < ApplicationController
     if assignee_name.nil? || assignee_name.empty?
       DEFAULT_USER_ID
     else
+      assignee_name = format_name(assignee_name)
       assignee = Assignee.find_or_create_by(name: assignee_name)
       assignee.id || DEFAULT_USER_ID
     end
