@@ -71,7 +71,8 @@ class TasksController < ApplicationController
       DEFAULT_USER_ID
     else
       assignee_name = format_name(assignee_name)
-      assignee = Assignee.find_or_create_by(name: assignee_name)
+      assignee_email = format_email(assignee_name)
+      assignee = Assignee.find_or_create_by(name: assignee_name, email: assignee_email)
       assignee.id || DEFAULT_USER_ID
     end
   end
@@ -79,7 +80,17 @@ class TasksController < ApplicationController
   def determine_the_project_id(json_task)
     fields = json_task['fields']
     project_key = fields&.[]('project')&.[]('key')
-    project = Project.find_or_create_by(jira_id: project_key)
+    project_name = fields&.[]('project')&.[]('name')
+    project_fields_response = call_jira_api(fields['project']['self']) # api call on the project it self to get the lead
+    return unless project_fields_response.code == '200'
+
+    json_project = JSON.parse(project_fields_response.body)
+    project_lead = json_project['lead']['displayName']
+    pp(project_lead)
+    project = Project.find_or_create_by(jira_id: project_key) do |pro|
+      pro.name = project_name
+      pro.lead = project_lead
+    end
     project.id || DEFAULT_PROJECT_ID
   end
 
@@ -96,5 +107,4 @@ class TasksController < ApplicationController
     end
     return total_time_spent
   end
-
 end

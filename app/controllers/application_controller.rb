@@ -20,4 +20,11 @@ class ApplicationController < ActionController::Base
     words = formatted_str.split(' ')
     words.map(&:capitalize).join(' ')
   end
+
+  def format_email(assignee_name)
+    domain = 'inspiregroup.io'
+    email_prefix = assignee_name.sub(/\s/, '.').delete(' ').downcase
+    assignee_email = "#{email_prefix}@#{domain}"
+    return assignee_email
+  end
 end

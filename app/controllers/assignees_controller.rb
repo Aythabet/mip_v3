@@ -31,7 +31,7 @@ class AssigneesController < ApplicationController
   end
 
   def destroy_all
-    Assignee.destroy_all
+    Assignee.destroy_all("id != ?", 1)
     redirect_to assignees_path
   end
 
@@ -44,12 +44,5 @@ class AssigneesController < ApplicationController
       user.name = assignee_name
       user.admin = admin
     end
-  end
-
-  def format_email(assignee_name)
-    domain = 'inspiregroup.io'
-    email_prefix = assignee_name.sub(/\s/, '.').delete(' ').downcase
-    assignee_email = "#{email_prefix}@#{domain}"
-    return assignee_email
   end
 end
