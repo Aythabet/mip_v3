@@ -26,7 +26,7 @@ class TasksController < ApplicationController
     jira_ids = []
     start_at = 0
     max_results = 50
-    total_pages = 1 # (total_issues_count / 50.0).ceil
+    total_pages = 1 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
 
     response = call_jira_api("https://agenceinspire.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20Created&startAt=#{start_at}&maxResults=#{max_results}")
 
@@ -59,6 +59,7 @@ class TasksController < ApplicationController
       new_task.status = fields['status']['name']
       new_task.created_at = fields['created']
       new_task.updated_at = fields['updated']
+      new_task.summary = fields['summary']
       new_task.time_spent = retrieve_time_spent(url)
     end
     added_task.save
@@ -86,7 +87,6 @@ class TasksController < ApplicationController
 
     json_project = JSON.parse(project_fields_response.body)
     project_lead = json_project['lead']['displayName']
-    pp(project_lead)
     project = Project.find_or_create_by(jira_id: project_key) do |pro|
       pro.name = project_name
       pro.lead = project_lead

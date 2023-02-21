@@ -16,6 +16,7 @@ Total tickets: <%= @tasks.count %></br>
           <p class="card-text">Status: <%= task.status %></p>
           <p class="card-text">Time Estimation: <%= (task.time_forecast.to_i / 3600).ceil %> hours</p>
           <p class="card-text">Time spent: <%= (task.time_spent.to_i / 3600).ceil %> hours </p>
+          <p class="card-text">Summary: <%= task.summary %> </p>
         </div>
         <div class="card-footer">
           <small class="text-muted">
