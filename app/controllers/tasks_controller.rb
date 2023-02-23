@@ -5,8 +5,8 @@ class TasksController < ApplicationController
 
   def index
     @tasks = Task.all.order(:updated_at).page params[:page]
+    @tasks_count = Task.count
   end
-
 
   def retrieve_tasks
     jira_ids = collect_all_task_jira_ids

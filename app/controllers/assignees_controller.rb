@@ -1,6 +1,7 @@
 class AssigneesController < ApplicationController
   def index
     @assignees = Assignee.all.order(:updated_at).page params[:page]
+    @assignees_count = Assignee.count
   end
 
   def retrieve_assignees

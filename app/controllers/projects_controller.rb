@@ -1,6 +1,7 @@
 class ProjectsController < ApplicationController
   def index
     @projects = Project.all.order(:updated_at).page params[:page]
+    @projects_count = Project.count
   end
 
 
