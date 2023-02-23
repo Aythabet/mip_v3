@@ -1,5 +1,31 @@
 class ApplicationController < ActionController::Base
   before_action :authenticate_user!
+  include ActionView::Helpers::NumberHelper
+
+  def format_duration(seconds)
+    if seconds.nil? || seconds == 0
+      return "No input from assignee"
+    end
+
+    minutes = seconds / 60.0
+    if minutes < 60
+      return "#{minutes.round(1)}min"
+    end
+
+    hours = minutes / 60.0
+    if hours < 8
+      return "#{hours.round(1)}h"
+    end
+
+    days = (hours / 8).floor
+    hours %= 8
+
+    duration = []
+    duration << "#{days} day#{'s' if days > 1}" if days > 0
+    duration << "#{hours} hour#{'s' if hours > 1}" if hours > 0
+    duration.join(' and ')
+  end
+
 
   private
 

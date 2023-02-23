@@ -10,8 +10,8 @@
       <div class="card border-0">
         <div class="card-body">
           <p class="card-text mb-1">Total tickets: <%= @tasks.count %></p>
-          <p class="card-text mb-1">Total Time Estimation: <%= (@total_time_estimation / 3600).ceil %> hours</p>
-          <p class="card-text mb-1">Total Time Spent: <%= (@total_time_spent / 3600).ceil %> hours</p>
+          <p class="card-text mb-1">Total Time Estimation: <%= my_helper_format_duration(@total_time_estimation) %></p>
+          <p class="card-text mb-1">Total Time Spent: <%= my_helper_format_duration(@total_time_spent) %></p>
         </div>
       </div>
     </div>
@@ -27,8 +27,8 @@
           <div class="card-body">
             <h5 class="card-title">Project: <%= task.project.name %></h5>
             <p class="card-text">Status: <%= task.status %></p>
-            <p class="card-text">Time Estimation: <%= (task.time_forecast.to_i / 3600).ceil %> hours </p>
-            <p class="card-text">Time spent: <%= (task.time_spent.to_i / 3600).ceil %> hours </p>
+            <p class="card-text">Time Estimation: <%= my_helper_format_duration(task.time_forecast) %>  </p>
+            <p class="card-text">Time spent: <%= my_helper_format_duration(task.time_spent) %>  </p>
           </div>
           <div class="card-footer bg-light">
             <small class="text-muted">
