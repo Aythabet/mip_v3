@@ -1,0 +1,45 @@
+</br>
+<!-- Dashboard Metrics -->
+<div class="row justify-content-center mt-4">
+  <div class="col-md-3 text-center">
+    <p class="text-muted">Number of projects</p>
+    <h3><%= @total_number_of_projects %></h3>
+  </div>
+  <div class="col-md-3 text-center">
+    <p class="text-muted">Number of assignees</p>
+    <h3><%= @total_number_of_assignees %></h3>
+  </div>
+  <div class="col-md-3 text-center">
+    <p class="text-muted">Number of tickets</p>
+    <h3><%= @total_number_of_tasks %></h3>
+  </div>
+</div>
+<div class="row mt-4">
+  <div class="col-lg-6 col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Ticket Status in the last 3 days</h5>
+        <ul class="list-group">
+          <li class="list-group-item">Number of tickets "In Progress":<strong> <%= @number_of_tickets_in_progress %></strong></li>
+          <li class="list-group-item">Number of tickets "Done":<strong> <%= @number_of_tickets_done_last_three_days %></strong></li>
+          <li class="list-group-item">Number of tickets "Waiting":<strong> <%= @number_of_tickets_waiting_last_three_days %></strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6 col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">Assignees activity in the last 3 days</h5>
+        <ul class="list-group">
+          <% @assignees_and_tickets_count.sort_by { |a| a[:ticket_count] }.reverse.each_with_index do |assignee, index| %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span><%= assignee[:name] %></span>
+              <span class="badge badge-primary badge-pill"><%= assignee[:ticket_count] %> tickets</span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
