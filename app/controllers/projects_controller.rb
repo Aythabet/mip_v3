@@ -12,14 +12,15 @@ class ProjectsController < ApplicationController
 
   def show
     @project = Project.find(params[:id])
-    @tasks = Task.where(project: @project).order(:updated_at).page params[:page]
+    @project_tasks = Task.where(project: @project)
+    @project_tasks_paginated = Task.where(project: @project).order(:updated_at).page params[:page]
 
     @total_time_estimation = 0
     @total_time_spent = 0
 
-    @tasks.each do |task|
-      @total_time_estimation += task.time_forecast.to_i || 0
-      @total_time_spent += task.time_spent.to_i || 0
+    @project_tasks.each do |task|
+      @total_time_estimation += task.time_forecast || 0
+      @total_time_spent += task.time_spent || 0
     end
   end
 

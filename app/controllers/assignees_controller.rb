@@ -20,13 +20,14 @@ class AssigneesController < ApplicationController
 
   def show
     @assignee = Assignee.find(params[:id])
-    @tasks = Task.where(assignee: @assignee).order(:updated_at).page params[:page]
+    @assignee_tasks = Task.where(assignee: @assignee)
+    @assignee_tasks_paginated = Task.where(assignee: @assignee).order(:updated_at).page params[:page]
     @total_time_estimation = 0
     @total_time_spent = 0
 
-    @tasks.each do |task|
-      @total_time_estimation += task.time_forecast.to_i || 0
-      @total_time_spent += task.time_spent.to_i || 0
+    @assignee_tasks.each do |task|
+      @total_time_estimation += task.time_forecast || 0
+      @total_time_spent += task.time_spent || 0
     end
   end
 

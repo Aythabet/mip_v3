@@ -19,6 +19,7 @@ class ApplicationController < ActionController::Base
 
     days = (hours / 8).floor
     hours %= 8
+    hours = hours.round(1)
 
     duration = []
     duration << "#{days} day#{'s' if days > 1}" if days > 0

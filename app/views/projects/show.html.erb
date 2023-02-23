@@ -9,7 +9,7 @@
       <h2 class="fw-bold mb-3">Stats</h2>
       <div class="card border-0">
         <div class="card-body">
-          <p class="card-text mb-1">Total tickets: <%= @tasks.count %></p>
+          <p class="card-text mb-1">Total tickets: <%= @project_tasks.count %></p>
           <p class="card-text mb-1">Total Time Estimation: <%= my_helper_format_duration(@total_time_estimation) %> </p>
           <p class="card-text mb-1">Total Time Spent: <%= my_helper_format_duration(@total_time_spent) %> </p>
         </div>
@@ -17,10 +17,10 @@
     </div>
     <!-- Tickets - Cards -->
   </div>
-  <div align="right" style="font-size: 80%"><%= page_entries_info @tasks, entry_name: 'task' %></div>
-  <span class="d-flex flex-row-reverse"><%= link_to_next_page @tasks, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @tasks, 'Previous' %></span>
+  <div align="right" style="font-size: 80%"><%= page_entries_info @project_tasks_paginated, entry_name: 'task' %></div>
+  <span class="d-flex flex-row-reverse"><%= link_to_next_page @project_tasks_paginated, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @project_tasks_paginated, 'Previous' %></span>
   <div class="row row-cols-1 row-cols-md-3 g-4">
-    <% @tasks.each do |task| %>
+    <% @project_tasks_paginated.each do |task| %>
       <div class="col">
         <div class="card border-0 h-100">
           <div class="card-header bg-light text-muted">
@@ -34,7 +34,7 @@
           </div>
           <div class="card-footer bg-light">
             <small class="text-muted">
-              Updated at: <%= task.project.updated_at %>
+              Created at: <%= task.created_at %>
             </small>
           </div>
         </div>
