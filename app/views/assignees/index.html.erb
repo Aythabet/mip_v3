@@ -8,6 +8,8 @@
   <% end %>
 </div>
 Total users: <%= @assignees.count %></br>
+<div align="right" style="font-size: 80%"><%= page_entries_info @assignees, entry_name: 'assignee' %></div>
+<span class="d-flex flex-row-reverse"><%= link_to_next_page @assignees, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @assignees, 'Previous' %></span>
 <table class="table">
   <thead>
     <tr>

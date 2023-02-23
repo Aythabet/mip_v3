@@ -1,6 +1,6 @@
 class AssigneesController < ApplicationController
   def index
-    @assignees = Assignee.all
+    @assignees = Assignee.all.order(:updated_at).page params[:page]
   end
 
   def retrieve_assignees
@@ -20,7 +20,7 @@ class AssigneesController < ApplicationController
 
   def show
     @assignee = Assignee.find(params[:id])
-    @tasks = Task.where(assignee: @assignee)
+    @tasks = Task.where(assignee: @assignee).order(:updated_at).page params[:page]
     @total_time_estimation = 0
     @total_time_spent = 0
 

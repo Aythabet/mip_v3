@@ -4,7 +4,7 @@ class TasksController < ApplicationController
   DEFAULT_PORJECT_ID = 1
 
   def index
-    @tasks = Task.all
+    @tasks = Task.all.order(:updated_at).page params[:page]
   end
 
 
