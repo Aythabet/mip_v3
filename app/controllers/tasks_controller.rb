@@ -1,10 +1,12 @@
 class TasksController < ApplicationController
+  include ActionView::Helpers::DateHelper
   DEFAULT_USER_ID = 1
   DEFAULT_PORJECT_ID = 1
 
   def index
     @tasks = Task.all
   end
+
 
   def retrieve_tasks
     jira_ids = collect_all_task_jira_ids
