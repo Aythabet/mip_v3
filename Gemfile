@@ -53,8 +53,6 @@ gem 'net-http'
 gem "devise"
 gem "autoprefixer-rails"
 gem "font-awesome-sass", "~> 6.1"
-gem 'rss'
-gem 'open-uri'
 gem 'kaminari'
 gem "simple_form", github: "heartcombo/simple_form"
 group :development, :test do

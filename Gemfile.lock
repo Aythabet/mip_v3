@@ -166,10 +166,6 @@ GEM
     nio4r (2.5.8)
     nokogiri (1.14.2-x86_64-linux)
       racc (~> 1.4)
-    open-uri (0.3.0)
-      stringio
-      time
-      uri
     orm_adapter (0.5.0)
     pg (1.4.5)
     public_suffix (5.0.1)
@@ -213,8 +209,6 @@ GEM
       actionpack (>= 5.2)
       railties (>= 5.2)
     rexml (3.2.5)
-    rss (0.2.9)
-      rexml
     rubyzip (2.3.2)
     sassc (2.4.0)
       ffi (~> 1.9)
@@ -237,11 +231,8 @@ GEM
       sprockets (>= 3.0.0)
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
-    stringio (3.0.5)
     thor (1.2.1)
     tilt (2.0.11)
-    time (0.2.1)
-      date
     timeout (0.3.1)
     turbo-rails (1.3.3)
       actionpack (>= 6.0.0)
@@ -285,11 +276,9 @@ DEPENDENCIES
   json (~> 2.6, >= 2.6.3)
   kaminari
   net-http
-  open-uri
   pg (~> 1.1)
   puma (~> 5.0)
   rails (~> 7.0.4, >= 7.0.4.2)
-  rss
   sassc-rails
   selenium-webdriver
   simple_form!
