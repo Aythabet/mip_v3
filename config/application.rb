@@ -17,7 +17,8 @@ module MipV3
     config.load_defaults 7.0
 
     # Configuration for the application, engines, and railties goes here.
-    #
+    config.active_job.queue_adapter = :sidekiq
+    config.cache_store = :redis_store, "redis://localhost:6379/0/cache", { expires_in: 90.minutes }
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
