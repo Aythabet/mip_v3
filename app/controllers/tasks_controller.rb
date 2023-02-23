@@ -28,12 +28,12 @@ class TasksController < ApplicationController
     jira_ids = []
     start_at = 0
     max_results = 50
-    total_pages = 1 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
 
     response = call_jira_api("https://agenceinspire.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20Created&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
+      total_pages = (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues is #{total_issues_count}...")
 
       (1..total_pages).each do |i|
