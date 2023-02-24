@@ -1,6 +1,6 @@
 class AssigneesController < ApplicationController
   def index
-    @assignees = Assignee.all.order(:updated_at).page params[:page]
+    @assignees = Assignee.all.order(:id).page params[:page]
     @assignees_count = Assignee.count
   end
 
@@ -21,8 +21,8 @@ class AssigneesController < ApplicationController
 
   def show
     @assignee = Assignee.find(params[:id])
-    @assignee_tasks = Task.where(assignee: @assignee)
-    @assignee_tasks_paginated = Task.where(assignee: @assignee).order(:updated_at).page params[:page]
+    @assignee_tasks = Task.where(assignee: @assignee).order(updated_at: :desc)
+    @assignee_tasks_paginated = Task.where(assignee: @assignee).order(updated_at: :desc).page params[:page]
     @total_time_estimation = 0
     @total_time_spent = 0
 

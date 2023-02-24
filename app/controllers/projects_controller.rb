@@ -1,9 +1,8 @@
 class ProjectsController < ApplicationController
   def index
-    @projects = Project.all.order(:updated_at).page params[:page]
+    @projects = Project.all.order(:name).page params[:page]
     @projects_count = Project.count
   end
-
 
   def retrieve_projects
     get_projects_data_with_pagination(0)
@@ -13,8 +12,8 @@ class ProjectsController < ApplicationController
 
   def show
     @project = Project.find(params[:id])
-    @project_tasks = Task.where(project: @project)
-    @project_tasks_paginated = Task.where(project: @project).order(:updated_at).page params[:page]
+    @project_tasks = Task.where(project: @project).order(updated_at: :desc)
+    @project_tasks_paginated = Task.where(project: @project).order(updated_at: :desc).page params[:page]
 
     @total_time_estimation = 0
     @total_time_spent = 0

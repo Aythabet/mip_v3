@@ -31,14 +31,19 @@
             <p class="card-text">Status: <%= task.status %></p>
             <p class="card-text">Time Estimation: <%= my_helper_format_duration(task.time_forecast) %></p>
             <p class="card-text">Time spent: <%= my_helper_format_duration(task.time_spent) %></p>
+            <p class="card-text">Summary: <%= task.summary %> </p>
           </div>
           <div class="card-footer bg-light">
             <small class="text-muted">
               Created at: <%= task.created_at %>
             </small>
-          </div>
+          </br>
+          <small class="text-muted">
+            Updated at: <%= task.updated_at %>
+          </small>
         </div>
       </div>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
+</div>
 </div>

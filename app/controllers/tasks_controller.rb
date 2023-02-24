@@ -4,7 +4,7 @@ class TasksController < ApplicationController
   DEFAULT_PORJECT_ID = 1
 
   def index
-    @tasks = Task.all.order(:updated_at).page params[:page]
+    @tasks = Task.all.order(updated_at: :desc).page params[:page]
     @tasks_count = Task.count
   end
 
@@ -29,18 +29,18 @@ class TasksController < ApplicationController
     start_at = 0
     max_results = 50
 
-    response = call_jira_api("https://agenceinspire.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20Created&startAt=#{start_at}&maxResults=#{max_results}")
+    response = call_jira_api("https://agenceinspire.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 2 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues is #{total_issues_count}...")
 
       (1..total_pages).each do |i|
         tasks = JSON.parse(response.body)
         jira_ids << tasks['issues'].map { |issue| issue['key'] }
         start_at += 50
-        response = call_jira_api("https://agenceinspire.atlassian.net/rest/api/3/search?jql=&startAt=#{start_at}&maxResults=50")
+        response = call_jira_api("https://agenceinspire.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
       end
     end
     p("Total issues to import is #{jira_ids.flatten.count}... This is going to take a while!")
@@ -54,16 +54,16 @@ class TasksController < ApplicationController
 
     json_task = JSON.parse(response.body)
     fields = json_task['fields']
-    added_task = Task.find_or_create_by(jira_id:) do |new_task|
-      new_task.project_id = determine_the_project_id(json_task)
-      new_task.assignee_id = determine_the_user_id(json_task)
-      new_task.time_forecast = fields['timeoriginalestimate']
-      new_task.status = fields['status']['name']
-      new_task.created_at = fields['created']
-      new_task.updated_at = fields['updated']
-      new_task.summary = fields['summary']
-      new_task.time_spent = retrieve_time_spent(url)
-    end
+    pp(Task.where(jira_id:).first_or_initialize)
+    added_task = Task.where(jira_id:).first_or_create
+    added_task.update(project_id: determine_the_project_id(json_task),
+                      assignee_id: determine_the_user_id(json_task),
+                      time_forecast: fields['timeoriginalestimate'],
+                      status: fields['status']['name'],
+                      created_at: fields['created'],
+                      updated_at: fields['updated'],
+                      summary: fields['summary'],
+                      time_spent: retrieve_time_spent(url))
     added_task.save
   end
 
