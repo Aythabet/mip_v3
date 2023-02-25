@@ -1,5 +1,7 @@
-class TasksJob
-  include Sidekiq::Job
+require 'sidekiq-scheduler'
+
+class ImportTasksScheduler
+  include Sidekiq::Worker
   DEFAULT_USER_ID = 1
   DEFAULT_PORJECT_ID = 1
 
@@ -46,7 +48,7 @@ class TasksJob
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 2 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 1 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues is #{total_issues_count}...")
 
       (1..total_pages).each do |i|

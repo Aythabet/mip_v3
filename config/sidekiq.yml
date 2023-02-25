@@ -1,0 +1,6 @@
+:scheduler:
+  :schedule:
+    import_tasks:
+      cron: '*/5 * * * *'
+      class: 'ImportTasksScheduler'
+      queue: default

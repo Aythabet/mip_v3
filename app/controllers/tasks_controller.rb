@@ -5,7 +5,9 @@ class TasksController < ApplicationController
   end
 
   def retrieve_tasks
-    TasksJob.perform_at(5.minutes.from_now)
+    TasksJob.perform_async
+
+    redirect_to tasks_path
   end
 
   def destroy_all
