@@ -10,16 +10,23 @@ Total tickets: <%= @tasks_count %></br>
   <% @tasks.each do |task| %>
     <div class="col">
       <div class="card">
-        <div class="card-header fw-bold text-muted">
-          JIRA ID:
-          <%= task.jira_id %>
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="fw-bold text-muted"><%= task.status %> - <%= task.jira_id %></div>
+          <div class="d-flex align-items-center">
+            <span class="me-2"><%= task.priority %></span>
+            <i class="bi bi-arrow-up"></i>
+          </div>
         </div>
+        <p class="badge badge-pill badge-dark"><%= task.epic %></p>
         <div class="card-body">
-          <h5 class="card-title">Project: <%= task.project.name %></h5>
-          <p class="card-text">Status: <%= task.status %></p>
+          <h5 class="card-title"><%= task.project.name %></h5>
           <p class="card-text">Time Estimation: <%= my_helper_format_duration(task.time_forecast) %></p>
           <p class="card-text">Time spent: <%= my_helper_format_duration(task.time_spent) %> </p>
           <p class="card-text">Summary: <%= task.summary %> </p>
+          <p class="card-text">Priority:  </p>
+          <% task.labels&.split&.each do |label| %>
+            <span class="badge badge-pill badge-danger"><%= label.gsub(/[^a-zA-Z\s]/, '') %></span>
+          <% end %>
         </div>
         <div class="card-footer">
           <small class="text-muted">
