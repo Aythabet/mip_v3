@@ -4,10 +4,11 @@ class TasksJob
   DEFAULT_PORJECT_ID = 1
 
   def perform(*)
-    jira_ids = collect_all_task_jira_ids
+    entity = "agenceinspire"
+    jira_ids = collect_all_task_jira_ids(entity)
     i = 0
     jira_ids.each do |jira_id|
-      collect_and_save_task_information(jira_id)
+      collect_and_save_task_information(entity, jira_id)
       i += 1
       pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~")
     end
@@ -40,12 +41,12 @@ class TasksJob
     end
   end
 
-  def collect_all_task_jira_ids
+  def collect_all_task_jira_ids(entity)
     jira_ids = []
     start_at = 0
     max_results = 10
 
-    response = call_jira_api("https://agenceinspire.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
+    response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
@@ -56,15 +57,15 @@ class TasksJob
         tasks = JSON.parse(response.body)
         jira_ids << tasks['issues'].map { |issue| issue['key'] }
         start_at += max_results
-        response = call_jira_api("https://agenceinspire.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
+        response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
       end
     end
     p("Total issues to import is #{jira_ids.flatten.count}... This is going to take a while!")
     jira_ids.flatten
   end
 
-  def collect_and_save_task_information(jira_id)
-    url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{jira_id}"
+  def collect_and_save_task_information(entity, jira_id)
+    url = "https://#{entity}.atlassian.net/rest/api/3/issue/#{jira_id}"
     response = call_jira_api(url)
     return unless response.code == '200'
 

@@ -6,7 +6,7 @@ class TasksController < ApplicationController
 
   def retrieve_tasks
     TasksJob.perform_async
-
+    flash.notice = 'The import started, come back in few minutes!'
     redirect_to tasks_path
   end
 

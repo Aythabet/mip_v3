@@ -1,5 +1,4 @@
 </br>
-</br>
 <div class="d-flex justify-content-start">
   <%= button_to "Import tasks from JIRA", { action: "retrieve_tasks" }, method: :post, class: "btn btn-success mb-4" %>
   <%= button_to "Delete all tasks", { action: "destroy_all" }, method: :post, class: "btn btn-warning mb-4 ml-2" %></div>
@@ -11,7 +10,7 @@ Total tickets: <%= @tasks_count %></br>
     <div class="col">
       <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <div class="fw-bold text-muted"><%= task.status %> - <%= task.jira_id %></div>
+          <div class="fw-bold text-muted"><%= task.status %>: <%= task.jira_id %></div>
           <div class="d-flex align-items-center">
             <span class="me-2"><%= task.priority %></span>
             <i class="bi bi-arrow-up"></i>
@@ -19,7 +18,7 @@ Total tickets: <%= @tasks_count %></br>
         </div>
         <p class="badge badge-pill badge-dark"><%= task.epic %></p>
         <div class="card-body">
-          <h5 class="card-title"><%= task.project.name %></h5>
+          <h5 class="card-title"><%= link_to task.project.name, task.project, style: "text-decoration:none; color:grey" %></h5>
           <p class="card-text">Time Estimation: <%= my_helper_format_duration(task.time_forecast) %></p>
           <p class="card-text">Time spent: <%= my_helper_format_duration(task.time_spent) %> </p>
           <p class="card-text">Summary: <%= task.summary %> </p>
@@ -31,7 +30,7 @@ Total tickets: <%= @tasks_count %></br>
         <div class="card-footer">
           <small class="text-muted">
             Assigned to:
-            <%= task.assignee.name %>
+            <%= link_to task.assignee.name , task.assignee, style: "text-decoration:none; color:grey" %>
           </small>
         </div>
       </div>

@@ -31,8 +31,8 @@ class PagesController < ApplicationController
     @assignees_and_tickets_count = []
     assignees = Assignee.all
     assignees.each do |assignee|
-      ticket_count = Task.where(assignee_id: assignee.id, updated_at: (Time.current - 3.days)..Time.current).count
-      @assignees_and_tickets_count << { name: assignee.name, ticket_count: } if ticket_count.positive?
+      ticket_count = Task.where(assignee_id: assignee.id, updated_at: (Time.current - 1.days)..Time.current).count
+      @assignees_and_tickets_count << { name: assignee.name, id: assignee.id ,ticket_count: } if ticket_count.positive?
     end
   end
 end
