@@ -1,8 +1,8 @@
-</br>
-<div class="d-flex justify-content-start">
-  <%= button_to "Import projects from JIRA", { action: "retrieve_projects" }, method: :post, class: "btn btn-dark mb-4" %>
-  <%= button_to "Delete all Projects", { action: "destroy_all" }, method: :post, class: "btn btn-warning mb-4 ml-2" %></div>
-Total projects: <%= @projects_count %></br>
+<div class="container py-4">
+  <div class="d-flex justify-content-start">
+    <%= button_to "Import projects from JIRA", { action: "retrieve_projects" }, method: :post, class: "btn btn-dark mb-4" %>
+    <%= button_to "Delete all Projects", { action: "destroy_all" }, method: :post, class: "btn btn-warning mb-4 ml-2" %></div>
+  Total projects: <%= @projects_count %></br>
 <div align="right" style="font-size: 80%"><%= page_entries_info @projects, entry_name: 'project' %></div>
 <span class="d-flex flex-row-reverse"><%= link_to_next_page @projects, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @projects, 'Previous' %></span>
 <table class="table">
@@ -27,3 +27,4 @@ Total projects: <%= @projects_count %></br>
     <% end %>
   </tbody>
 </table>
+</div>

@@ -1,8 +1,8 @@
-</br>
-<div class="d-flex justify-content-start">
-  <%= button_to "Import tasks from JIRA", { action: "retrieve_tasks" }, method: :post, class: "btn btn-success mb-4" %>
-  <%= button_to "Delete all tasks", { action: "destroy_all" }, method: :post, class: "btn btn-warning mb-4 ml-2" %></div>
-Total tickets: <%= @tasks_count %></br>
+<div class="container py-4">
+  <div class="d-flex justify-content-start">
+    <%= button_to "Import tasks from JIRA", { action: "retrieve_tasks" }, method: :post, class: "btn btn-success mb-4" %>
+    <%= button_to "Delete all tasks", { action: "destroy_all" }, method: :post, class: "btn btn-warning mb-4 ml-2" %></div>
+  Total tickets: <%= @tasks_count %></br>
 <div align="right" style="font-size: 80%"><%= page_entries_info @tasks, entry_name: 'task' %></div>
 <span class="d-flex flex-row-reverse"><%= link_to_next_page @tasks, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @tasks, 'Previous' %></span>
 <div class="row row-cols-1 row-cols-md-4 g-4">
@@ -18,7 +18,7 @@ Total tickets: <%= @tasks_count %></br>
         </div>
         <p class="badge badge-pill badge-dark"><%= task.epic %></p>
         <div class="card-body">
-          <h5 class="card-title"><%= link_to task.project.name, task.project, style: "text-decoration:none; color:grey" %></h5>
+          <h5 class="card-title"><%= link_to task.project.name, task.project %></h5>
           <p class="card-text">Time Estimation: <%= my_helper_format_duration(task.time_forecast) %></p>
           <p class="card-text">Time spent: <%= my_helper_format_duration(task.time_spent) %> </p>
           <p class="card-text">Summary: <%= task.summary %> </p>
@@ -30,11 +30,11 @@ Total tickets: <%= @tasks_count %></br>
         <div class="card-footer">
           <small class="text-muted">
             Assigned to:
-            <%= link_to task.assignee.name , task.assignee, style: "text-decoration:none; color:grey" %>
+            <%= link_to task.assignee.name , task.assignee %>
           </small>
         </div>
       </div>
     </div>
   <% end %>
 </div>
-</br>
+</div>
