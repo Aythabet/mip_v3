@@ -61,7 +61,6 @@ class TasksJob
       end
     end
     number_of_tasks_to_import = max_results * total_pages
-
     p("Total issues to import is #{number_of_tasks_to_import}...")
     p(" It will take #{number_of_tasks_to_import / 60} minutes...")
     jira_ids.flatten
