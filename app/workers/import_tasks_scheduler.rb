@@ -90,7 +90,6 @@ class ImportTasksScheduler
       time_spent: retrieve_time_spent(url),
       labels: retrive_labels(json_task)
     )
-    retrive_labels(json_task)
     pp(added_task)
     added_task.save
   end
