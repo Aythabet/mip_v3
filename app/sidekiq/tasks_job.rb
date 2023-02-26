@@ -43,14 +43,14 @@ class TasksJob
 
   def collect_all_task_jira_ids(entity)
     jira_ids = []
-    start_at = 4000
-    max_results = 50
+    start_at = 0
+    max_results = 5
 
     response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 25 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 1 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues is #{total_issues_count}...")
 
       (1..total_pages).each do |i|
@@ -60,11 +60,10 @@ class TasksJob
         response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
       end
     end
-    number_of_tasks_to_import = total_issues_count - start_at
-    time_to_import_approx = number_of_tasks_to_import * 1 # estimate 1 sec to import a task (real: 0,7ms)
+    number_of_tasks_to_import = max_results * total_pages
 
     p("Total issues to import is #{number_of_tasks_to_import}...")
-    p(" It will take #{time_to_import_approx / 60} minutes...")
+    p(" It will take #{number_of_tasks_to_import / 60} minutes...")
     jira_ids.flatten
   end
 

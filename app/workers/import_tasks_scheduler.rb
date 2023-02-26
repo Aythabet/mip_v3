@@ -62,7 +62,10 @@ class ImportTasksScheduler
         response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
       end
     end
-    p("Total issues to import is #{jira_ids.flatten.count}... This is going to take a while!")
+    number_of_tasks_to_import = max_results * total_pages
+
+    p("Total issues to import is #{number_of_tasks_to_import}...")
+    p(" It will take #{number_of_tasks_to_import / 60} minutes...")
     jira_ids.flatten
   end
 
