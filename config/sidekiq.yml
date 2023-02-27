@@ -1,6 +1,6 @@
 :scheduler:
   :schedule:
     import_tasks:
-      cron: '0 * * * * '
+      cron: '*/30 * * * *'
       class: 'ImportTasksScheduler'
       queue: default
