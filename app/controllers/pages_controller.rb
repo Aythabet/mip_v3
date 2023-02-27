@@ -18,13 +18,13 @@ class PagesController < ApplicationController
   def tickets_done_in_progress_waiting_count
     @number_of_tickets_in_progress = Task.where("LOWER(status) IN (?) AND updated_at AT TIME ZONE 'UTC' >= ?",
                                                 'in progress',
-                                                (Time.current - 3.days).beginning_of_day.utc).count
+                                                (Time.current - 1.days).beginning_of_day.utc).count
     @number_of_tickets_done_last_three_days = Task.where("LOWER(status) IN (?, ?, ?) AND updated_at AT TIME ZONE 'UTC' >= ?",
                                                          'done', 'validé', 'valide',
-                                                         (Time.current - 3.days).beginning_of_day.utc).count
+                                                         (Time.current - 1.days).beginning_of_day.utc).count
     @number_of_tickets_waiting_last_three_days = Task.where("LOWER(status) IN (?) AND updated_at AT TIME ZONE 'UTC' >= ?",
                                                             'en attente',
-                                                            (Time.current - 3.days).beginning_of_day.utc).count
+                                                            (Time.current - 1.days).beginning_of_day.utc).count
   end
 
   def top_active_assignee_last_three_days

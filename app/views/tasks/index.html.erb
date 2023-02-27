@@ -18,23 +18,26 @@
         </div>
         <p class="badge badge-pill badge-dark"><%= task.epic %></p>
         <div class="card-body">
+          <%= link_to task.assignee.name , task.assignee %>
           <h5 class="card-title"><%= link_to task.project.name, task.project %></h5>
           <p class="card-text">Time Estimation: <%= my_helper_format_duration(task.time_forecast) %></p>
           <p class="card-text">Time spent: <%= my_helper_format_duration(task.time_spent) %> </p>
           <p class="card-text">Summary: <%= task.summary %> </p>
-          <p class="card-text">Priority:  </p>
           <% task.labels&.split&.each do |label| %>
             <span class="badge badge-pill badge-danger"><%= label.gsub(/[^a-zA-Z\s]/, '') %></span>
           <% end %>
         </div>
-        <div class="card-footer">
+        <div class="card-footer bg-light">
           <small class="text-muted">
-            Assigned to:
-            <%= link_to task.assignee.name , task.assignee %>
+            Created at: <%= task.created_at %>
           </small>
-        </div>
+        </br>
+        <small class="text-muted">
+          Updated at: <%= task.updated_at %>
+        </small>
       </div>
     </div>
-  <% end %>
+  </div>
+<% end %>
 </div>
 </div>

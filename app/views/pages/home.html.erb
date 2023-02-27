@@ -18,7 +18,7 @@
     <div class="col-lg-6 col-md-12">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Ticket Status in the last 3 days</h5>
+          <h5 class="card-title">Today <%= Date.today.strftime("%e %B %Y")%></h5>
           <ul class="list-group">
             <li class="list-group-item">Number of tickets "In Progress":<strong> <%= @number_of_tickets_in_progress %></strong></li>
             <li class="list-group-item">Number of tickets "Done":<strong> <%= @number_of_tickets_done_last_three_days %></strong></li>

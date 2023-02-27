@@ -32,12 +32,11 @@
           </div>
           <p class="badge badge-pill badge-dark"><%= task.epic %></p>
           <div class="card-body">
-            <h5 class="card-title"><%= link_to task.assignee.name %>
+            <h5 class="card-title"><%= link_to task.assignee.name, task.assignee %>
             </h5>
             <p class="card-text">Time Estimation: <%= my_helper_format_duration(task.time_forecast) %></p>
             <p class="card-text">Time spent: <%= my_helper_format_duration(task.time_spent) %></p>
             <p class="card-text">Summary: <%= task.summary %> </p>
-            <p class="card-text">Priority:  </p>
             <% task.labels&.split&.each do |label| %>
               <span class="badge badge-pill badge-danger"><%= label.gsub(/[^a-zA-Z\s]/, '') %></span>
             <% end %>
