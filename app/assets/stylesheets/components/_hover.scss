@@ -1,0 +1,19 @@
+#hover-text {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.hover-content {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 0;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  z-index: 1;
+}
+
+#hover-text:hover + .hover-content {
+  display: block;
+}
