@@ -1,0 +1,10 @@
+<div class="hover-content">
+  <p> Tasks done today: <%= Date.today %></p>
+  <% @assignee_todays_tasks.each do |task| %>
+    <ul>
+    <li><%= task.jira_id %> - 
+    <%= task.status %> - <%= task.time_spent %>
+    </li>
+  </ul>
+  <% end %>
+</div>

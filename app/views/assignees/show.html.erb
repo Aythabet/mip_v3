@@ -4,6 +4,11 @@
     <div class="col-12 col-md-6">
       <h1 class="mb-2">Assignee #<%= @assignee.id %></h1>
       <h2 class="fw-bold mb-3"><%= @assignee.name %></h2>
+      <div>
+      <!-- Hover CR -->
+      <%= render partial: 'hover_cr_today' %>
+      <span id="hover-text"><%= Date.today.strftime("%e %B %Y") %></span>
+      </div>
     </div>
     <div class="col-12 col-md-6">
       <h2 class="fw-bold mb-3">Stats</h2>
@@ -55,3 +60,25 @@
   <% end %>
 </div>
 </div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+  const hoverText = document.getElementById("hover-text");
+  const hoverContent = document.querySelector(".hover-content");
+  
+  hoverText.addEventListener("mouseover", function(event) {
+    // Calculate the position of the cursor relative to the viewport
+    const x = event.clientX;
+    const y = event.clientY;
+    
+    // Set the position of the hover content relative to the cursor
+    hoverContent.style.display = "block";
+    hoverContent.style.top = `${y + 10}px`;
+    hoverContent.style.left = `${x + 10}px`;
+  });
+  
+  hoverText.addEventListener("mouseout", function() {
+    hoverContent.style.display = "none";
+  });
+});
+</script>

@@ -22,6 +22,10 @@ class AssigneesController < ApplicationController
   def show
     @assignee = Assignee.find(params[:id])
     @assignee_tasks = Task.where(assignee: @assignee).order(updated_at: :desc)
+
+    # CR Today
+    generate_cr(Date.today)
+
     @assignee_tasks_paginated = Task.where(assignee: @assignee).order(updated_at: :desc).page params[:page]
     @total_time_estimation = 0
     @total_time_spent = 0
@@ -46,5 +50,11 @@ class AssigneesController < ApplicationController
       user.name = assignee_name
       user.admin = admin
     end
+  end
+
+  def generate_cr(day)
+    @assignee_todays_tasks = Task.where(assignee: @assignee)
+                             .where("DATE(updated_at) = ? OR DATE(created_at) = ?", day, day)
+                             .order(updated_at: :desc)
   end
 end
