@@ -1,6 +1,6 @@
 <div class="hover-content">
-  <p> Tasks done today: <%= Date.today %></p>
-  <% @assignee_todays_tasks.each do |task| %>
+  <p> Tasks done yesterday: <%= Date.today - 1 %></p>
+  <% @assignee_yesterday_tasks.each do |task| %>
     <ul>
       <li><%= task.jira_id %> - 
         <%= task.status %> - <%= my_helper_format_duration(task.time_spent) %>
