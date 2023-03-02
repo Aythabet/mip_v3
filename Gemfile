@@ -88,3 +88,5 @@ gem "sidekiq", "~> 7.0"
 gem 'sidekiq-scheduler'
 
 gem "importmap-rails", "~> 1.1"
+
+gem "hotwire-livereload", "~> 1.2"
