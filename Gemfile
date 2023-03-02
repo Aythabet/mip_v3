@@ -48,13 +48,6 @@ gem "sassc-rails"
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-gem 'json', '~> 2.6', '>= 2.6.3'
-gem 'net-http'
-gem "devise"
-gem "autoprefixer-rails"
-gem "font-awesome-sass", "~> 6.1"
-gem 'kaminari'
-gem "simple_form", github: "heartcombo/simple_form"
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
@@ -86,7 +79,13 @@ end
 
 gem "sidekiq", "~> 7.0"
 gem 'sidekiq-scheduler'
-
 gem "importmap-rails", "~> 1.1"
-
 gem "hotwire-livereload", "~> 1.2"
+gem 'json', '~> 2.6', '>= 2.6.3'
+gem 'net-http'
+gem "devise"
+gem "autoprefixer-rails"
+gem "font-awesome-sass", "~> 6.1"
+gem 'kaminari'
+gem "simple_form", github: "heartcombo/simple_form"
+

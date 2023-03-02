@@ -54,7 +54,11 @@ class AssigneesController < ApplicationController
 
   def generate_cr(day)
     @assignee_todays_tasks = Task.where(assignee: @assignee)
-                             .where("DATE(updated_at) = ? OR DATE(created_at) = ?", day, day)
-                             .order(updated_at: :desc)
+    .where("DATE(updated_at) = ? OR DATE(created_at) = ?", day, day)
+    .order(updated_at: :desc)
+
+    @assignee_yesterday_tasks = Task.where(assignee: @assignee)
+    .where("DATE(updated_at) = ? OR DATE(created_at) = ?", day - 1, day - 1)
+    .order(updated_at: :desc)
   end
 end

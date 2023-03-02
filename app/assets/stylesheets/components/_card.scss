@@ -1,6 +1,7 @@
 .card {
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .card-body {
@@ -9,4 +10,12 @@
 
 .card-footer {
   margin-top: auto;
+}
+
+.bg-stats {
+  display: flex;
+  flex-direction: column;
+  height: 70%;
+  background-color: white;
+  padding: 10px;  
 }
