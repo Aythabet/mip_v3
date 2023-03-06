@@ -1,0 +1,7 @@
+<%= turbo_frame_tag "tasks" do %>
+  <div class="row row-cols-1 row-cols-md-3 g-2">
+    <% tasks.each do |task| %>
+      <%= render partial: "task", locals: { task: task } %>
+    <% end %>
+  </div>
+<% end %>

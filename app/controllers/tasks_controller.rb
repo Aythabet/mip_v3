@@ -1,6 +1,15 @@
 class TasksController < ApplicationController
   def index
-    @tasks = Task.all.order(updated_at: :desc).page params[:page]
+    @tasks = Task.order(updated_at: :desc)
+    @tasks = @tasks.where("jira_id LIKE ?", "%#{params[:query].upcase}%") if params[:query].present?
+    @tasks = @tasks.page params[:page]
+
+    if turbo_frame_request?
+      render partial: "tasks", locals: { tasks: @tasks }
+    else
+      render :index
+    end
+
     @tasks_count = Task.count
   end
 
