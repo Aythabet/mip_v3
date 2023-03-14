@@ -1,7 +1,6 @@
 .card {
   display: flex;
   flex-direction: column;
-  height: 100%;
 }
 
 .card-body {
@@ -18,4 +17,8 @@
   height: 70%;
   background-color: white;
   padding: 10px;  
+}
+
+.card-task {
+  height: 100%;
 }

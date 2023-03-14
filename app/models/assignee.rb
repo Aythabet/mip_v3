@@ -4,5 +4,5 @@ class Assignee < ApplicationRecord
   validates :name, uniqueness: true
   validates :email, uniqueness: true
 
-  paginates_per 10
+  paginates_per 20
 end
