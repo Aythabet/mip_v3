@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_02_25_210555) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_16_133053) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -28,6 +28,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_25_210555) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "lead"
+    t.boolean "archived_status", default: false
   end
 
   create_table "tasks", force: :cascade do |t|
@@ -43,6 +44,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_02_25_210555) do
     t.string "priority"
     t.string "epic"
     t.string "labels"
+    t.string "link"
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["project_id"], name: "index_tasks_on_project_id"
   end
