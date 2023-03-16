@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
 
   def format_duration(seconds)
     if seconds.nil? || seconds.zero?
-      return "No input from assignee"
+      return "No data"
     end
 
     minutes = seconds / 60.0

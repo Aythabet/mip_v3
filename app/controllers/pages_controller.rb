@@ -5,6 +5,7 @@ class PagesController < ApplicationController
     basic_stats_projects_assignees_tasks
     tickets_done_in_progress_waiting_count
     top_active_assignee_last_three_days
+    active_tickets_partial
   end
 
   private
@@ -43,5 +44,20 @@ class PagesController < ApplicationController
       ticket_count = Task.where(assignee_id: assignee.id, updated_at: (Time.current.beginning_of_day.utc)..Time.current).count
       @assignees_and_tickets_count << { name: assignee.name, id: assignee.id ,ticket_count: } if ticket_count.positive?
     end
+  end
+
+  def active_tickets_partial
+    projects = Project
+    .joins(:tasks)
+    .where(tasks: { status: 'In Progress' })
+    .distinct
+    .includes(:tasks)
+
+    projects.each do |project|
+      t_count = project.tasks.count
+      pp("#{project.jira_id} ======== #{t_count}")
+    end
+
+    @projects_with_active_tickets = projects.sort_by{ |project| -1 * project.tasks.where(status: 'In Progress').count }
   end
 end
