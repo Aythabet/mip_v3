@@ -53,11 +53,6 @@ class PagesController < ApplicationController
     .distinct
     .includes(:tasks)
 
-    projects.each do |project|
-      t_count = project.tasks.count
-      pp("#{project.jira_id} ======== #{t_count}")
-    end
-
     @projects_with_active_tickets = projects.sort_by{ |project| -1 * project.tasks.where(status: 'In Progress').count }
   end
 end
