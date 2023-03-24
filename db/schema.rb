@@ -44,7 +44,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_16_133053) do
     t.string "priority"
     t.string "epic"
     t.string "labels"
-    t.string "link"
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["project_id"], name: "index_tasks_on_project_id"
   end

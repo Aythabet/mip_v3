@@ -33,7 +33,9 @@
     <div class="col">
       <div class="card card-task border-0 h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
-          <div class="fw-bold text-muted"><%= task.status %>: <%= task.jira_id %></div>
+          <div class="fw-bold text-muted">
+            <%= task.status %>: <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank" %>
+          </div>
           <div class="d-flex align-items-center">
             <span class="me-2"><%= task.priority %></span>
             <i class="bi bi-arrow-up"></i>
