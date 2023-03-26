@@ -78,6 +78,7 @@ group :production do
 end
 
 gem 'bootstrap-sass'
+gem 'uri'
 gem "sidekiq", "~> 7.0"
 gem 'sidekiq-scheduler'
 gem "importmap-rails", "~> 1.1"
