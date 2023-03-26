@@ -1,46 +1,28 @@
-<div class="container d-flex justify-content-center">
-  <div class="project-row">
-    <% @projects_with_active_tickets.each do |project| %>
-      <span><%= project.jira_id %>: <%= project.tasks.where(status: "In Progress").count %> tickets "In Progress"</span>
-      <div class="row">
-        <% project.tasks.each_slice(6) do |task_group| %>
-          <% task_group.each do |task| %>
-            <div class="col-md-2 mb-1 m-1 p-1">
-              <div class="card task-card">
-                <div class="card-body">
-                  <div class="d-flex align-items-center">
-                    <div class="assignee-circle mr-2">
-                      <%= task.assignee.name.split.map { |word| word[0] }.join.upcase %>
-                    </div>
-                    <span class="badge badge-dashboard badge-secondary">
-                      <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank", class: "no-white-link-decoration" %>
-                    </span>
-                  </div>
-                  <% if task.time_forecast.nil? || task.time_spent.nil? %>
-                    <div class="progress mt-2">
-                      <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: 100%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="1"> No data</div>
-                    </div>
-                  <% else %>
-                    <% remaining_time = task.time_forecast - task.time_spent %>
-                    <% status_class = case remaining_time <=> 0
-					                  when -1 then 'text-danger'
-					                  when 0 then 'text-warning'
-					                  else 'text-success'
-					                  end %>
-                    <div class="progress mt-2">
-                      <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: <%= (task.time_spent / task.time_forecast) * 100 %>%;" aria-valuenow=<% task.time_spent %> aria-valuemin="0" aria-valuemax=<% task.time_forecast %>>
-                        <span class="sr-only"><%= "#{my_helper_format_duration(task.time_spent)} / #{my_helper_format_duration(task.time_forecast)}" %></span>
-                        <span class="<%= status_class %> remaining-time" style="color:black !important;"><%= "#{my_helper_format_duration(remaining_time)} remaining..." %></span>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-              </div>
-            </div>
+<div class="d-flex flex-wrap">
+  <% @projects_with_active_tickets.each do |project| %>
+    <div class="card mr-1 mb-1">
+      <div class="card-body d-flex flex-column align-items-center">
+        <ul class="list-unstyled mb-0">
+          <% project.tasks.each do |task| %>
+            <li>
+              <span class="badge badge-secondary mr-2"><%= task.jira_id %></span>
+              <strong><%= task.assignee.name.split.map { |word| word[0] }.join.upcase %></strong>
+              <% if task.time_forecast.nil? || task.time_spent.nil? %>
+                <span class="text-danger">No data</span>
+              <% else %>
+                <% remaining_time = task.time_forecast - task.time_spent %>
+                <% if remaining_time < 0 %>
+                  <span class="text-danger"><%= my_helper_format_duration(remaining_time) %></span>
+                <% elsif remaining_time == 0 %>
+                  <span class="text-warning"><%= my_helper_format_duration(remaining_time) %></span>
+                <% else %>
+                  <span class="text-success"><%= my_helper_format_duration(remaining_time) %></span>
+                <% end %>
+              <% end %>
+            </li>
           <% end %>
-        <% end %>
-        <hr class="hr hr-blurry" />
-      <% end %>
+        </ul>
+      </div>
     </div>
-  </div>
+  <% end %>
 </div>
