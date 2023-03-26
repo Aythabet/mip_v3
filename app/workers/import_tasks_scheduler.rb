@@ -83,7 +83,7 @@ class ImportTasksScheduler
       time_forecast: fields['timeoriginalestimate'],
       status: fields&.[]('status')&.[]('name'),
       created_at: fields['created'],
-      updated_at: fields['updated'],
+      last_jira_update: fields['updated'],
       summary: fields['summary'],
       priority: fields&.[]('priority')&.[]('name'),
       epic: fields&.[]('parent')&.[]('fields')&.[]('summary'),

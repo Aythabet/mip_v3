@@ -44,13 +44,13 @@ class TasksJob
   def collect_all_task_jira_ids(entity)
     jira_ids = []
     start_at = 0
-    max_results = 50
+    max_results = 5
 
     response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 2 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 1 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues is #{total_issues_count}...")
 
       (1..total_pages).each do
@@ -80,7 +80,7 @@ class TasksJob
       time_forecast: fields['timeoriginalestimate'],
       status: fields&.[]('status')&.[]('name'),
       created_at: fields['created'],
-      updated_at: fields['updated'],
+      last_jira_update: fields['updated'],
       summary: fields['summary'],
       priority: fields&.[]('priority')&.[]('name'),
       epic: fields&.[]('parent')&.[]('fields')&.[]('summary'),
@@ -136,7 +136,6 @@ class TasksJob
 
   def retrive_labels(json_task)
     fields = json_task['fields']
-    labels = fields&.[]('labels')
+    fields&.[]('labels')
   end
-
 end

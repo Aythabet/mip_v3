@@ -12,8 +12,8 @@ class ProjectsController < ApplicationController
 
   def show
     @project = Project.find(params[:id])
-    @project_tasks = Task.where(project: @project).order(updated_at: :desc)
-    @project_tasks_paginated = Task.where(project: @project).order(updated_at: :desc).page params[:page]
+    @project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
+    @project_tasks_paginated = Task.where(project: @project).order(last_jira_update: :desc).page params[:page]
 
     @total_time_estimation = 0
     @total_time_spent = 0

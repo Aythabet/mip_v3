@@ -21,12 +21,12 @@ class AssigneesController < ApplicationController
 
   def show
     @assignee = Assignee.find(params[:id])
-    @assignee_tasks = Task.where(assignee: @assignee).order(updated_at: :desc)
+    @assignee_tasks = Task.where(assignee: @assignee).order(last_jira_update: :desc)
 
     # CR Today
     generate_cr(Date.today)
 
-    @assignee_tasks_paginated = Task.where(assignee: @assignee).order(updated_at: :desc).page params[:page]
+    @assignee_tasks_paginated = Task.where(assignee: @assignee).order(last_jira_update: :desc).page params[:page]
     @total_time_estimation = 0
     @total_time_spent = 0
 
@@ -54,11 +54,11 @@ class AssigneesController < ApplicationController
 
   def generate_cr(day)
     @assignee_todays_tasks = Task.where(assignee: @assignee)
-    .where("DATE(updated_at) = ? OR DATE(created_at) = ?", day, day)
-    .order(updated_at: :desc)
+    .where("DATE(last_jira_update) = ? OR DATE(created_at) = ?", day, day)
+    .order(last_jira_update: :desc)
 
     @assignee_yesterday_tasks = Task.where(assignee: @assignee)
-    .where("DATE(updated_at) = ? OR DATE(created_at) = ?", day - 1, day - 1)
-    .order(updated_at: :desc)
+    .where("DATE(last_jira_update) = ? OR DATE(created_at) = ?", day - 1, day - 1)
+    .order(last_jira_update: :desc)
   end
 end
