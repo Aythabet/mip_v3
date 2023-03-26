@@ -50,17 +50,17 @@ class TasksJob
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 2 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 2 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues is #{total_issues_count}...")
 
-      (1..total_pages).each do |i|
+      (1..total_pages).each do
         tasks = JSON.parse(response.body)
         jira_ids << tasks['issues'].map { |issue| issue['key'] }
         start_at += max_results
         response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
       end
     end
-    number_of_tasks_to_import = max_results * total_pages
+    number_of_tasks_to_import = max_results.to_i * total_pages.to_i
     p("Total issues to import is #{number_of_tasks_to_import}...")
     p(" It will take #{number_of_tasks_to_import / 60} minutes...")
     jira_ids.flatten

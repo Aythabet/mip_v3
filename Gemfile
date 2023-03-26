@@ -77,6 +77,7 @@ group :production do
   gem 'redis-rack-cache'
 end
 
+gem 'uri'
 gem "sidekiq", "~> 7.0"
 gem 'sidekiq-scheduler'
 gem "importmap-rails", "~> 1.1"
