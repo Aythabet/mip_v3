@@ -90,3 +90,7 @@ gem "autoprefixer-rails"
 gem "font-awesome-sass", "~> 6.1"
 gem 'kaminari'
 gem "simple_form", github: "heartcombo/simple_form"
+
+gem "omniauth"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
