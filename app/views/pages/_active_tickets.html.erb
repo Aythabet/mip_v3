@@ -11,7 +11,7 @@
                   <span class="badge badge-dashboard badge-secondary">
                     <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank", class: "links_on_active_tasks_cards" %>
                   </span>
-                  <i class="bi bi-person-fill-gear"></i> &nbsp; <%= task.assignee.name %>
+                  &nbsp;<i class="bi bi-person-fill-gear"></i> &nbsp; <%= task.assignee.name %>
                 </div>
                 <% if task.time_forecast.nil? || task.time_spent.nil? %>
                   <div class="progress mt-2">

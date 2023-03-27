@@ -49,7 +49,7 @@
           <% @assignees_and_tickets_count.sort_by { |a| a[:ticket_count] }.reverse.each_with_index do |assignee, index| %>
             <li class="list-group-item d-flex justify-content-between align-items-center">
               <span><%= link_to assignee[:name], assignee_path(assignee[:id]) %></span>
-              <span class="badge badge-primary badge-pill"><%= assignee[:ticket_count] %> tickets</span>
+              <span class="badge badge-primary badge-pill" ><%= assignee[:ticket_count] %> tickets </span>
             </li>
           <% end %>
         <% end %>

@@ -9,7 +9,7 @@
         <i class="bi bi-arrow-up"></i>
       </div>
     </div>
-    <p class="badge badge-pill badge-dark"><%= task.epic %></p>
+    <span class="badge badge-pill badge-dark"><%= task.epic %></span>
     <div class="card-body">
       <%= link_to task.assignee.name , task.assignee %>
       <h5 class="card-title"><%= link_to task.project.name, task.project %></h5>
