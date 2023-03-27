@@ -18,7 +18,6 @@ class TasksController < ApplicationController
 
     flash.notice = 'The import started, come back in few minutes!'
     redirect_to tasks_path
-    flash.clear
   end
 
   def destroy_all
