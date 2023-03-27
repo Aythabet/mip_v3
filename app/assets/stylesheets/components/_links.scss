@@ -8,7 +8,13 @@ a:hover {
   color: black;
 }
 
-.no-white-link-decoration {
+.links_on_active_tasks_cards {
   text-decoration: none; 
-  color: white;
+  color: black  !important;
+
+}
+
+.links_on_active_tasks_cards:hover {
+  text-decoration: none; 
+  color: white !important;
 }

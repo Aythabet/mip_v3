@@ -4,16 +4,14 @@
     <div class="row">
       <% project.tasks.each_slice(6) do |task_group| %>
         <% task_group.each do |task| %>
-          <div class="col-md-2 mb-1 m-1 p-1">
+          <div class="col-md-3 mb-1 m-1 p-1">
             <div class="card task-card">
-              <div class="card-body">
+              <div class="card-body-active-card">
                 <div class="d-flex align-items-center">
-                  <div class="assignee-circle mr-2">
-                    <%= task.assignee.name.split.map { |word| word[0] }.join.upcase %>
-                  </div>
                   <span class="badge badge-dashboard badge-secondary">
-                    <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank", class: "no-white-link-decoration" %>
+                    <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank", class: "links_on_active_tasks_cards" %>
                   </span>
+                  <i class="bi bi-person-fill-gear"></i> &nbsp; <%= task.assignee.name %>
                 </div>
                 <% if task.time_forecast.nil? || task.time_spent.nil? %>
                   <div class="progress mt-2">
@@ -33,6 +31,9 @@
                     </div>
                   </div>
                 <% end %>
+                <div>
+                  <p class="text-center font-weight-light" style="font-size: small; ">Original Estimate: <%= my_helper_format_duration(task.time_forecast) %> </p>
+                </div>
               </div>
             </div>
           </div>
