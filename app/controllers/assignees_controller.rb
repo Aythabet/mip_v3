@@ -1,6 +1,11 @@
 class AssigneesController < ApplicationController
   def index
-    @assignees = Assignee.all.order(:id).page params[:page]
+    @assignees = Assignee
+    .select('assignees.*, subquery.task_count')
+    .from("(SELECT COUNT(*) AS task_count, assignee_id FROM tasks GROUP BY assignee_id) subquery")
+    .joins('INNER JOIN assignees ON assignees.id = subquery.assignee_id')
+    .order('subquery.task_count DESC, assignees.name')
+    .page(params[:page])
     @assignees_count = Assignee.count
   end
 

@@ -1,12 +1,27 @@
 <div class="container py-4">
   <!-- Statistics -->
   <div class="row justify-content-between mb-4">
+    <!-- Project details -->
     <div class="col-12 col-md-6">
       <h1 class="mb-2">Project #<%= @project.id %></h1>
-      <h2 class="fw-bold mb-3"><%= @project.name %></h2>
+      <h2 class="mb-3"><%= @project.name %></h2>
       <p><em>Archived? = <%= @project.archived_status %></em></p>
     </div>
+    <!-- Team / Filtres -->
     <div class="col-12 col-md-6">
+      <h1 class="mb-2">Team  (<%= @project_tasks.count %>)</h1>
+      <div class="row">
+        <% @projects_unique_assignees.each_slice((@projects_unique_assignees.size + 1) / 2) do |assignees| %>
+          <div class="col-6">
+            <% assignees.each do |assignee| %>
+              <p class="card-text mb-1"><%= assignee %> - (<%= @assignee_task_counts[assignee] %>) - <%= "#{(@assignee_task_percentages[assignee]).round(2)} %" %></p>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <!-- Statistics -->
+    <div class="col-12 col-md-12">
       <h2 class="fw-bold mb-3">Stats</h2>
       <div class="bg-stats border-0">
         <div class="card-body">
@@ -16,10 +31,11 @@
         </div>
       </div>
     </div>
-    <!-- Tickets - Cards -->
   </div>
+  <!-- Pagination -->
   <div align="right" style="font-size: 80%"><%= page_entries_info @project_tasks_paginated, entry_name: 'task' %></div>
   <span class="d-flex flex-row-reverse"><%= link_to_next_page @project_tasks_paginated, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @project_tasks_paginated, 'Previous' %></span>
+  <!-- Tickets - Cards -->
   <div class="row row-cols-1 row-cols-md-3 g-2">
     <% @project_tasks_paginated.each do |task| %>
       <div class="col">
@@ -27,7 +43,7 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <div class="fw-bold text-muted">
               <%= task.status %>: <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank" %>
-            </div>              
+            </div>
             <div class="d-flex align-items-center">
               <span class="me-2"><%= task.priority %></span>
               <i class="bi bi-arrow-up"></i>

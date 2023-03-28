@@ -1,6 +1,12 @@
 class ProjectsController < ApplicationController
   def index
-    @projects = Project.all.order(:name).page params[:page]
+    @projects = Project
+    .select('projects.*, subquery.task_count')
+    .from("(SELECT COUNT(*) AS task_count, project_id FROM tasks GROUP BY project_id) subquery")
+    .joins('INNER JOIN projects ON projects.id = subquery.project_id')
+    .order('subquery.task_count DESC, projects.name')
+    .page(params[:page])
+
     @projects_count = Project.count
   end
 
@@ -14,6 +20,8 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
     @project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
     @project_tasks_paginated = Task.where(project: @project).order(last_jira_update: :desc).page params[:page]
+
+    projects_unique_assignees_list
 
     @total_time_estimation = 0
     @total_time_spent = 0
@@ -56,6 +64,27 @@ class ProjectsController < ApplicationController
     Project.find_or_create_by(name: project_name) do |project|
       project.jira_id = project_jira_id
       project.lead = project_lead
+    end
+  end
+
+  def projects_unique_assignees_list
+    # Load the project by ID
+    @project = Project.find(params[:id])
+
+    # Load all the unique assignees for the project's tasks
+    assignee_names = @project.tasks.select(:assignee_id).distinct.joins(:assignee).pluck('assignees.name')
+
+    # Extract the full names from the array of names
+    @projects_unique_assignees = assignee_names.map { |name| name.split(' ').map(&:capitalize).join(' ') }
+
+    @assignee_task_counts = {}
+    @project.tasks.group(:assignee_id).count.each do |assignee_id, task_count|
+      @assignee_task_counts[Assignee.find(assignee_id).name] = task_count
+    end
+    @assignee_task_percentages = {}
+    total_tasks = @project.tasks.count
+    @assignee_task_counts.each do |assignee, task_count|
+      @assignee_task_percentages[assignee] = (task_count.to_f / total_tasks * 100).round(2)
     end
   end
 end
