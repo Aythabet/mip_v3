@@ -81,10 +81,14 @@ class ProjectsController < ApplicationController
     @project.tasks.group(:assignee_id).count.each do |assignee_id, task_count|
       @assignee_task_counts[Assignee.find(assignee_id).name] = task_count
     end
+
     @assignee_task_percentages = {}
     total_tasks = @project.tasks.count
     @assignee_task_counts.each do |assignee, task_count|
       @assignee_task_percentages[assignee] = (task_count.to_f / total_tasks * 100).round(2)
     end
+
+    # Sort the unique assignees by the number of tasks in descending order
+    @projects_unique_assignees.sort_by! { |assignee| -@assignee_task_counts[assignee] }
   end
 end

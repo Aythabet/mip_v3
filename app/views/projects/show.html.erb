@@ -14,7 +14,11 @@
         <% @projects_unique_assignees.each_slice((@projects_unique_assignees.size + 1) / 2) do |assignees| %>
           <div class="col-6">
             <% assignees.each do |assignee| %>
-              <p class="card-text mb-1"><%= assignee %> - (<%= @assignee_task_counts[assignee] %>) - <%= "#{(@assignee_task_percentages[assignee]).round(2)} %" %></p>
+              <p class="card-text mb-1">
+                <%= assignee %>
+                <span class="badge bg-info text-dark"> <%= @assignee_task_counts[assignee] %></span>
+                <span class="badge bg-dark text-light"> <%= "#{(@assignee_task_percentages[assignee]).round(2)} %" %></span>
+              </p>
             <% end %>
           </div>
         <% end %>
@@ -49,7 +53,7 @@
               <i class="bi bi-arrow-up"></i>
             </div>
           </div>
-          <p class="badge badge-pill badge-dark"><%= task.epic %></p>
+          <span class="badge bg-secondary"><%= task.epic %></span>
           <div class="card-body">
             <h5 class="card-title"><%= link_to task.assignee.name, task.assignee %>
             </h5>
@@ -57,7 +61,7 @@
             <p class="card-text">Time spent: <%= my_helper_format_duration(task.time_spent) %></p>
             <p class="card-text">Summary: <%= task.summary %> </p>
             <% task.labels&.split&.each do |label| %>
-              <span class="badge badge-pill badge-danger"><%= label.gsub(/[^a-zA-Z\s]/, '') %></span>
+              <span class="badge rounded-pill bg-primary"><%= label.gsub(/[^a-zA-Z\s]/, '') %></span>
             <% end %>
           </div>
           <div class="card-footer bg-light">

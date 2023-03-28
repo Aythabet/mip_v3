@@ -8,7 +8,7 @@
             <div class="card task-card">
               <div class="card-body-active-card">
                 <div class="d-flex align-items-center">
-                  <span class="badge badge-dashboard badge-secondary">
+                  <span class="badge bg-secondary">
                     <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank", class: "links_on_active_tasks_cards" %>
                   </span>
                   &nbsp;<i class="bi bi-person-fill-gear"></i> &nbsp; <%= task.assignee.name %>
