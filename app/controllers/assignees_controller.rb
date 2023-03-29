@@ -6,6 +6,7 @@ class AssigneesController < ApplicationController
     .joins('INNER JOIN assignees ON assignees.id = subquery.assignee_id')
     .order('subquery.task_count DESC, assignees.name')
     .page(params[:page])
+
     @assignees_count = Assignee.count
   end
 
@@ -31,6 +32,9 @@ class AssigneesController < ApplicationController
     # CR Today
     generate_cr(Date.today)
 
+    assignee_unique_projects_list
+    @tasks_by_time_status = tasks_by_time_status
+
     @assignee_tasks_paginated = Task.where(assignee: @assignee).order(last_jira_update: :desc).page params[:page]
     @total_time_estimation = 0
     @total_time_spent = 0
@@ -38,6 +42,8 @@ class AssigneesController < ApplicationController
     @assignee_tasks.each do |task|
       @total_time_estimation += task.time_forecast || 0
       @total_time_spent += task.time_spent || 0
+      @time_difference = @total_time_estimation - @total_time_spent
+
     end
   end
 
@@ -65,5 +71,47 @@ class AssigneesController < ApplicationController
     @assignee_yesterday_tasks = Task.where(assignee: @assignee)
     .where("DATE(last_jira_update) = ? OR DATE(created_at) = ?", day - 1, day - 1)
     .order(last_jira_update: :desc)
+  end
+
+  def assignee_unique_projects_list
+    # Load the project by ID
+    @assignee = Assignee.find(params[:id])
+
+    # Load all the unique assignees for the project's tasks
+    @projects_jira_ids = @assignee.tasks.select(:project_id).distinct.joins(:project).pluck('projects.jira_id')
+
+    @project_task_counts = {}
+    @assignee.tasks.group(:project_id).count.each do |project_id, task_count|
+      @project_task_counts[Project.find(project_id).jira_id] = task_count
+    end
+
+    @project_task_percentages = {}
+    total_tasks = @assignee.tasks.count
+    @project_task_counts.each do |project, task_count|
+      @project_task_percentages[project] = (task_count.to_f / total_tasks * 100).round(2)
+    end
+    pp("===========#{@project_task_counts}")
+
+    # Sort the unique assignees by the number of tasks in descending order
+    @projects_jira_ids.sort_by! { |project| -@project_task_counts[project] }
+  end
+
+  def tasks_by_time_status
+    assignee = Assignee.find(params[:id])
+    total_tasks = assignee.tasks.count
+    in_time_tasks = assignee.tasks.where("time_spent = time_forecast").count
+    early_tasks = assignee.tasks.where("time_spent < time_forecast").count
+    delayed_tasks = assignee.tasks.where("time_spent > time_forecast").count
+    no_data_tasks = assignee.tasks.where("time_forecast IS NULL OR time_spent IS NULL").count
+
+    in_time_percentage = (in_time_tasks.to_f / total_tasks.to_f * 100).round(2)
+    early_percentage = (early_tasks.to_f / total_tasks.to_f * 100).round(2)
+    delayed_percentage = (delayed_tasks.to_f / total_tasks.to_f * 100).round(2)
+    no_data_percentage = (no_data_tasks.to_f / total_tasks.to_f * 100).round(2)
+
+    { in_time: { count: in_time_tasks, percentage: in_time_percentage },
+      early: { count: early_tasks, percentage: early_percentage },
+      delayed: { count: delayed_tasks, percentage: delayed_percentage },
+      no_data: {count: no_data_tasks, percentage: no_data_percentage }}
   end
 end

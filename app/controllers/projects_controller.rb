@@ -30,7 +30,6 @@ class ProjectsController < ApplicationController
     projects_unique_assignees_list
     projects_unique_statuses_list
     @tasks_by_time_status = tasks_by_time_status
-    pp(@tasks_by_time_status)
 
     @total_time_estimation = 0
     @total_time_spent = 0

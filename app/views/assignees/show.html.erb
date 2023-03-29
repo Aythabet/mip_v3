@@ -2,8 +2,7 @@
   <!-- Statistics -->
   <div class="row justify-content-between mb-4">
     <div class="col-12 col-md-6">
-      <h1 class="mb-2">Assignee #<%= @assignee.id %></h1>
-      <h2 class="fw-bold mb-3"><%= @assignee.name %></h2>
+      <h1 class="fw-bold mb-3"><%= @assignee.name %></h1>
       <div>
         <!-- Hover CR -->
         <%= render partial: 'hover_cr_today' %>
@@ -12,15 +11,69 @@
       </br>
       <span class="hover-text"><%= (Date.today - 1).strftime("%e %B %Y") %></span>
     </div>
-    <!-- Stats -->
   </div>
+  <!-- Team / Filtres -->
   <div class="col-12 col-md-6">
+    <div class="d-flex align-items-center">
+      <h1 class="mb-2 me-3">Projects</h1>
+      <span class="badge bg-dark fs-6"><%= @assignee_tasks.count %> tickets</span>
+    </div>
+    <div class="row">
+      <% @projects_jira_ids.each_slice((@projects_jira_ids.size + 1) / 2) do |projects| %>
+        <div class="col-6">
+          <% projects.each do |project| %>
+            <p class="card-text mb-1">
+              <%= project %>
+              <span class="badge bg-info text-dark"> <%= @project_task_counts[project] %></span>
+              <span class="badge bg-primary"> <%= "#{(@project_task_percentages[project]).round(2)} %" %></span>
+            </p>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <!-- Stats -->
+  <div class="col-12 col-md-12 pt-3">
     <h2 class="fw-bold mb-3">Stats</h2>
     <div class="bg-stats border-0">
-      <div class="card-body">
-        <p class="card-text mb-1">Total tickets: <%= @assignee_tasks.count %></p>
-        <p class="card-text mb-1">Total Time Estimation: <%= my_helper_format_duration(@total_time_estimation) %></p>
-        <p class="card-text mb-1">Total Time Spent: <%= my_helper_format_duration(@total_time_spent) %></p>
+      <div class="card-body row">
+        <div class="col-4">
+          <div class="mb-1">
+            <span class="badge bg-light text-dark">Total Time Estimated</span>
+            <span class="badge bg-secondary"><%= my_helper_format_duration(@total_time_estimation) %></span>
+          </div>
+          <div class="mb-1">
+            <span class="badge bg-light text-dark">Total Time Spent</span>
+            <span class="badge bg-secondary"><%= my_helper_format_duration(@total_time_spent) %></span>
+          </div>
+          <div class="mb-1">
+            <span class="badge bg-light text-dark">Difference</span>
+            <% color = @time_difference.positive? ? "success" : (@time_difference < 0 ? "danger" : "secondary") %>
+            <span class="badge bg-<%= color %>"><%= my_helper_format_duration(@time_difference) %></span>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="mb-1">
+            <span class="badge bg-light text-dark">In Time</span>
+            <span class="badge bg-success"><%= @tasks_by_time_status[:in_time][:count] %></span>
+            <span class="badge bg-success"><%= @tasks_by_time_status[:in_time][:percentage] %>%</span>
+          </div>
+          <div class="mb-1">
+            <span class="badge bg-light text-dark">Early</span>
+            <span class="badge bg-warning"><%= @tasks_by_time_status[:early][:count] %></span>
+            <span class="badge bg-warning"><%= @tasks_by_time_status[:early][:percentage] %>%</span>
+          </div>
+          <div class="mb-1">
+            <span class="badge bg-light text-dark">Delayed</span>
+            <span class="badge bg-danger"><%= @tasks_by_time_status[:delayed][:count] %></span>
+            <span class="badge bg-danger"><%= @tasks_by_time_status[:delayed][:percentage] %>%</span>
+          </div>
+          <div class="mb-1">
+            <span class="badge bg-light text-dark">No data</span>
+            <span class="badge bg-dark"><%= @tasks_by_time_status[:no_data][:count] %></span>
+            <span class="badge bg-dark"><%= @tasks_by_time_status[:no_data][:percentage] %>%</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
