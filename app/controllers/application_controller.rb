@@ -4,8 +4,12 @@ class ApplicationController < ActionController::Base
   before_action :authenticate_user!
 
   def format_duration(seconds)
-    if seconds.nil? || seconds.zero?
+    if seconds.nil?
       return "No data"
+    elsif seconds == 0
+      return "0s"
+    elsif seconds < 0
+      return "-#{format_duration(-seconds)}"
     end
 
     minutes = seconds / 60.0
@@ -27,6 +31,7 @@ class ApplicationController < ActionController::Base
     duration << "#{hours} hour#{'s' if hours > 1}" if hours.positive?
     duration.join(' and ')
   end
+
 
   def call_jira_api(url)
     uri = URI.parse(url)

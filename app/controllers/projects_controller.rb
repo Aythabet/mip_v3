@@ -22,6 +22,9 @@ class ProjectsController < ApplicationController
     @project_tasks_paginated = Task.where(project: @project).order(last_jira_update: :desc).page params[:page]
 
     projects_unique_assignees_list
+    projects_unique_statuses_list
+    @tasks_by_time_status = tasks_by_time_status
+    pp(@tasks_by_time_status)
 
     @total_time_estimation = 0
     @total_time_spent = 0
@@ -29,6 +32,7 @@ class ProjectsController < ApplicationController
     @project_tasks.each do |task|
       @total_time_estimation += task.time_forecast || 0
       @total_time_spent += task.time_spent || 0
+      @time_difference = @total_time_estimation - @total_time_spent
     end
   end
 
@@ -91,4 +95,50 @@ class ProjectsController < ApplicationController
     # Sort the unique assignees by the number of tasks in descending order
     @projects_unique_assignees.sort_by! { |assignee| -@assignee_task_counts[assignee] }
   end
+
+  def projects_unique_statuses_list
+    # Load the project by ID
+    @project = Project.find(params[:id])
+
+    # Load all the unique statuses for the project's tasks
+    status_names = @project.tasks.select(:status).distinct.pluck(:status)
+
+    # Extract the full names from the array of names
+    @projects_unique_statuses = status_names.map(&:capitalize)
+
+    # Get the count and percentage of tasks for each status
+    @status_task_counts = {}
+    total_tasks = @project.tasks.count
+    @project.tasks.group(:status).count.each do |status, task_count|
+      @status_task_counts[status.capitalize] = task_count
+    end
+
+    @status_task_percentages = {}
+    @status_task_counts.each do |status, task_count|
+      @status_task_percentages[status] = (task_count.to_f / total_tasks * 100).round(2)
+    end
+
+    # Sort the unique statuses by the number of tasks in descending order
+    @projects_unique_statuses.sort_by! { |status| -@status_task_counts[status] }
+  end
+
+  def tasks_by_time_status
+    project = Project.find(params[:id])
+    total_tasks = project.tasks.count
+    in_time_tasks = project.tasks.where("time_spent = time_forecast").count
+    early_tasks = project.tasks.where("time_spent < time_forecast").count
+    delayed_tasks = project.tasks.where("time_spent > time_forecast").count
+    no_data_tasks = project.tasks.where("time_forecast IS NULL OR time_spent IS NULL").count
+
+    in_time_percentage = (in_time_tasks.to_f / total_tasks.to_f * 100).round(2)
+    early_percentage = (early_tasks.to_f / total_tasks.to_f * 100).round(2)
+    delayed_percentage = (delayed_tasks.to_f / total_tasks.to_f * 100).round(2)
+    no_data_percentage = (no_data_tasks.to_f / total_tasks.to_f * 100).round(2)
+
+    { in_time: { count: in_time_tasks, percentage: in_time_percentage },
+      early: { count: early_tasks, percentage: early_percentage },
+      delayed: { count: delayed_tasks, percentage: delayed_percentage },
+      no_data: {count: no_data_tasks, percentage: no_data_percentage }}
+  end
+
 end
