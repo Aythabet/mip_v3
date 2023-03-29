@@ -1,12 +1,18 @@
 class ProjectsController < ApplicationController
   def index
-    @projects = Project
-    .select('projects.*, subquery.task_count')
-    .from("(SELECT COUNT(*) AS task_count, project_id FROM tasks GROUP BY project_id) subquery")
-    .joins('INNER JOIN projects ON projects.id = subquery.project_id')
-    .order('subquery.task_count DESC, projects.name')
+    # Get projects with active tasks and order by number of active tasks
+    active_projects = Project
+    .joins(:tasks)
+    .where('tasks.status = ?', 'In Progress')
+    .group('projects.id')
+    .order(Arel.sql('COUNT(DISTINCT tasks.id) DESC'))
+
+    # Get remaining projects and concatenate the two lists
+    inactive_projects = Project.where.not(id: active_projects)
+    @projects = Kaminari.paginate_array(active_projects.to_a + inactive_projects.to_a)
     .page(params[:page])
 
+    # Get the total count of projects
     @projects_count = Project.count
   end
 

@@ -11,13 +11,13 @@
     </div>
     <span class="badge bg-secondary"><%= task.epic %></span>
     <div class="card-body">
-      <%= link_to task.assignee.name , task.assignee %>
-      <h5 class="card-title"><%= link_to task.project.name, task.project %></h5>
-      <p class="card-text">Time Estimation: <%= my_helper_format_duration(task.time_forecast) %></p>
-      <p class="card-text">Time spent: <%= my_helper_format_duration(task.time_spent) %> </p>
-      <p class="card-text">Summary: <%= task.summary %> </p>
+      <span class="pb-0 pt-0 mt-0 mb-0"><%= link_to task.assignee.name , task.assignee %></span>
+      <h5 class="card-title pt-0 pb-0 mt-0 mb-0"><%= link_to task.project.name, task.project %></h5>
+      <p class="card-text pt-0 pb-0 mt-0 mb-0">Time Estimation: <%= my_helper_format_duration(task.time_forecast) %></p>
+      <p class="card-text pt-0 pb-0 mt-0 mb-0">Time spent: <%= my_helper_format_duration(task.time_spent) %> </p>
+      <p class="card-text pt-0 pb-0 mt-0 mb-0">Summary: <%= task.summary %> </p>
       <% task.labels&.split&.each do |label| %>
-        <span class="badge rounded-pill bg-primary"><%= label.gsub(/[^a-zA-Z\s]/, '') %></span>
+        <span class="badge rounded-pill bg-primary pb-0 mb-0"><%= label.gsub(/[^a-zA-Z\s]/, '') %></span>
       <% end %>
     </div>
     <div class="card-footer bg-light">
