@@ -1,8 +1,8 @@
 <div class="project-row">
   <% @projects_with_active_tickets.each do |project| %>
-    <span><%= project.jira_id %>: <%= project.tasks.where(status: "In Progress").count %> tickets "In Progress"</span>
     <div class="row">
       <% project.tasks.each_slice(6) do |task_group| %>
+        <a href="#"><%= project.jira_id %> <span class="badge bg-dark text-light"><%= project.tasks.where(status: "In Progress").count %></span></a>
         <% task_group.each do |task| %>
           <div class="col-md-3 mb-1 m-1 p-1">
             <div class="card task-card">
@@ -39,7 +39,6 @@
           </div>
         <% end %>
       <% end %>
-      <hr class="hr hr-blurry" />
     <% end %>
   </div>
 </div>
