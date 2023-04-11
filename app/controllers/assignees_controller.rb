@@ -25,6 +25,13 @@ class AssigneesController < ApplicationController
     redirect_to assignees_path
   end
 
+  def send_data_to_assignee
+    assignee = Assignee.find(params[:id])
+    ReportMailer.send_data_to_user(assignee).deliver_now
+    redirect_to assignee_path, notice: 'Data sent to assignee'
+    pp("#{assignee}==================================")
+  end
+
   def show
     @assignee = Assignee.find(params[:id])
     @assignee_tasks = Task.where(assignee: @assignee).order(last_jira_update: :desc)
@@ -90,7 +97,6 @@ class AssigneesController < ApplicationController
     @project_task_counts.each do |project, task_count|
       @project_task_percentages[project] = (task_count.to_f / total_tasks * 100).round(2)
     end
-    pp("===========#{@project_task_counts}")
 
     # Sort the unique assignees by the number of tasks in descending order
     @projects_jira_ids.sort_by! { |project| -@project_task_counts[project] }

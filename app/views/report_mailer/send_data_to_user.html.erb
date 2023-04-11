@@ -1,0 +1,12 @@
+<p>Hello <%= @assignee.name %>,</p>
+<p>Here is the data from My App:</p>
+<ul>
+  <% @data.each do |task| %>
+    <li><%= task.jira_id %></li>
+    <li><%= task.project.name %></li>
+    <li><%= task.time_forecast / 3600 %> hours</li>
+    <li><%= task.time_spent / 3600 %> hours</li>
+  <% end %>
+</ul>
+<p>Best regards,</p>
+<p>The My App Team</p>
