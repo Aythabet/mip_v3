@@ -100,8 +100,8 @@ Rails.application.configure do
   end
 
   config.action_dispatch.rack_cache = {
-    metastore: "redis://localhost:6379/1/metastore",
-    entitystore: "redis://localhost:6379/1/entitystore"
+    metastore: "redis://red-cgr5b4m4dadccqre5eng:6379/1/metastore",
+    entitystore: "redis://red-cgr5b4m4dadccqre5eng:6379/1/entitystore"
   }
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
