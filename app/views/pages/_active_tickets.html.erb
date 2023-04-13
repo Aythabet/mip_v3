@@ -1,8 +1,13 @@
-<div class="project-row">
+<div class="project-row mt-3">
   <% @projects_with_active_tickets.each do |project| %>
-    <div class="row">
-      <% project.tasks.each_slice(6) do |task_group| %>
-        <a href="#"><%= project.jira_id %> <span class="badge bg-dark text-light"><%= project.tasks.where(status: "In Progress").count %></span></a>
+    <div class="row d-flex justify-content-center">
+      <% project.tasks.each_slice(project.tasks.count / 3) do |task_group| %>
+        <div class="text-center">
+          <%= link_to project_path(project), class: "text-decoration-none" do %>
+            <%= project.name %>
+            <span class="badge bg-dark text-light"><%= project.tasks.where(status: "In Progress").count %></span>
+          <% end %>
+        </div>
         <% task_group.each do |task| %>
           <div class="col-md-3 mb-1 m-1 p-1">
             <div class="card task-card">
@@ -34,6 +39,7 @@
                 <div>
                   <p class="text-center font-weight-light small-text" >Original Estimate: <%= my_helper_format_duration(task.time_forecast) %> </p>
                 </div>
+                <p class="card-text text-center font-weight-light small-text pt-0 pb-0 mt-0 mb-0"> <%= task.summary %> </p>
               </div>
             </div>
           </div>
