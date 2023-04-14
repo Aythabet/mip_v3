@@ -1,4 +1,5 @@
 class AssigneesController < ApplicationController
+
   def index
     @assignees = Assignee
     .select('assignees.*, subquery.task_count')
@@ -29,7 +30,6 @@ class AssigneesController < ApplicationController
     assignee = Assignee.find(params[:id])
     ReportMailer.send_data_to_user(assignee).deliver_now
     redirect_to assignee_path, notice: 'Data sent to assignee'
-    pp("#{assignee}==================================")
   end
 
   def show
@@ -54,12 +54,37 @@ class AssigneesController < ApplicationController
     end
   end
 
+  def edit
+    @assignee = Assignee.find(params[:id])
+  end
+
+  def update
+    @assignee = Assignee.find(params[:id])
+    if @assignee.update(assignee_params)
+      redirect_to assignee_profile_path(@assignee), notice: 'Assignee was successfully updated.'
+    else
+      render :edit
+    end
+  end
+
+  def assignee_profile
+    @assignee = Assignee.find(params[:id])
+    @assignees_projects = Project.joins(:tasks).where(tasks: { assignee_id: @assignee.id })
+    .select("projects.*, SUM(tasks.time_spent) AS total_time_spent")
+    .group("projects.id")
+
+  end
+
   def destroy_all
     Assignee.destroy_all("id != ?", 1)
     redirect_to assignees_path
   end
 
   private
+
+  def assignee_params
+    params.require(:assignee).permit(:name, :email, :admin, :salary, :hourly_rate)
+  end
 
   def find_or_create_assignee(assignee_name, assignee_email, admin: false)
     assignee_name = format_name(assignee_name)

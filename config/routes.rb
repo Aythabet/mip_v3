@@ -14,10 +14,11 @@ Rails.application.routes.draw do
 
   root to: "pages#home"
 
-  resources :assignees, only: [:index, :show] do
+  resources :assignees, only: [:index, :show, :edit, :update] do
     post 'send_data_to_assignee', on: :member, as: :send_data_to_assignee
   end
 
+  get '/assignee_profile/:id', to: 'assignees#assignee_profile', as: 'assignee_profile'
   post 'assignees/retrieve_assignees'
   post 'assignees/destroy_all'
 
