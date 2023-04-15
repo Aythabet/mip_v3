@@ -1,0 +1,43 @@
+<div class="pb-4">
+  <%= link_to "Back", :back %>
+</div>
+<div class="container pt-4" style="max-width: 80%;">
+  <div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span><%= @project.name %></span>
+    </div>
+    <div class="card-body">
+      <h5 class="mb-3">
+        <%= @project.jira_id %>
+      </h5>
+      <p class="card-text">
+        Total Internal Cost: <span class=" badge bg-info text-dark" ><%= number_with_precision(@project_total_internal_cost, precision: 1) %> TND</span>
+      </p>
+    </div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Ressources</th>
+            <th>Total time worked</th>
+            <th>Total cost</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% @projects_assignees.each do |assignee| %>
+                <tr>
+                <td><%= link_to assignee.name, assignee %></td>
+                <td>
+                  <% if assignee.hourly_rate.present? && assignee.hourly_rate.to_f != 0 %>
+                    <%= number_with_precision((assignee.total_time_spent.to_f / 3600) * assignee.hourly_rate.to_f, precision: 1) %> TND
+                  <% else %>
+                    Check if the assignee hourly rate is set!
+                  <% end %>
+                </td>
+                <td><%= assignee.name %></td>
+                </tr>
+            <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>

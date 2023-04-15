@@ -41,6 +41,22 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def project_details
+    @project = Project.find(params[:id])
+
+    @projects_assignees = Assignee.joins(tasks: :project)
+      .select("assignees.*, SUM(tasks.time_spent) AS total_time_spent")
+      .where(tasks: { project_id: @project.id })
+      .group("assignees.id")
+
+@project_total_internal_cost = Task.joins(:assignee)
+  .where(project: @project)
+  .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
+
+
+  end
+
+
   def destroy_all
     Project.destroy_all
     redirect_to projects_path

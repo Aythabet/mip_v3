@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   post 'assignees/destroy_all'
 
   resources :projects, only: [:index, :show]
+  get '/project_details/:id', to: 'projects#project_details', as: 'project_details'
   post 'projects/retrieve_projects'
   post 'projects/destroy_all'
 

@@ -28,7 +28,7 @@
         <tbody>
           <% @assignees_projects.each do |project| %>
             <tr>
-              <td><%= project.jira_id %></td>
+              <td><%= link_to project.jira_id, project %></td>
               <td><%=  my_helper_format_duration(project.total_time_spent) %></td>
               <td>
                 <% if @assignee.hourly_rate.present? && @assignee.hourly_rate.to_f != 0 %>

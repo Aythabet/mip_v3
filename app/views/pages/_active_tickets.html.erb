@@ -1,7 +1,8 @@
 <div class="project-row mt-3">
   <% @projects_with_active_tickets.each do |project| %>
     <div class="row d-flex justify-content-center">
-      <% project.tasks.each_slice(project.tasks.count / 3) do |task_group| %>
+      <% task_groups = project.tasks.each_slice((project.tasks.count / 3.0).ceil).to_a %>
+      <% task_groups.each do |task_group| %>
         <div class="text-center">
           <%= link_to project_path(project), class: "text-decoration-none" do %>
             <%= project.name %>
