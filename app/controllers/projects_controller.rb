@@ -45,17 +45,29 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
 
     @projects_assignees = Assignee.joins(tasks: :project)
-      .select("assignees.*, SUM(tasks.time_spent) AS total_time_spent")
-      .where(tasks: { project_id: @project.id })
-      .group("assignees.id")
+    .select("assignees.*, SUM(tasks.time_spent) AS total_time_spent")
+    .where(tasks: { project_id: @project.id })
+    .group("assignees.id")
 
-@project_total_internal_cost = Task.joins(:assignee)
-  .where(project: @project)
-  .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
-
+    @project_total_internal_cost = Task.joins(:assignee)
+    .where(project: @project)
+    .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
 
   end
 
+
+  def edit
+    @project = Project.find(params[:id])
+  end
+
+  def update
+    @project = Project.find(params[:id])
+    if @project.update(project_params)
+      redirect_to project_details_path(@project), notice: 'Project was successfully updated.'
+    else
+      render :edit
+    end
+  end
 
   def destroy_all
     Project.destroy_all
@@ -63,6 +75,10 @@ class ProjectsController < ApplicationController
   end
 
   private
+
+  def project_params
+    params.require(:project).permit(:name, :jira_id, :archived_status, :lead, :total_internal_cost, :total_selling_price)
+  end
 
   def get_projects_data_with_pagination(startat)
     url = "https://agenceinspire.atlassian.net/rest/api/3/project/search?startAt=#{startat}&maxResults=50&expand=lead"

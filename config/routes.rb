@@ -14,6 +14,7 @@ Rails.application.routes.draw do
 
   root to: "pages#home"
 
+  # Assignees Routes
   resources :assignees, only: [:index, :show, :edit, :update] do
     post 'send_data_to_assignee', on: :member, as: :send_data_to_assignee
   end
@@ -22,11 +23,15 @@ Rails.application.routes.draw do
   post 'assignees/retrieve_assignees'
   post 'assignees/destroy_all'
 
-  resources :projects, only: [:index, :show]
+
+  # Projects Routes
+  resources :projects, only: [:index, :show, :edit, :update]
+
   get '/project_details/:id', to: 'projects#project_details', as: 'project_details'
   post 'projects/retrieve_projects'
   post 'projects/destroy_all'
 
+  # Tasks Routes
   resources :tasks, only: [:index]
   post 'tasks/retrieve_tasks'
   post 'tasks/destroy_all'

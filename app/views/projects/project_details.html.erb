@@ -5,13 +5,16 @@
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
       <span><%= @project.name %></span>
+      <%= link_to "Edit Project", edit_project_path(@project), class: "btn btn-dark btn-sm mb-0 text-light ml-auto" %>
     </div>
     <div class="card-body">
-      <h5 class="mb-3">
-        <%= @project.jira_id %>
+      <h5 class="mb-0">
       </h5>
       <p class="card-text">
-        Total Internal Cost: <span class=" badge bg-info text-dark" ><%= number_with_precision(@project_total_internal_cost, precision: 1) %> TND</span>
+        <div>Total Internal Cost: <span class=" badge bg-primary text-light" ><%= number_with_precision(@project_total_internal_cost, precision: 1) %> TND</span></div>
+        <!-- Selling price section -->
+        <div>Total Sellng Price: <span class=" badge bg-secondary text-light" ><%= @project.total_selling_price %> TND</span></div>
+        <!-- diffrence in price section w/l -->
       </p>
     </div>
     <div class="card-body">
@@ -20,24 +23,34 @@
           <tr>
             <th>Ressources</th>
             <th>Total time worked</th>
-            <th>Total cost</th>
           </tr>
         </thead>
         <tbody>
-            <% @projects_assignees.each do |assignee| %>
-                <tr>
-                <td><%= link_to assignee.name, assignee %></td>
-                <td>
-                  <% if assignee.hourly_rate.present? && assignee.hourly_rate.to_f != 0 %>
-                    <%= number_with_precision((assignee.total_time_spent.to_f / 3600) * assignee.hourly_rate.to_f, precision: 1) %> TND
-                  <% else %>
-                    Check if the assignee hourly rate is set!
-                  <% end %>
-                </td>
-                <td><%= assignee.name %></td>
-                </tr>
-            <% end %>
+          <% @projects_assignees.each do |assignee| %>
+            <tr>
+              <td><%= link_to assignee.name, assignee %></td>
+              <td>
+                <% if assignee.hourly_rate.present? && assignee.hourly_rate.to_f != 0 %>
+                  <%= number_with_precision((assignee.total_time_spent.to_f / 3600) * assignee.hourly_rate.to_f, precision: 1) %> TND
+                <% else %>
+                  Check if the assignee hourly rate is set!
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
         </tbody>
       </table>
     </div>
   </div>
+  <script>
+    $(document).on('turbo:load', function() {
+      $('#editSellingPriceModal').on('shown.bs.modal', function() {
+        $('input[type="number"]').focus();
+      });
+      $('[data-toggle="modal"]').click(function(e) {
+        e.preventDefault();
+        var target = $(this).attr('data-target');
+        $(target).modal('show');
+      });
+    });
+  </script>
