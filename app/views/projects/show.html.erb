@@ -24,16 +24,20 @@
         <span class="badge bg-dark fs-6"><%= @project_tasks.count %> tickets</span>
       </div>
       <div class="row">
-        <% @projects_unique_assignees.each_slice((@projects_unique_assignees.size + 1) / 2) do |assignees| %>
-          <div class="col-6">
-            <% assignees.each do |assignee| %>
-              <p class="card-text mb-1">
-                <%= assignee %>
-                <span class="badge bg-info text-dark"> <%= @assignee_task_counts[assignee] %></span>
-                <span class="badge bg-primary"> <%= "#{(@assignee_task_percentages[assignee]).round(2)} %" %></span>
-              </p>
-            <% end %>
-          </div>
+        <% if @projects_unique_assignees.present? %>
+          <% @projects_unique_assignees.each_slice((@projects_unique_assignees.size + 1) / 2.to_i) do |assignees| %>
+            <div class="col-6">
+              <% assignees.each do |assignee| %>
+                <p class="card-text mb-1">
+                  <%= assignee %>
+                  <span class="badge bg-info text-dark"> <%= @assignee_task_counts[assignee] %></span>
+                  <span class="badge bg-primary"> <%= "#{(@assignee_task_percentages[assignee]).round(2)} %" %></span>
+                </p>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <p>No unique assignees found.</p>
         <% end %>
       </div>
     </div>
@@ -51,11 +55,15 @@
               <span class="badge bg-light text-dark">Total Time Spent</span>
               <span class="badge bg-secondary"><%= my_helper_format_duration(@total_time_spent) %></span>
             </div>
-            <div class="mb-1">
-              <span class="badge bg-light text-dark">Difference</span>
-              <% color = @time_difference.positive? ? "success" : (@time_difference < 0 ? "danger" : "secondary") %>
-              <span class="badge bg-<%= color %>"><%= my_helper_format_duration(@time_difference) %></span>
-            </div>
+            <span class="badge bg-light text-dark">Difference</span>
+            <% if @time_difference.present? %>
+              <div class="mb-1">
+                <% color = @time_difference.positive? ? "success" : (@time_difference < 0 ? "danger" : "secondary") %>
+                <span class="badge bg-<%= color %>"><%= my_helper_format_duration(@time_difference) %></span>
+              </div>
+            <% else %>
+              <span class="badge bg-danger text-light">No data</span>
+            <% end %>
           </div>
           <div class="col-4">
             <div class="mb-1">

@@ -1,0 +1,8 @@
+<div>
+  <%= turbo_frame_tag "project_form" do %>
+    <%= simple_form_for @project do |f| %>
+      <%= f.input :total_selling_price %>
+      <%= f.button :submit, class: "btn btn-secondary", value: "Update" %>
+    <% end %>
+  <% end %>
+</div>

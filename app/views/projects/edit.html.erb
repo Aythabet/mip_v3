@@ -3,9 +3,11 @@
 </div>
 <div class="container py-4" style="max-width: 50%;">
   <div>
-    <%= simple_form_for @project do |f| %>
-      <%= f.input :total_selling_price %>
-      <%= f.button :submit, class:"btn btn-dark text-light mb-5" %>
+    <%= turbo_frame_tag "project_form" do %>
+      <%= simple_form_for @project do |f| %>
+        <%= f.input :total_selling_price %>
+        <%= f.button :submit, class: "btn btn-primary" %>
+      <% end %>
     <% end %>
   </div>
 </div>

@@ -62,8 +62,19 @@ class ProjectsController < ApplicationController
 
   def update
     @project = Project.find(params[:id])
+
     if @project.update(project_params)
-      redirect_to project_details_path(@project), notice: 'Project was successfully updated.'
+      respond_to do |format|
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            'selling_price',
+            partial: 'projects/edit',
+            locals: { project: @project }
+          )
+        end
+        format.html { redirect_to project_details_path(@project) }
+      end
+
     else
       render :edit
     end

@@ -5,15 +5,29 @@
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
       <span><%= @project.name %></span>
-      <%= link_to "Edit Project", edit_project_path(@project), class: "btn btn-dark btn-sm mb-0 text-light ml-auto" %>
+      <%# link_to "Edit Project", edit_project_path(@project), class: "btn btn-dark btn-sm mb-0 text-light ml-auto" %>
     </div>
     <div class="card-body">
       <h5 class="mb-0">
       </h5>
       <p class="card-text">
-        <div>Total Internal Cost: <span class=" badge bg-primary text-light" ><%= number_with_precision(@project_total_internal_cost, precision: 1) %> TND</span></div>
+        <div>Total Internal Cost: <span class="badge bg-primary text-light" ><%= number_with_precision(@project_total_internal_cost, precision: 1) %> TND</span></div>
         <!-- Selling price section -->
-        <div>Total Sellng Price: <span class=" badge bg-secondary text-light" ><%= @project.total_selling_price %> TND</span></div>
+        <% if @project.total_selling_price.blank? || @project.total_selling_price == 0 %>
+          <div>
+            Total Selling Price:
+            <span class="small-text">
+              <%= link_to "Add Selling Price", "#", id: "addSellingPriceLink" %>
+            </span>
+          </div>
+        <% else %>
+          <div>
+            Total Selling Price: 
+            <span class="badge bg-primary text-light">
+              <%= number_with_precision(@project.total_selling_price, precision: 1) %> TND
+            </span>
+          </div>
+        <% end %>
         <!-- diffrence in price section w/l -->
       </p>
     </div>
@@ -42,15 +56,17 @@
       </table>
     </div>
   </div>
-  <script>
-    $(document).on('turbo:load', function() {
-      $('#editSellingPriceModal').on('shown.bs.modal', function() {
-        $('input[type="number"]').focus();
-      });
-      $('[data-toggle="modal"]').click(function(e) {
-        e.preventDefault();
-        var target = $(this).attr('data-target');
-        $(target).modal('show');
-      });
-    });
-  </script>
+  <!-- Selling price modal -->
+  <div class="modal fade" id="editSellingPriceModal" tabindex="-1" aria-labelledby="editSellingPriceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editSellingPriceModalLabel">Add Selling Price</h5>
+          <button type="button" class="btn-close" id="dismissButton" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <%= render "edit", project: @project %>
+        </div>
+      </div>
+    </div>
+  </div>
