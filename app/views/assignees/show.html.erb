@@ -29,9 +29,9 @@
       <div class="col-6">
         <% projects.each do |project| %>
           <p class="card-text mb-1">
-            <%= project %>
-            <span class="badge bg-info text-dark"> <%= @project_task_counts[project] %></span>
-            <span class="badge bg-primary"> <%= "#{(@project_task_percentages[project]).round(2)} %" %></span>
+            <%= link_to project[:jira_id], project_path(project[:project_id]) %>
+            <span class="badge bg-info text-dark"> <%= @project_task_counts[project[:project_id]] %></span>
+            <span class="badge bg-primary"> <%= "#{(@project_task_percentages[project[:jira_id]])} %" %></span>
           </p>
         <% end %>
       </div>
@@ -78,6 +78,18 @@
           <span class="badge bg-light text-dark">No data</span>
           <span class="badge bg-dark"><%= @tasks_by_time_status[:no_data][:count] %></span>
           <span class="badge bg-dark"><%= @tasks_by_time_status[:no_data][:percentage] %>%</span>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="mb-1">
+          <span class="badge bg-light text-dark">Assignee Total Performance Ratio</span>
+          <span class="badge bg-success text-dark"><%= @assignee_ratio %>%</span>
+        </div>
+        <div class="mb-1">
+        </div>
+        <div class="mb-1">
+        </div>
+        <div class="mb-1">
         </div>
       </div>
     </div>

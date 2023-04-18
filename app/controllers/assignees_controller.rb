@@ -32,27 +32,7 @@ class AssigneesController < ApplicationController
     redirect_to assignee_path, notice: 'Data sent to assignee'
   end
 
-  def show
-    @assignee = Assignee.find(params[:id])
-    @assignee_tasks = Task.where(assignee: @assignee).order(last_jira_update: :desc)
 
-    # CR Today
-    generate_cr(Date.today)
-
-    assignee_unique_projects_list
-    @tasks_by_time_status = tasks_by_time_status
-
-    @assignee_tasks_paginated = Task.where(assignee: @assignee).order(last_jira_update: :desc).page params[:page]
-    @total_time_estimation = 0
-    @total_time_spent = 0
-
-    @assignee_tasks.each do |task|
-      @total_time_estimation += task.time_forecast || 0
-      @total_time_spent += task.time_spent || 0
-      @time_difference = @total_time_estimation - @total_time_spent
-
-    end
-  end
 
   def edit
     @assignee = Assignee.find(params[:id])
@@ -67,12 +47,25 @@ class AssigneesController < ApplicationController
     end
   end
 
+  def show
+    @assignee = Assignee.find(params[:id])
+    @assignee_tasks = Task.where(assignee: @assignee).order(last_jira_update: :desc)
+    generate_cr(Date.today)
+    assignee_unique_projects_list
+    @tasks_by_time_status = tasks_by_time_status
+    @assignee_tasks_paginated = Task.where(assignee: @assignee).order(last_jira_update: :desc).page(params[:page])
+    calculate_time_statistics
+    calculate_task_ratio_sum
+    @assignee_ratio = calculate_assignee_ratio
+  end
+
+
+
   def assignee_profile
     @assignee = Assignee.find(params[:id])
     @assignees_projects = Project.joins(:tasks).where(tasks: { assignee_id: @assignee.id })
     .select("projects.*, SUM(tasks.time_spent) AS total_time_spent")
     .group("projects.id")
-
   end
 
   def destroy_all
@@ -106,26 +99,29 @@ class AssigneesController < ApplicationController
   end
 
   def assignee_unique_projects_list
-    # Load the project by ID
+    # Load the assignee by ID
     @assignee = Assignee.find(params[:id])
 
-    # Load all the unique assignees for the project's tasks
-    @projects_jira_ids = @assignee.tasks.select(:project_id).distinct.joins(:project).pluck('projects.jira_id')
-
-    @project_task_counts = {}
-    @assignee.tasks.group(:project_id).count.each do |project_id, task_count|
-      @project_task_counts[Project.find(project_id).jira_id] = task_count
+    # Load all the unique projects for the assignee's tasks
+    @project_task_counts = @assignee.tasks.group(:project_id).count
+    @projects_jira_ids = []
+    @project_task_counts.each do |project_id, task_count|
+      project = Project.find(project_id)
+      @projects_jira_ids << { project_id: project_id, jira_id: project.jira_id }
     end
 
+    # Calculate task percentages for each project
     @project_task_percentages = {}
     total_tasks = @assignee.tasks.count
-    @project_task_counts.each do |project, task_count|
-      @project_task_percentages[project] = (task_count.to_f / total_tasks * 100).round(2)
+    @project_task_counts.each do |project_id, task_count|
+      project = Project.find(project_id)
+      @project_task_percentages[project.jira_id] = (task_count.to_f / total_tasks * 100).round(2)
     end
 
-    # Sort the unique assignees by the number of tasks in descending order
-    @projects_jira_ids.sort_by! { |project| -@project_task_counts[project] }
+    # Sort the projects by the number of tasks in descending order
+    @projects_jira_ids.sort_by! { |project| -@project_task_counts[project[:project_id]] }
   end
+
 
   def tasks_by_time_status
     assignee = Assignee.find(params[:id])
@@ -144,5 +140,31 @@ class AssigneesController < ApplicationController
       early: { count: early_tasks, percentage: early_percentage },
       delayed: { count: delayed_tasks, percentage: delayed_percentage },
       no_data: {count: no_data_tasks, percentage: no_data_percentage }}
+  end
+
+
+  def calculate_time_statistics
+    @total_time_estimation = @assignee_tasks.sum(:time_forecast) || 0
+    @total_time_spent = @assignee_tasks.sum(:time_spent) || 0
+    @time_difference = @total_time_estimation - @total_time_spent
+  end
+
+  def calculate_task_ratio_sum
+    @task_ratio_sum = @assignee_tasks.sum { |task| calculate_task_ratio(task) }
+  end
+
+  def calculate_assignee_ratio
+    (@task_ratio_sum.fdiv(@assignee_tasks.count || 0) * 100).round(2)
+  end
+
+  def calculate_task_ratio(task)
+    if task.time_forecast && task.time_spent
+      task_time_gap = task.time_forecast - task.time_spent
+      accepted_gap_ratio = task_time_gap / task.time_forecast
+      if accepted_gap_ratio < 0.17
+        return 1
+      end
+    end
+    return 0
   end
 end
