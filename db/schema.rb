@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_15_133759) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_20_115734) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -49,6 +49,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_15_133759) do
     t.string "epic"
     t.string "labels"
     t.datetime "last_jira_update"
+    t.date "due_date"
+    t.datetime "status_change_date"
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["project_id"], name: "index_tasks_on_project_id"
   end

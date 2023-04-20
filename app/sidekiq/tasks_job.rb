@@ -85,7 +85,9 @@ class TasksJob
       priority: fields&.[]('priority')&.[]('name'),
       epic: fields&.[]('parent')&.[]('fields')&.[]('summary'),
       time_spent: retrieve_time_spent(url),
-      labels: retrive_labels(json_task)
+      labels: retrive_labels(json_task),
+      status_change_date: fields['statuscategorychangedate'],
+      due_date: fields['duedate']
     )
     pp(added_task)
     added_task.save
@@ -117,7 +119,7 @@ class TasksJob
       pro.name = project_name
       pro.lead = project_lead
     end
-       project.id || DEFAULT_PROJECT_ID
+    project.id || DEFAULT_PROJECT_ID
   end
 
   def retrieve_time_spent(url)

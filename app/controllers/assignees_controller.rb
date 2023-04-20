@@ -32,8 +32,6 @@ class AssigneesController < ApplicationController
     redirect_to assignee_path, notice: 'Data sent to assignee'
   end
 
-
-
   def edit
     @assignee = Assignee.find(params[:id])
   end
@@ -58,8 +56,6 @@ class AssigneesController < ApplicationController
     calculate_task_ratio_sum
     @assignee_ratio = calculate_assignee_ratio
   end
-
-
 
   def assignee_profile
     @assignee = Assignee.find(params[:id])
@@ -122,7 +118,6 @@ class AssigneesController < ApplicationController
     @projects_jira_ids.sort_by! { |project| -@project_task_counts[project[:project_id]] }
   end
 
-
   def tasks_by_time_status
     assignee = Assignee.find(params[:id])
     total_tasks = assignee.tasks.count
@@ -141,7 +136,6 @@ class AssigneesController < ApplicationController
       delayed: { count: delayed_tasks, percentage: delayed_percentage },
       no_data: {count: no_data_tasks, percentage: no_data_percentage }}
   end
-
 
   def calculate_time_statistics
     @total_time_estimation = @assignee_tasks.sum(:time_forecast) || 0

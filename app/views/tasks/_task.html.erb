@@ -20,6 +20,14 @@
         <span class="badge rounded-pill bg-primary pb-0 mb-0"><%= label.gsub(/[^a-zA-Z\s]/, '') %></span>
       <% end %>
     </div>
+    <div class="small-text text-end text-muted me-1">
+      <% if task.due_date.present? %>
+        <div>Start date: <%= task.status_change_date.strftime("%e %B %Y")  %></div>
+        <div>Due Date: <%= task.due_date.strftime("%e %B %Y") %></div>
+      <% else %>
+        No Data
+      <% end %>
+    </div>
     <div class="card-footer bg-light">
       <small class="text-muted">
         Created at: <%= task.created_at %>
