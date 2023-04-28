@@ -9,25 +9,26 @@ class QuotesController < ApplicationController
     @project = Project.find(params[:project_id])
     @quote = Quote.new
   end
-
   def create
     @quote = Quote.new(quote_params)
     @project = Project.find(params[:project_id])
     @quote.project = @project
+
     respond_to do |format|
       if @quote.save
         format.html { redirect_to project_quotes_path(@project), notice: "Quote created successfully." }
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
-            'quote',
+            'quote-modal',
             partial: 'quotes/form',
             locals: { quote: @quote, project: @project }
           )
         end
       else
+        format.html { render :new }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.append(
-            'quote-errors',
+          render turbo_stream: turbo_stream.replace(
+            'quote-modal',
             partial: 'quotes/form',
             locals: { quote: @quote, project: @project }
           )
@@ -35,7 +36,6 @@ class QuotesController < ApplicationController
       end
     end
   end
-
 
   private
 

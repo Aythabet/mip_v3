@@ -1,0 +1,9 @@
+<%= turbo_frame_tag "vacation-modal" do %>
+  <%= simple_form_for([@assignee, @vacation]) do |f| %>
+    <%= f.input :start_date, placeholder: "Select date"  %>
+    <%= f.input :end_date, placeholder: "Select date" %>
+    <%= f.select :duration, options_for_select(["4 hours", "1 day", "2 days", "3 days", "4 days", "5 days", "6 days", "1 week", "2 weeks", "3 weeks", "4 weeks", "5 weeks", "6 weeks", "7 weeks", "8 weeks", "9 weeks", "10 weeks"], selected: "4 hours"), { include_blank: true }, { class: 'form-control' } %>
+    <%= f.input :assignee_id, as: :hidden, value: @assignee.id %>
+    <%= f.submit class:"btn btn-success mb-2 text-dark" %>
+  <% end %>
+<% end %>

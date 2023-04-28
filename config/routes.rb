@@ -17,6 +17,7 @@ Rails.application.routes.draw do
   # Assignees Routes
   resources :assignees, only: [:index, :show, :edit, :update] do
     post 'send_data_to_assignee', on: :member, as: :send_data_to_assignee
+    resources :vacations, only: [:new, :create, :index]
   end
 
   get '/assignee_profile/:id', to: 'assignees#assignee_profile', as: 'assignee_profile', as: 'assignee_profile', constraints: lambda { |request| request.env['warden'].user.admin? }

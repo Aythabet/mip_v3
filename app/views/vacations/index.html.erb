@@ -1,0 +1,44 @@
+<div class="container py-4">
+  <div class="pb-4">
+    <%= link_to "Back", assignee_profile_path(@assignee) %>
+  </div>
+  <div>
+    <%= link_to "Add a new vacation to #{@assignee.name}", "#", id: "addVacationLink", class: "btn btn-success btn-sm mb-4 text-dark" %>
+  </div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Duration</th>
+          <th>Assignee</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @vacations.each do |vacation| %>
+          <tr>
+            <td><%= vacation.start_date %></td>
+            <td><%= vacation.end_date %></td>
+            <td><%= vacation.duration %></td>
+            <td><%= vacation.assignee.name %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <!-- Selling price modal -->
+  <div class="modal fade" id="AddVacationModal" tabindex="-1" aria-labelledby="AddVacationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="AddVacationModalLabel">Add Vacation</h5>
+          <button type="button" class="btn-close" id="dismissButton" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <%= render "form", vacation: @vacation, assignee: @assignee %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

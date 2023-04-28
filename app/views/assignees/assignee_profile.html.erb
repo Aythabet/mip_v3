@@ -5,41 +5,45 @@
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
       <span><%= @assignee.name %></span>
-      <%= link_to "Edit Profile", edit_assignee_path(@assignee), class: "btn btn-dark btn-sm mb-0 text-light ml-auto" %>
-    </div>
-    <div class="card-body">
-      <h5 class="mb-3">
-        <%= @assignee.email %>
-      </h5>
-      <p class="card-text">
-        Salary: <%= @assignee.salary %> TND<br>
-        Hourly rate: <%= @assignee.hourly_rate %> TND
-      </p>
-    </div>
-    <div class="card-body">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Project</th>
-            <th>Total time worked</th>
-            <th>Total cost</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @assignees_projects.each do |project| %>
-            <tr>
-              <td><%= link_to project.jira_id, project %></td>
-              <td><%=  my_helper_format_duration(project.total_time_spent) %></td>
-              <td>
-                <% if @assignee.hourly_rate.present? && @assignee.hourly_rate.to_f != 0 %>
-                  <%= number_with_precision((project.total_time_spent.to_f / 3600) * @assignee.hourly_rate.to_f, precision: 1) %> TND
-                <% else %>
-                  Check if the assignee hourly rate is set!
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+      <div>
+        <%= link_to "Edit Profile", edit_assignee_path(@assignee), class: "btn btn-dark btn-sm mb-0 text-light ml-auto" %>
+        <%= link_to "Vacations", assignee_vacations_path(@assignee), class: "btn btn-dark btn-sm mb-0 text-light ml-auto" -%>
+      </div>
     </div>
   </div>
+  <div class="card-body">
+    <h5 class="mb-3">
+      <%= @assignee.email %>
+    </h5>
+    <p class="card-text">
+      Salary: <%= @assignee.salary %> TND<br>
+      Hourly rate: <%= @assignee.hourly_rate %> TND
+    </p>
+  </div>
+  <div class="card-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Project</th>
+          <th>Total time worked</th>
+          <th>Total cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @assignees_projects.each do |project| %>
+          <tr>
+            <td><%= link_to project.jira_id, project %></td>
+            <td><%=  my_helper_format_duration(project.total_time_spent) %></td>
+            <td>
+              <% if @assignee.hourly_rate.present? && @assignee.hourly_rate.to_f != 0 %>
+                <%= number_with_precision((project.total_time_spent.to_f / 3600) * @assignee.hourly_rate.to_f, precision: 1) %> TND
+              <% else %>
+                Check if the assignee hourly rate is set!
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

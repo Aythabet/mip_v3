@@ -17,20 +17,37 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
-
+/*Quotes Modal*/
 document.addEventListener("DOMContentLoaded", function() {
-  // Modal Add Selling Price for the projects
   $(document).ready(function() {
     $('#addQuoteLink').click(function() {
       $('#AddQuoteModal').modal('show');
     });
   });
 
-  // Dismiss Selling Price Modal
+  // Dismiss Modal
   var dismissButton = document.getElementById("dismissButton");
   if (dismissButton) {
     dismissButton.addEventListener("click", function() {
       $('#AddQuoteModal').modal('hide');
+    });
+  }
+});
+
+
+/*Vacations Modal*/
+document.addEventListener("DOMContentLoaded", function() {
+  $(document).ready(function() {
+    $('#addVacationLink').click(function() {
+      $('#AddVacationModal').modal('show');
+    });
+  });
+
+  // Dismiss Modal
+  var dismissButton = document.getElementById("dismissButton");
+  if (dismissButton) {
+    dismissButton.addEventListener("click", function() {
+      $('#AddVacationModal').modal('hide');
     });
   }
 });
