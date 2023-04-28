@@ -26,6 +26,7 @@
               <p class="small-text nav-link">
                 <%= current_user.name %>
                 <%= current_user.email %>
+                <%= current_user.admin? %>
               </p>
               <%= form_tag destroy_user_session_path, method: :delete, class: "nav-link" do %>
                 <%= submit_tag "Sign out" %>

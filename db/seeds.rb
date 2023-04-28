@@ -22,6 +22,7 @@ User.create([
               {
                 'email': "admin@inspiregroup.io",
                 'password': 'azertyu',
-                'password_confirmation': 'azertyu'
+                'password_confirmation': 'azertyu',
+                'admin': true
               }
 ])

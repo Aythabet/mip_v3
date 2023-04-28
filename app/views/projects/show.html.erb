@@ -7,7 +7,9 @@
     <!-- Project details -->
     <div class="col-12 col-md-6">
       <h1 class="fw-bold mb-3"><%= @project.name %>
-        <%= link_to "View Project",  { action: "project_details" }, method: :post, class: "btn btn-light btn-sm mb-0 text-dark" %>
+        <% if current_user.admin? %>
+          <%= link_to "View Project",  { action: "project_details" }, method: :post, class: "btn btn-light btn-sm mb-0 text-dark" %>
+        <% end %>
       </h1>
       <% @projects_unique_statuses.each do |status| %>
         <p class="card-text mb-1">

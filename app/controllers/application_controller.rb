@@ -3,6 +3,13 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user!
 
+  def check_admin
+    unless current_user.admin?
+      flash[:alert] = "You don't have permission to access this page. #{current_user.admin?}"
+      redirect_to root_path
+    end
+  end
+
   def format_duration(seconds)
     if seconds.nil?
       return "No data"
@@ -57,4 +64,6 @@ class ApplicationController < ActionController::Base
     assignee_email = "#{email_prefix}@#{domain}"
     return assignee_email
   end
+
+
 end

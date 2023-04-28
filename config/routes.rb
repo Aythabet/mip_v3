@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     post 'send_data_to_assignee', on: :member, as: :send_data_to_assignee
   end
 
-  get '/assignee_profile/:id', to: 'assignees#assignee_profile', as: 'assignee_profile'
+  get '/assignee_profile/:id', to: 'assignees#assignee_profile', as: 'assignee_profile', as: 'assignee_profile', constraints: lambda { |request| request.env['warden'].user.admin? }
   post 'assignees/retrieve_assignees'
   post 'assignees/destroy_all'
 
@@ -27,7 +27,8 @@ Rails.application.routes.draw do
   # Projects Routes
   resources :projects, only: [:index, :show, :edit, :update]
 
-  get '/project_details/:id', to: 'projects#project_details', as: 'project_details'
+  get '/project_details/:id', to: 'projects#project_details', as: 'project_details', constraints: lambda { |request| request.env['warden'].user.admin? }
+
   post 'projects/retrieve_projects'
   post 'projects/destroy_all'
 
@@ -35,4 +36,7 @@ Rails.application.routes.draw do
   resources :tasks, only: [:index]
   post 'tasks/retrieve_tasks'
   post 'tasks/destroy_all'
+
+  # Admin Routes
+  get '/admin', to: 'admin#index'
 end
