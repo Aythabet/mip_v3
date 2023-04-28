@@ -2,9 +2,17 @@
   <%= simple_form_for([@project, @quote]) do |f| %>
     <%= f.input :number, placeholder: "E.g: 222D150, 223D010, 224D331" %>
     <%= f.input :date, placeholder: "Select date" %>
-    <%= f.input :value, placeholder: "E.g: 30000€, 10000 TND, 2900$" %>
+    <div class="row">
+      <div class="col-md-9">
+        <%= f.input :value, label: "Total Price", placeholder: "Insert the final value of the quote (e.g. 1000)", input_html: { value: number_to_currency(f.object.value, unit: f.object.currency), step: "0.01" } %>
+      </div>
+      <div class="col-md-3">
+        <%= f.input :currency, as: :select, collection: ["TND", "EUR", "USD"], include_blank: false %>
+      </div>
+    </div>
     <%= f.input :recipient, placeholder: "Client or company name" %>
     <%= f.input :responsible, placeholder: "Who's managing this ?" %>
+    <%= f.input :link, placeholder: "Please add a link to the quote" %>
     <%= f.collection_radio_buttons :status, ["Waiting", "Accepted", "Declined"], :to_s, :to_s, item_wrapper_class: 'form-check form-check-inline' do |b| %>
       <%= b.label(class: 'form-check-label') { b.radio_button(class: 'form-check-input') } %>
       <%= b.text %>

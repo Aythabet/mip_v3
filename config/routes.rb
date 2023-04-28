@@ -27,7 +27,7 @@ Rails.application.routes.draw do
 
   # Projects Routes
   resources :projects, only: [:index, :show, :edit, :update] do
-    resources :quotes, only: [:new, :create, :index]
+    resources :quotes, only: [:new, :create, :index, :edit, :update]
   end
 
   get '/project_details/:id', to: 'projects#project_details', as: 'project_details', constraints: lambda { |request| request.env['warden'].user.admin? }

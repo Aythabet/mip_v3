@@ -6,23 +6,34 @@
     <table class="table">
       <thead>
         <tr>
-          <th>Status</th>
+          <th></th>
           <th>Number</th>
           <th>Date</th>
           <th>Value</th>
           <th>Responsible</th>
           <th>Recipient</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <% @quotes.each do |quote| %>
-          <tr>
-            <td><%= quote.status %></td>
+          <% status_class = case quote.status
+                      when "Waiting" then ""
+                      when "Accepted" then "table-success"
+                      when "Declined" then "table-danger"
+                      end %>
+          <tr class="<%= status_class %>">
+            <td><%= status_icon(quote.status) %></td>
             <td><%= quote.number %></td>
-            <td><%= quote.date %></td>
-            <td><%= quote.value %></td>
+            <td><%= quote.date.strftime("%e %B %Y") %></td>
+            <td><%= quote.value %> <%= currency_icon(quote.currency) %></td>
             <td><%= quote.responsible %></td>
             <td><%= quote.recipient %></td>
+            <td>
+              <%= link_to "", quote.link, class: "bi bi-link", target: "_blank" %>
+              &nbsp; &nbsp;
+              <%= link_to "", "#", class: "bi bi-pencil-square" %>
+            </td>
           </tr>
         <% end %>
       </tbody>

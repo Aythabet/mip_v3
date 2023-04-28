@@ -2,13 +2,14 @@ class QuotesController < ApplicationController
   def index
     @quote = Quote.new
     @project = Project.find(params[:project_id])
-    @quotes = Quote.where(project_id: @project)
+    @quotes = Quote.where(project: @project).order(created_at: :desc)
   end
 
   def new
     @project = Project.find(params[:project_id])
     @quote = Quote.new
   end
+
   def create
     @quote = Quote.new(quote_params)
     @project = Project.find(params[:project_id])
@@ -37,9 +38,25 @@ class QuotesController < ApplicationController
     end
   end
 
+  def edit
+    @project = Project.find(params[:project_id])
+    @quote = Quote.find(params[:id])
+  end
+
+  def update
+    @project = Project.find(params[:project_id])
+    @quote = Quote.find(params[:id])
+
+    if @quote.update(quote_params)
+      redirect_to project_quotes_path(@project), notice: "Quote updated successfully."
+    else
+      render :edit
+    end
+  end
+
   private
 
   def quote_params
-    params.require(:quote).permit(:number, :date, :value, :recipient, :responsible, :status)
+    params.require(:quote).permit(:number, :date, :value, :recipient, :responsible, :status, :link, :currency)
   end
 end
