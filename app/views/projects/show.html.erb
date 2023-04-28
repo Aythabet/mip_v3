@@ -32,6 +32,7 @@
                   <%= assignee %>
                   <span class="badge bg-info text-dark"> <%= @assignee_task_counts[assignee] %></span>
                   <span class="badge bg-primary"> <%= "#{(@assignee_task_percentages[assignee]).round(2)} %" %></span>
+                  <span class="badge bg-warning text-light"> <%= (@assignee_time_spent[assignee] / 3600 ).round(2)%> hours</span>
                 </p>
               <% end %>
             </div>

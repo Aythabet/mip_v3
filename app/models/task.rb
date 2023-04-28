@@ -5,7 +5,7 @@ class Task < ApplicationRecord
   paginates_per 15
 
   def calculate_due_date
-    return if due_date.present? || self.time_forecast.nil?
+    return if due_date.present? || self.time_forecast.nil? || self.status_change_date.nil?
 
     total_seconds = time_forecast.to_i
     days = (total_seconds / (8 * 60 * 60)).to_i
@@ -27,5 +27,4 @@ class Task < ApplicationRecord
 
   before_save :calculate_due_date
   before_update :calculate_due_date
-
 end

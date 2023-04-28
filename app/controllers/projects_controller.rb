@@ -140,6 +140,11 @@ class ProjectsController < ApplicationController
       @assignee_task_percentages[assignee] = (task_count.to_f / total_tasks * 100).round(2)
     end
 
+    @assignee_time_spent = {}
+    @project.tasks.joins(:assignee).group("assignees.name").sum(:time_spent).each do |assignee_name, time_spent|
+      @assignee_time_spent[assignee_name] = time_spent
+    end
+
     # Sort the unique assignees by the number of tasks in descending order
     @projects_unique_assignees.sort_by! { |assignee| -@assignee_task_counts[assignee] }
   end
