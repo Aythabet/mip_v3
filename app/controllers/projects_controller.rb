@@ -54,20 +54,6 @@ class ProjectsController < ApplicationController
     .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
   end
 
-  def projects_quotes
-    @project = Project.find(params[:id])
-
-    @projects_assignees = Assignee.joins(tasks: :project)
-    .select("assignees.*, SUM(tasks.time_spent) AS total_time_spent")
-    .where(tasks: { project_id: @project.id })
-    .group("assignees.id")
-
-    @project_total_internal_cost = Task.joins(:assignee)
-    .where(project: @project)
-    .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
-  end
-
-
   def edit
     @project = Project.find(params[:id])
   end

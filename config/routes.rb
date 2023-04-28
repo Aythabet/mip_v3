@@ -25,10 +25,11 @@ Rails.application.routes.draw do
 
 
   # Projects Routes
-  resources :projects, only: [:index, :show, :edit, :update]
+  resources :projects, only: [:index, :show, :edit, :update] do
+    resources :quotes, only: [:new, :create, :index]
+  end
 
   get '/project_details/:id', to: 'projects#project_details', as: 'project_details', constraints: lambda { |request| request.env['warden'].user.admin? }
-  get '/project_quotes/:id', to: 'projects#project_quotes', as: 'project_quotes', constraints: lambda { |request| request.env['warden'].user.admin? }
 
   post 'projects/retrieve_projects'
   post 'projects/destroy_all'

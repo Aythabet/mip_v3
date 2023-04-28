@@ -1,0 +1,45 @@
+<div class="container py-4">
+  <div>
+    <%= link_to "Add a new quote to #{@project.name}", "#", id: "addQuoteLink", class: "btn btn-success btn-sm mb-4 text-dark" %>
+  </div>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Number</th>
+          <th>Date</th>
+          <th>Value</th>
+          <th>Responsible</th>
+          <th>Recipient</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @quotes.each do |quote| %>
+          <tr>
+            <td><%= quote.status %></td>
+            <td><%= quote.number %></td>
+            <td><%= quote.date %></td>
+            <td><%= quote.value %></td>
+            <td><%= quote.responsible %></td>
+            <td><%= quote.recipient %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+  <!-- Selling price modal -->
+  <div class="modal fade" id="AddQuoteModal" tabindex="-1" aria-labelledby="AddQuoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="AddQuoteModalLabel">Add Quote</h5>
+          <button type="button" class="btn-close" id="dismissButton" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <%= render "form", quote: @quote, project: @project %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
