@@ -28,7 +28,7 @@ Rails.application.routes.draw do
   resources :projects, only: [:index, :show, :edit, :update]
 
   get '/project_details/:id', to: 'projects#project_details', as: 'project_details', constraints: lambda { |request| request.env['warden'].user.admin? }
-  get '/projects_quotes/:id', to: 'projects#projects_quotes', as: 'projects_quotes', constraints: lambda { |request| request.env['warden'].user.admin? }
+  get '/project_quotes/:id', to: 'projects#project_quotes', as: 'project_quotes', constraints: lambda { |request| request.env['warden'].user.admin? }
 
   post 'projects/retrieve_projects'
   post 'projects/destroy_all'

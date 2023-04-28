@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_28_090216) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_28_102843) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -43,6 +43,19 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_28_090216) do
     t.boolean "archived_status", default: false
     t.decimal "total_internal_cost", precision: 10, scale: 2, default: "0.0"
     t.decimal "total_selling_price", precision: 10, scale: 2, default: "0.0"
+  end
+
+  create_table "quotes", force: :cascade do |t|
+    t.string "number"
+    t.date "date"
+    t.float "value"
+    t.string "recipient"
+    t.string "responsible"
+    t.string "status"
+    t.bigint "project_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_quotes_on_project_id"
   end
 
   create_table "tasks", force: :cascade do |t|
@@ -83,6 +96,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_28_090216) do
   end
 
   add_foreign_key "assignees", "users"
+  add_foreign_key "quotes", "projects"
   add_foreign_key "tasks", "assignees"
   add_foreign_key "tasks", "projects"
 end
