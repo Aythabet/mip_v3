@@ -107,8 +107,7 @@
               <%= task.status %>: <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank" %>
             </div>
             <div class="d-flex align-items-center">
-              <span class="me-2"><%= task.priority %></span>
-              <i class="bi bi-arrow-up"></i>
+              <span class="me-2"><%= priority_icon(task.priority) %></span>
             </div>
           </div>
           <span class="badge bg-secondary"><%= task.epic %></span>

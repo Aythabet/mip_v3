@@ -39,7 +39,6 @@ class ApplicationController < ActionController::Base
     duration.join(' and ')
   end
 
-
   def call_jira_api(url)
     uri = URI.parse(url)
     headers = {
@@ -64,6 +63,4 @@ class ApplicationController < ActionController::Base
     assignee_email = "#{email_prefix}@#{domain}"
     return assignee_email
   end
-
-
 end

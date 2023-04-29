@@ -1,4 +1,16 @@
-module QuotesHelper
+module IconsHelper
+  def priority_icon(priority)
+    case priority
+    when "Highest", "High"
+      content_tag(:i, "", class: "bi bi-arrow-up")
+    when "Medium"
+      content_tag(:i, "", class: "bi bi-arrow-left-right")
+    when "Lowest", "Low"
+      content_tag(:i, "", class: "bi bi-arrow-down")
+    end
+  end
+
+
   def status_icon(status)
     case status
     when "Waiting"

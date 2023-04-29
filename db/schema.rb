@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_28_224001) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_29_070045) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,6 +23,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_28_224001) do
     t.float "salary"
     t.float "hourly_rate"
     t.bigint "user_id"
+    t.float "vacation_days_available"
     t.index ["user_id"], name: "index_assignees_on_user_id"
   end
 

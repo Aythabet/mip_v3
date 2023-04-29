@@ -50,7 +50,7 @@ class TasksJob
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 2 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues is #{total_issues_count}...")
 
       (1..total_pages).each do
