@@ -10,14 +10,6 @@ class Assignee < ApplicationRecord
 
   after_create :calculate_vacation_days_available
 
-  private
-
-  def vacation_days_non_negative
-    if vacation_days_available.negative?
-      errors.add(:vacation_days_available, "You can't have vacation debts!")
-    end
-  end
-
   def calculate_vacation_days_available
     start_month = self.created_at.month
     start_year = self.created_at.year
@@ -36,6 +28,14 @@ class Assignee < ApplicationRecord
       end
 
       self.save
+    end
+  end
+
+  private
+
+  def vacation_days_non_negative
+    if vacation_days_available.negative?
+      errors.add(:vacation_days_available, "You can't have vacation debts!")
     end
   end
 end

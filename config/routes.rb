@@ -17,10 +17,10 @@ Rails.application.routes.draw do
   # Assignees Routes
   resources :assignees, only: [:index, :show, :edit, :update] do
     post 'send_data_to_assignee', on: :member, as: :send_data_to_assignee
-    resources :vacations, only: [:new, :create, :index]
+    resources :vacations, only: [:index, :new, :create, :edit, :update, :destroy]
   end
 
-  get '/assignee_profile/:id', to: 'assignees#assignee_profile', as: 'assignee_profile', as: 'assignee_profile', constraints: lambda { |request| request.env['warden'].user.admin? }
+  get '/assignee_profile/:id', to: 'assignees#assignee_profile', as: 'assignee_profile', constraints: lambda { |request| request.env['warden'].user.admin? }
   post 'assignees/retrieve_assignees'
   post 'assignees/destroy_all'
 
@@ -41,5 +41,6 @@ Rails.application.routes.draw do
   post 'tasks/destroy_all'
 
   # Admin Routes
-  get '/admin', to: 'admin#index'
+  get '/all_vacations', to: 'admin#all_vacations', as: 'all_vacations', constraints: lambda { |request| request.env['warden'].user.admin? }
+
 end

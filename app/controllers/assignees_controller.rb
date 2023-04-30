@@ -39,7 +39,7 @@ class AssigneesController < ApplicationController
   def update
     @assignee = Assignee.find(params[:id])
     if @assignee.update(assignee_params)
-      redirect_to assignee_profile_path(@assignee), notice: 'Assignee was successfully updated.'
+      redirect_to request.referrer || assignee_profile_path(@assignee), notice: "Assignee was updated."
     else
       render :edit
     end
@@ -72,7 +72,7 @@ class AssigneesController < ApplicationController
   private
 
   def assignee_params
-    params.require(:assignee).permit(:name, :email, :admin, :salary, :hourly_rate)
+    params.require(:assignee).permit(:name, :email, :admin, :salary, :hourly_rate, :vacation_days_available)
   end
 
   def find_or_create_assignee(assignee_name, assignee_email, admin: false)

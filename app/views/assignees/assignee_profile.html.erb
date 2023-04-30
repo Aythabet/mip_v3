@@ -1,5 +1,5 @@
 <div class="pb-4">
-  <%= link_to "Back", :back %>
+  <%= link_to "Back", assignee_path(@assignee) %>
 </div>
 <div class="container pt-4" style="max-width: 80%;">
   <div class="card">
@@ -10,14 +10,21 @@
         <%= link_to "Vacations", assignee_vacations_path(@assignee), class: "btn btn-dark btn-sm mb-0 text-light ml-auto" -%>
       </div>
     </div>
-  </div>
-  <div class="card-body">
-    <h5 class="mb-3">
-      <%= @assignee.email %>
-    </h5>
-    <p class="card-text">
-      Salary: <%= @assignee.salary %> TND<br>
-      Hourly rate: <%= @assignee.hourly_rate %> TND
+    <div class="card-body">
+      <h5 class="mb-0">
+        <%= @assignee.email %>
+      </h5>
+      <p class="card-text">
+        <div>
+          Salary:
+          <span class="badge bg-primary text-light">
+            <%= number_with_precision(@assignee.salary, precision: 1) %> TND
+          </span></br>
+        Hourly rate: 
+        <span class="badge bg-primary text-light">
+          <%= number_with_precision(@assignee.hourly_rate, precision: 1) %> TND         
+        </span>
+      </div>
     </p>
   </div>
   <div class="card-body">

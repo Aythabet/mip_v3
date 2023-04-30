@@ -2,7 +2,7 @@ class VacationsController < ApplicationController
   def index
     @vacation = Vacation.new
     @assignee = Assignee.find(params[:assignee_id])
-    @vacations = Vacation.where(assignee_id: @assignee)
+    @vacations = Vacation.where(assignee_id: @assignee).order(created_at: :desc)
   end
 
   def new
@@ -15,32 +15,62 @@ class VacationsController < ApplicationController
     @assignee = Assignee.find(params[:assignee_id])
     @vacation.assignee = @assignee
 
-    respond_to do |format|
+    if check_vacation_request(@assignee, @vacation.duration)
+      @vacation.end_date = @vacation.start_date + @vacation.duration
       if @vacation.save
-        format.html { redirect_to assignee_vacations_path(@assignee), notice: "Quote created successfully." }
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            'vacation-modal',
-            partial: 'vacations/form',
-            locals: { vacation: @vacation, assignee: @assignee }
-          )
+        @assignee.update(vacation_days_available: (@assignee.vacation_days_available - @vacation.duration))
+        respond_to do |format|
+          format.html { redirect_to assignee_vacations_path(@assignee), notice: "Quote created successfully." }
+          format.turbo_stream do
+            render turbo_stream: turbo_stream.replace(
+              'vacation-modal',
+              partial: 'vacations/form',
+              locals: { vacation: @vacation, assignee: @assignee }
+            )
+          end
         end
       else
-        format.html { render :new }
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            'vacation-modal',
-            partial: 'vacations/form',
-            locals: { vacation: @vacation, assignee: @assignee }
-          )
+        respond_to do |format|
+          format.html { render :new }
+          format.turbo_stream do
+            render turbo_stream: turbo_stream.replace(
+              'vacation-modal',
+              partial: 'vacations/form',
+              locals: { vacation: @vacation, assignee: @assignee }
+            )
+          end
         end
       end
+    else
+      flash[:alert] = "The assignee does not have enough vacation days available."
+      redirect_to assignee_vacations_path(@assignee)
     end
+  end
+
+  def edit
+  end
+
+  def show
+  end
+
+  def update
+  end
+
+  def destroy
+    @assignee = Assignee.find(params[:assignee_id])
+    @vacation = @assignee.vacations.find(params[:id])
+    @assignee.update(vacation_days_available: (@assignee.vacation_days_available + @vacation.duration))
+    @vacation.destroy!
+    redirect_to assignee_vacations_path(@assignee)
   end
 
   private
 
   def vacation_params
-    params.require(:vacation).permit(:start_date, :end_date, :duration)
+    params.require(:vacation).permit(:start_date, :end_date, :duration, :reason)
+  end
+
+  def check_vacation_request(assignee, duration)
+    return assignee.vacation_days_available >= duration
   end
 end

@@ -5,9 +5,6 @@
         <%= image_tag "logo.png" %>
       <% end %>
     </div>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav me-auto">
         <% if user_signed_in? %>
@@ -20,6 +17,11 @@
           <li class="nav-item">
             <%= link_to "Assignees", assignees_path, class: "nav-link" %>
           </li>
+          <% if current_user&.admin? %>
+            <li class="nav-item">
+              <%= link_to "Vacations", all_vacations_path , class: "nav-link" %>
+            </li>
+          <% end %>
           <li class="nav-item dropdown">
             <%= image_tag "https://img.freepik.com/premium-vector/color-diamong-icon-magic-gem-jewel-sign_543062-2891.jpg?w=2000", class: "avatar dropdown-toggle", id: "navbarDropdown", data: { bs_toggle: "dropdown" }, 'aria-haspopup': true, 'aria-expanded': false %>
             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">

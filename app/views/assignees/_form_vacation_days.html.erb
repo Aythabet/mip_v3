@@ -1,0 +1,8 @@
+<div>
+  <%= turbo_frame_tag "form_vacation_days" do %>
+    <%= simple_form_for(@assignee) do |f| %>
+      <%= f.input :vacation_days_available, placeholder: "Insert how many days you want to add."  %>
+      <%= f.button :submit, class: "btn btn-secondary", value: "Update" %>
+    <% end %>
+  <% end %>
+</div>

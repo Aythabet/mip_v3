@@ -1,0 +1,30 @@
+<div class='container py-4'>
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>Duration</th>
+          <th>Assignee</th>
+          <th>Reason</th>
+          <!--           <th></th>
+ -->        </tr>
+      </thead>
+      <tbody>
+        <% @active_vacations.each do |active_vacation| %>
+          <tr>
+            <td><%= active_vacation.start_date %></td>
+            <td><%= active_vacation.end_date %></td>
+            <td><%= active_vacation.duration %></td>
+            <td><%= active_vacation.assignee.name %></td>
+            <td><%= active_vacation.reason %></td>
+            <td>
+              <%# link_to "", assignee_vacation_path(@assignee, active_vacation), method: :delete, data: { confirm: "Are you sure you want to delete this vacation?" }, class: "bi bi-trash-fill text-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
