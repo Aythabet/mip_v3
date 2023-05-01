@@ -1,30 +1,56 @@
-<div class='container py-4'>
-  <div class="table-responsive">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Duration</th>
-          <th>Assignee</th>
-          <th>Reason</th>
-          <!--           <th></th>
- -->        </tr>
-      </thead>
-      <tbody>
-        <% @active_vacations.each do |active_vacation| %>
-          <tr>
-            <td><%= active_vacation.start_date %></td>
-            <td><%= active_vacation.end_date %></td>
-            <td><%= active_vacation.duration %></td>
-            <td><%= active_vacation.assignee.name %></td>
-            <td><%= active_vacation.reason %></td>
-            <td>
-              <%# link_to "", assignee_vacation_path(@assignee, active_vacation), method: :delete, data: { confirm: "Are you sure you want to delete this vacation?" }, class: "bi bi-trash-fill text-danger" %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+<div class="d-flex flex-nowrap gap-1 justify-content-between">
+  <div class="list-group pt-4 w-50">
+    <h3>Assignees in vacations today:</h3>
+    <% @active_vacations.each do |vacation| %>
+      <a href="#" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+          <div>
+            <h5 class="mb-1"><%= vacation.assignee.name %></h5>
+            <p class="mb-1"><%= vacation.reason %></p>
+            <small class="text-muted">
+              Starts: <%= vacation.start_date %><br>
+              Ends: <%= vacation.end_date %><br>
+            </small>
+          </div>
+          <small class="text-muted">Duration: 
+            <% if vacation.duration %>
+              <% if vacation.duration % 1 == 0.5 %>
+                <span class="font-weight-bold text-secondary"><%= number_with_precision(vacation.duration, precision: 1) %></span> days
+              <% else %>
+                <span class="font-weight-bold text-secondary"><%= vacation.duration.to_i %></span> days
+              <% end %>
+            <% else %>
+              <span class="font-weight-bold text-danger">N/A</span>
+            <% end %></small>
+        </div>
+      </a>
+    <% end %>
+  </div>
+  <div class="list-group pt-4 w-50  ">
+    <h3>Upcoming Vacations:</h3>
+    <% @upcoming_vacations.each do |vacation| %>
+      <a href="#" class="list-group-item list-group-item-action">
+        <div class="d-flex w-100 justify-content-between">
+          <div>
+            <h5 class="mb-1"><%= vacation.assignee.name %></h5>
+            <p class="mb-1"><%= vacation.reason %></p>
+            <small class="text-muted">
+              Starts: <%= vacation.start_date %><br>
+              Ends: <%= vacation.end_date %><br>
+            </small>
+          </div>
+          <small class="text-muted">Duration: 
+            <% if vacation.duration %>
+              <% if vacation.duration % 1 == 0.5 %>
+                <span class="font-weight-bold text-secondary"><%= number_with_precision(vacation.duration, precision: 1) %></span> days
+              <% else %>
+                <span class="font-weight-bold text-secondary"><%= vacation.duration.to_i %></span> days
+              <% end %>
+            <% else %>
+              <span class="font-weight-bold text-danger">N/A</span>
+            <% end %></small>
+        </div>
+      </a>
+    <% end %>
   </div>
 </div>

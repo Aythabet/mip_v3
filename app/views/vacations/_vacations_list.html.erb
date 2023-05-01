@@ -1,0 +1,27 @@
+<div class="table-responsive">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Duration</th>
+        <th>Assignee</th>
+        <th>Reason</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @vacations.each do |vacation| %>
+        <tr>
+          <td><%= vacation.start_date %></td>
+          <td><%= vacation.end_date %></td>
+          <td><%= number_with_precision(vacation.duration, precision: 1) %></td>
+          <td><%= vacation.assignee.name %></td>
+          <td><%= vacation.reason %></td>
+          <td>
+            <%= link_to "", assignee_vacation_path(@assignee, vacation), method: :delete, data: { confirm: "Are you sure you want to delete this vacation?" }, class: "bi bi-trash-fill text-danger" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
