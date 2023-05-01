@@ -14,7 +14,14 @@
       <h3><%= link_to @total_number_of_tasks, tasks_path %></h3>
     </div>
   </div>
-  <%= render partial: 'active_tickets'%>
+</div>
+<div style="display: flex;">
+  <div style="width: 75%;">
+    <%= render partial: 'active_tickets'%>
+  </div>
+  <div style="width: 25%;">
+    <%= render partial: 'all_status_count'%>
+  </div>
 </div>
 <!--  Information about tasks in progress today and yesterday
  <div class="row mt-4">

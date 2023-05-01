@@ -49,10 +49,15 @@ class PagesController < ApplicationController
   def active_tickets_partial
     projects = Project
     .joins(:tasks)
-    .where(tasks: { status: 'In Progress' })
+    .where(tasks: { status: ['In Progress', 'En cours', 'en cours'] })
     .distinct
     .includes(:tasks)
 
-    @projects_with_active_tickets = projects.sort_by{ |project| -1 * project.tasks.where(status: 'In Progress').count }
+    unique_tasks_count = Task.group(:status).count
+    @unique_tasks_count = unique_tasks_count.sort_by { |status, count| count }.reverse
+
+    @projects_with_active_tickets = projects.sort_by{ |project| -1 * project.tasks.where(status: ['In Progress', 'En cours', 'en cours']).count }
+    pp("=================#{@projects_with_active_tickets}")
   end
+
 end
