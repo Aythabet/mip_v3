@@ -5,7 +5,7 @@
   <h1 class="mb-3">
     Vacation days: 
     <span  >
-      <%= @assignee.vacation_days_available %>
+      <%= number_with_precision(@assignee.vacation_days_available, precision: 1) %>
       <%= link_to "", "#", id: "addVacationDaysLink", class: "bi bi-plus-square-fill text-dark small" %>
     </span>
     for 
@@ -31,7 +31,7 @@
           <tr>
             <td><%= vacation.start_date %></td>
             <td><%= vacation.end_date %></td>
-            <td><%= vacation.duration %></td>
+            <td><%= number_with_precision(vacation.duration, precision: 1) %></td>
             <td><%= vacation.assignee.name %></td>
             <td><%= vacation.reason %></td>
             <td>

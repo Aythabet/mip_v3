@@ -1,7 +1,7 @@
 <%= turbo_frame_tag "vacation-modal" do %>
   <%= simple_form_for([@assignee, @vacation]) do |f| %>
     <%= f.input :start_date, placeholder: "Select date"  %>
-    <%= f.input :duration, label: "Duration", collection: { "Half a day" => 0.5, "1 day" => 1, "2 days" => 2, "3 days" => 3, "4 days" => 4, "5 days" => 5, "6 days" => 6, "7 days" => 7, "8 days" => 8, "9 days" => 9, "10 days" => 10, "11 days" => 11, "12 days" => 12, "13 days" => 13, "14 days" => 14 }, include_blank: false, class: 'form-control' %>
+    <%= f.input :duration, label: "Duration", collection: { "Half a day" => 0.5, "1 day" => 1.0, "2 days" => 2.0, "3 days" => 3.0, "4 days" => 4.0, "5 days" => 5.0, "6 days" => 6.0, "7 days" => 7.0, "8 days" => 8.0, "9 days" => 9.0, "10 days" => 10.0, "11 days" => 11.0, "12 days" => 12.0, "13 days" => 13.0, "14 days" => 14.0 }, include_blank: false, class: 'form-control' %>
     <%= f.input :reason, placeholder: "Enter a reason.." %>
     <%= f.input :assignee_id, as: :hidden, value: @assignee.id %>
     <%= f.submit class:"btn btn-success mb-2 text-dark" %>

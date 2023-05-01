@@ -16,7 +16,7 @@ class VacationsController < ApplicationController
     @vacation.assignee = @assignee
 
     if check_vacation_request(@assignee, @vacation.duration)
-      @vacation.end_date = @vacation.start_date + @vacation.duration
+      set_vacation_end_date(@vacation)
       if @vacation.save
         @assignee.update(vacation_days_available: (@assignee.vacation_days_available - @vacation.duration))
         respond_to do |format|
@@ -72,5 +72,19 @@ class VacationsController < ApplicationController
 
   def check_vacation_request(assignee, duration)
     return assignee.vacation_days_available >= duration
+  end
+
+  def set_vacation_end_date(vacation)
+    @vacation.end_date = @vacation.start_date
+    days_left = @vacation.duration - 1 # Exclude the start date
+
+    while days_left > 0
+      @vacation.end_date += 1.day
+      if @vacation.end_date.on_weekend? # Skip weekends
+        next
+      else
+        days_left -= 1 # Decrease the remaining duration
+      end
+    end
   end
 end
