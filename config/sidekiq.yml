@@ -8,3 +8,10 @@
       cron: '0 0 1 * *'
       class: 'AddVacationDaysScheduler'
       queue: default
+    check_assignee_on_vacation:
+      cron: '0 0 * * *'
+      class: 'CheckAssigneeOnVacationScheduler'
+      queue: default
+
+
+

@@ -3,7 +3,7 @@ class TasksJob
   DEFAULT_USER_ID = 1
   DEFAULT_PORJECT_ID = 1
 
-  def perform(*)
+  def perform
     entity = "agenceinspire"
     jira_ids = collect_all_task_jira_ids(entity)
     i = 0
@@ -50,8 +50,9 @@ class TasksJob
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 1 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
-      p("Total issues is #{total_issues_count}...")
+      total_pages = (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      p("Total issues available at source is #{total_issues_count}...")
+      p("Calculating your waiting time...")
 
       (1..total_pages).each do
         tasks = JSON.parse(response.body)
@@ -62,7 +63,7 @@ class TasksJob
     end
     number_of_tasks_to_import = max_results.to_i * total_pages.to_i
     p("Total issues to import is #{number_of_tasks_to_import}...")
-    p(" It will take #{number_of_tasks_to_import / 60} minutes...")
+    p("It will take #{format_duration(number_of_tasks_to_import)}")
     jira_ids.flatten
   end
 
@@ -140,4 +141,34 @@ class TasksJob
     fields = json_task['fields']
     fields&.[]('labels')
   end
+
+  def format_duration(seconds)
+    if seconds.nil?
+      return "No data"
+    elsif seconds == 0
+      return "0s"
+    elsif seconds < 0
+      return "-#{format_duration(-seconds)}"
+    end
+
+    minutes = seconds / 60.0
+    if minutes < 60
+      return "#{minutes.round(1)} min"
+    end
+
+    hours = minutes / 60.0
+    if hours < 8
+      return "#{hours.round(1)} h"
+    end
+
+    days = (hours / 8).floor
+    hours %= 8
+    hours = hours.round(1)
+
+    duration = []
+    duration << "#{days} day#{'s' if days > 1}" if days.positive?
+    duration << "#{hours} hour#{'s' if hours > 1}" if hours.positive?
+    duration.join(' and ')
+  end
+
 end

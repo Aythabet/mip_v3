@@ -46,16 +46,24 @@
               </div>
               <p class="card-text text-center font-weight-light small-text pt-0 pb-0 mt-0 mb-0"> <%= task.summary %> </p>
             </div>
-            <div class="small-text text-end text-muted me-1">
-              <% if task.due_date.present? %>
-                <div>Start date: <%= task.status_change_date.strftime("%e %B %Y")  %></div>
-                <div>Due Date: <%= task.due_date.strftime("%e %B %Y") %></div>
-              <% else %>
-                No Data
-              <% end %>
+            <div class="d-flex align-items-center justify-content-between mx-2">
+              <div class="small-text">
+                <% if task.assignee.on_vacation? %>
+                  <span class="badge bg-warning">On Vacation</span>
+                <% end %>
+              </div>
+              <div class="small-text text-muted">
+                <% if task.due_date.present? %>
+                  <div>Start date: <%= task.status_change_date.strftime("%e %B %Y")  %></div>
+                  <div>Due Date: <%= task.due_date.strftime("%e %B %Y") %></div>
+                <% else %>
+                  No Data
+                <% end %>
+              </div>
             </div>
           </div>
         </div>
       <% end %>
     <% end %>
   </div>
+</div>
