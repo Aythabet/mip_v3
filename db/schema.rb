@@ -22,17 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_29_144655) do
     t.datetime "updated_at", null: false
     t.float "salary"
     t.float "hourly_rate"
-    t.bigint "user_id"
     t.float "vacation_days_available"
-    t.index ["user_id"], name: "index_assignees_on_user_id"
-  end
-
-  create_table "entities", force: :cascade do |t|
-    t.string "name"
-    t.string "url"
-    t.string "token"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "projects", force: :cascade do |t|
@@ -109,7 +99,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_29_144655) do
     t.index ["assignee_id"], name: "index_vacations_on_assignee_id"
   end
 
-  add_foreign_key "assignees", "users"
   add_foreign_key "quotes", "projects"
   add_foreign_key "tasks", "assignees"
   add_foreign_key "tasks", "projects"

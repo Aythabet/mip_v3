@@ -27,15 +27,13 @@
     <span class="badge bg-dark fs-6"><%= @assignee_tasks.count %> tickets</span>
   </div>
   <div class="row">
-    <% @projects_jira_ids.each_slice((@projects_jira_ids.size + 1) / 2) do |projects| %>
+    <% @projects_jira_ids.each do |project| %>
       <div class="col-6">
-        <% projects.each do |project| %>
-          <p class="card-text mb-1">
-            <%= link_to project[:jira_id], project_path(project[:project_id]) %>
-            <span class="badge bg-info text-dark"> <%= @project_task_counts[project[:project_id]] %></span>
-            <span class="badge bg-primary"> <%= "#{(@project_task_percentages[project[:jira_id]])} %" %></span>
-          </p>
-        <% end %>
+        <p class="card-text mb-1">
+          <%= link_to project[:jira_id], project_path(project[:project_id]) %>
+          <span class="badge bg-info text-dark"> <%= @project_task_counts[project[:project_id]] %></span>
+          <span class="badge bg-primary"> <%= "#{(@project_task_percentages[project[:jira_id]])} %" %></span>
+        </p>
       </div>
     <% end %>
   </div>

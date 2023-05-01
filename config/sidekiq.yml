@@ -4,3 +4,7 @@
       cron: '*/30 * * * *'
       class: 'ImportTasksScheduler'
       queue: default
+    add_vacation_days:
+      cron: '0 0 1 * *'
+      class: 'AddVacationDaysScheduler'
+      queue: default
