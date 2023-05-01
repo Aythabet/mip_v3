@@ -1,10 +1,10 @@
-<div class="d-flex align-items-center flex-column">
+<div class="d-flex align-items-center flex-column pb-4">
   <div class="flex-grow-1">
     <h5>All</h5>
   </div>
   <% @unique_tasks_count.each do |status, count| %>
     <div class="flex-grow-1">
-      We have <span class="badge badge-small-pill bg-warning text-light"><%= count %> tasks </span> <span class="badge badge-small-pill bg-dark text-light"><%= status %></span>
+      We have <span class="badge bg-warning text-light"><%= count %> tasks </span> <span class="badge bg-dark text-light"><%= status %></span>
     </div>
   <% end %>
 </div>
