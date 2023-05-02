@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_01_072620) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_02_184521) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -68,6 +68,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_01_072620) do
     t.datetime "last_jira_update"
     t.date "due_date"
     t.datetime "status_change_date"
+    t.string "task_type"
+    t.string "is_task_subtask"
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["project_id"], name: "index_tasks_on_project_id"
   end
