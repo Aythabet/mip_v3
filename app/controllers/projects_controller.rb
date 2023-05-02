@@ -52,6 +52,8 @@ class ProjectsController < ApplicationController
     @project_total_internal_cost = Task.joins(:assignee)
     .where(project: @project)
     .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
+
+    @revenue_from_project = @project.total_selling_price - @project_total_internal_cost
   end
 
   def edit

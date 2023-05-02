@@ -72,7 +72,7 @@ class AssigneesController < ApplicationController
   private
 
   def assignee_params
-    params.require(:assignee).permit(:name, :email, :admin, :salary, :hourly_rate, :vacation_days_available)
+    params.require(:assignee).permit(:name, :email, :admin, :salary, :hourly_rate, :vacation_days_available, :on_vacation)
   end
 
   def find_or_create_assignee(assignee_name, assignee_email, admin: false)

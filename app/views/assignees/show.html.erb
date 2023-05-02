@@ -5,16 +5,17 @@
   <!-- Statistics -->
   <div class="row justify-content-between mb-4">
     <div class="col-12 col-md-6">
-      <h1 class="fw-bold mb-3"><%= @assignee.name %>
-        <span class="small-text">
+      <div class="d-flex align-items-auto">
+        <h1 class="fw-bold mb-3"><%= @assignee.name %></h1>
+        <div class="ms-2 small-text pt-2">
           <% if current_user.admin? %>
-            <%= link_to "View Salary details", assignee_profile_path(@assignee) , class: "btn btn-light btn-sm mb-0 text-dark" %>
+            <%= link_to "Overview", assignee_profile_path(@assignee) , class: "btn btn-light btn-sm mb-0 text-dark" %>
           <% end %>
           <% if @assignee.on_vacation? %>
-            <span class="badge bg-warning">On Vacation</span>
+            <span class="badge bg-warning ps-1 pt-1">On Vacation</span>
           <% end %>
-        </span>
-      </h1>
+        </div>
+      </div>
       <div>
         <!-- Hover CR -->
         <%= render partial: 'hover_cr_today' %>

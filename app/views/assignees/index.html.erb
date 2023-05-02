@@ -29,7 +29,12 @@
         <td><%= assignee.name %></td>
         <td><%= assignee.email %></td>
         <td><%= assignee.tasks.count %></td>
-        <td><%= link_to "View", { action: "show", id: assignee.id }, class: "btn btn-secondary btn-sm" %></td>
+        <td class="text-end">
+          <%= link_to "Prod View", { action: "show", id: assignee.id }, class: "btn btn-secondary btn-sm" %>
+          <% if current_user.admin? %>
+            <%= link_to "Admin View", { action: "assignee_profile", id: assignee.id }, class: "btn btn-warning btn-sm" %>
+          <% end %>
+        </td>
       </tr>
     <% end %>
   </tbody>

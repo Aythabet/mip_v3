@@ -6,8 +6,8 @@
     <div class="card-header d-flex justify-content-between align-items-center">
       <span><%= @assignee.name %></span>
       <div>
-        <%= link_to "Edit Profile", edit_assignee_path(@assignee), class: "btn btn-dark btn-sm mb-0 text-light ml-auto" %>
-        <%= link_to "Vacations", assignee_vacations_path(@assignee), class: "btn btn-dark btn-sm mb-0 text-light ml-auto" -%>
+        <%= link_to "Update Information", edit_assignee_path(@assignee), class: "btn btn-dark btn-sm mb-0 text-light ml-auto" %>
+        <%= link_to "Vacations", assignee_vacations_path(@assignee), class: "btn btn-success btn-sm mb-0 text-dark ml-auto" -%>
       </div>
     </div>
     <div class="card-body">
@@ -16,41 +16,45 @@
       </h5>
       <p class="card-text">
         <div>
-          Salary:
+          Vacation days available:
           <span class="badge bg-primary text-light">
-            <%= number_with_precision(@assignee.salary, precision: 1) %> TND
+            <%= number_with_precision(@assignee.vacation_days_available, precision: 1) %> days
           </span></br>
-        Hourly rate: 
+        Salary:
         <span class="badge bg-primary text-light">
-          <%= number_with_precision(@assignee.hourly_rate, precision: 1) %> TND         
-        </span>
-      </div>
-    </p>
-  </div>
-  <div class="card-body">
-    <table class="table">
-      <thead>
+          <%= number_with_precision(@assignee.salary, precision: 1) %> TND
+        </span></br>
+      Hourly rate: 
+      <span class="badge bg-primary text-light">
+        <%= number_with_precision(@assignee.hourly_rate, precision: 1) %> TND         
+      </span>
+    </div>
+  </p>
+</div>
+<div class="card-body">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Project</th>
+        <th>Total time worked</th>
+        <th>Total cost</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @assignees_projects.each do |project| %>
         <tr>
-          <th>Project</th>
-          <th>Total time worked</th>
-          <th>Total cost</th>
+          <td><%= link_to project.jira_id, project %></td>
+          <td><%=  my_helper_format_duration(project.total_time_spent) %></td>
+          <td>
+            <% if @assignee.hourly_rate.present? && @assignee.hourly_rate.to_f != 0 %>
+              <%= number_with_precision((project.total_time_spent.to_f / 3600) * @assignee.hourly_rate.to_f, precision: 1) %> TND
+            <% else %>
+              Check if the assignee hourly rate is set!
+            <% end %>
+          </td>
         </tr>
-      </thead>
-      <tbody>
-        <% @assignees_projects.each do |project| %>
-          <tr>
-            <td><%= link_to project.jira_id, project %></td>
-            <td><%=  my_helper_format_duration(project.total_time_spent) %></td>
-            <td>
-              <% if @assignee.hourly_rate.present? && @assignee.hourly_rate.to_f != 0 %>
-                <%= number_with_precision((project.total_time_spent.to_f / 3600) * @assignee.hourly_rate.to_f, precision: 1) %> TND
-              <% else %>
-                Check if the assignee hourly rate is set!
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
+      <% end %>
+    </tbody>
+  </table>
+</div>
 </div>

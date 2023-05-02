@@ -27,6 +27,19 @@
               <%= number_with_precision(@project.total_selling_price, precision: 1) %> TND
             </span>
           </div>
+          <div>
+            <% if @revenue_from_project >= 0 %>
+              We made
+              <span class="badge bg-success text-dark">
+                <%= number_with_precision((@revenue_from_project) , precision: 1) %> TND
+              </span>
+            <% else %>
+              We lost
+              <span class="badge bg-warning text-light">
+                <%= number_with_precision((@revenue_from_project) , precision: 1) %> TND
+              </span>
+            <% end %>
+          </div>
         <% end %>
       </p>
     </div>

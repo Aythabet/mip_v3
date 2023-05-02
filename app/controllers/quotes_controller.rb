@@ -57,6 +57,6 @@ class QuotesController < ApplicationController
   private
 
   def quote_params
-    params.require(:quote).permit(:number, :date, :value, :recipient, :responsible, :status, :link, :currency)
+    params.require(:quote).permit(:number, :date, :value, :recipient, :responsible, :status, :link, :currency, :project_id)
   end
 end

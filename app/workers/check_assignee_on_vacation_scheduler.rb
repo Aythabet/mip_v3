@@ -4,15 +4,13 @@ class CheckAssigneeOnVacationScheduler
   include Sidekiq::Worker
 
   def perform
+    today = Date.today
     assignees = Assignee.all
 
     assignees.each do |assignee|
-      active_vacations = Vacation.where("start_date <= ? AND ? < (start_date + interval '1 day' * duration)", Date.today, Date.today + 0.5)
-      if active_vacations.any? { |vacation| vacation.assignee_id == assignee.id }
-        assignee.update(on_vacation: true)
-      else
-        assignee.update(on_vacation: false)
-      end
+      active_vacations = Vacation.where(assignee_id: assignee.id)
+      .where("start_date <= ? AND end_date >= ?", today, today)
+      assignee.update(on_vacation: active_vacations.any?)
     end
   end
 end
