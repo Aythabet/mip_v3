@@ -19,7 +19,7 @@
               <span class="badge bg-secondary">
                 <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank", class: "links_on_active_tasks_cards" %>
                 <% if task.is_task_subtask == "t" %>
-                  &nbsp;<span><i class="bi bi-subtract"></i> </span>
+                  &nbsp;<span><i class="bi bi-subtract"></i></span>
                 <% end %>
               </span>
               <%= truncate(task.assignee.name, length: 20) %>
