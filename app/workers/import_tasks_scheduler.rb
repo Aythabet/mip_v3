@@ -52,7 +52,7 @@ class ImportTasksScheduler
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 1 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 2 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
       p("Calculating your waiting time...")
 
@@ -90,7 +90,9 @@ class ImportTasksScheduler
       time_spent: retrieve_time_spent(url),
       labels: retrive_labels(json_task),
       status_change_date: fields['statuscategorychangedate'],
-      due_date: fields['duedate']
+      due_date: fields['duedate'],
+      task_type: fields&.[]('issuetype')&.[]('name'),
+      is_task_subtask: fields&.[]('issuetype')&.[]('subtask')
     )
     pp(added_task)
     added_task.save
@@ -172,5 +174,4 @@ class ImportTasksScheduler
     duration << "#{hours} hour#{'s' if hours > 1}" if hours.positive?
     duration.join(' and ')
   end
-
 end

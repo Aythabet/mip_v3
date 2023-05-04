@@ -22,7 +22,7 @@
                   &nbsp;<span><i class="bi bi-subtract"></i></span>
                 <% end %>
               </span>
-              <%= truncate(task.assignee.name, length: 20) %>
+              <%= link_to truncate(task.assignee.name, length: 20), assignee_path(task.assignee) %>
               <span class="text-muted small-text"> <%= task.status %></span>
             </div>
             <% if task.time_forecast.nil? || task.time_spent.nil? %>
