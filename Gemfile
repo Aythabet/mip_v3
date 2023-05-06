@@ -94,3 +94,4 @@ gem "omniauth"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 gem 'actionmailer', '~> 7.0'
+gem "breadcrumbs"

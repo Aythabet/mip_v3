@@ -3,11 +3,14 @@ class VacationsController < ApplicationController
     @vacation = Vacation.new
     @assignee = Assignee.find(params[:assignee_id])
     @vacations = Vacation.where(assignee_id: @assignee).order(created_at: :desc)
+    breadcrumbs.add "Admin view: #{@assignee.name}", assignee_profile_path(@assignee)
+
   end
 
   def new
     @assignee = Assignee.find(params[:assignee_id])
     @vacation = Vacation.new
+    breadcrumbs.add "Admin view: #{@assignee.name}", assignee_profile_path(@assignee)
   end
 
   def create

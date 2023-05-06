@@ -13,6 +13,8 @@ Rails.application.routes.draw do
   }
 
   root to: "pages#home"
+  get '/tests', to: 'pages#tests', as: 'tests', constraints: lambda { |request| request.env['warden'].user.admin? }
+
 
   # Assignees Routes
   resources :assignees, only: [:index, :show, :edit, :update] do

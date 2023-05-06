@@ -1,5 +1,7 @@
 class ProjectsController < ApplicationController
   def index
+    breadcrumbs.add "Projects", projects_path
+
     # Get projects with active tasks and order by number of active tasks
     active_projects = Project
     .joins(:tasks)
@@ -24,6 +26,8 @@ class ProjectsController < ApplicationController
 
   def show
     @project = Project.find(params[:id])
+    breadcrumbs.add "Projects", projects_path
+
     @project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
     @project_tasks_paginated = Task.where(project: @project).order(last_jira_update: :desc).page params[:page]
 
@@ -43,6 +47,7 @@ class ProjectsController < ApplicationController
 
   def project_details
     @project = Project.find(params[:id])
+    breadcrumbs.add "Prod view: #{@project.name}", project_path(@project)
 
     @projects_assignees = Assignee.joins(tasks: :project)
     .select("assignees.*, SUM(tasks.time_spent) AS total_time_spent")

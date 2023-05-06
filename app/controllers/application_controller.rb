@@ -1,6 +1,6 @@
 class ApplicationController < ActionController::Base
   include ActionView::Helpers::NumberHelper
-
+  before_action :add_initial_breadcrumbs
   before_action :authenticate_user!
 
   def check_admin
@@ -63,4 +63,11 @@ class ApplicationController < ActionController::Base
     assignee_email = "#{email_prefix}@#{domain}"
     return assignee_email
   end
+
+  private
+
+  def add_initial_breadcrumbs
+    breadcrumbs.add "Home", root_path
+  end
+
 end

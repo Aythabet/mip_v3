@@ -8,6 +8,15 @@ class PagesController < ApplicationController
     active_tickets_partial
   end
 
+  def tests
+    breadcrumbs.add "Tests", tests_path
+
+    basic_stats_projects_assignees_tasks
+    tickets_done_in_progress_waiting_count
+    top_active_assignee_last_three_days
+    active_tickets_partial
+  end
+
   private
 
   def basic_stats_projects_assignees_tasks
@@ -57,6 +66,7 @@ class PagesController < ApplicationController
     @unique_tasks_count = unique_tasks_count.sort_by { |status, count| count }.reverse
 
     @projects_with_active_tickets = projects.sort_by{ |project| -1 * project.tasks.where(status: ['In Progress', 'En cours', 'en cours']).count }
+
   end
 
 end

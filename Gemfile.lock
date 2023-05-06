@@ -85,6 +85,10 @@ GEM
     bootstrap-sass (3.4.1)
       autoprefixer-rails (>= 5.2.1)
       sassc (>= 2.0.0)
+    breadcrumbs (0.3.0)
+      actionview
+      activesupport
+      i18n
     builder (3.2.4)
     capybara (3.39.0)
       addressable
@@ -350,6 +354,7 @@ DEPENDENCIES
   autoprefixer-rails
   bootsnap
   bootstrap-sass
+  breadcrumbs
   capybara
   debug
   devise

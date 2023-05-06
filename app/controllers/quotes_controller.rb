@@ -3,6 +3,9 @@ class QuotesController < ApplicationController
     @quote = Quote.new
     @project = Project.find(params[:project_id])
     @quotes = Quote.where(project: @project).order(created_at: :desc)
+
+    breadcrumbs.add "Admin view: #{@project.name}", project_details_path(@project)
+
   end
 
   def new

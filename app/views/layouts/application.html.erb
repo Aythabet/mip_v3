@@ -23,6 +23,7 @@
   <body>
     <div class="container">
       <%= render "shared/navbar" %>
+      <span class="small-text"><%= breadcrumbs.render(format: :inline, separator: "|") %></span>
       <%= yield %>
     </div>
   </body>

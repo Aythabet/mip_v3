@@ -1,5 +1,7 @@
 class TasksController < ApplicationController
   def index
+    breadcrumbs.add "Tasks", tasks_path
+
     @tasks = Task.order(updated_at: :desc)
     @tasks = @tasks.where("jira_id LIKE ?", "%#{params[:query].upcase}%") if params[:query].present?
     @tasks = @tasks.page params[:page]

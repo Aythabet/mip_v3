@@ -29,6 +29,7 @@
                 <%= current_user.name %>
                 <%= current_user.email %>
                 <%= current_user.admin? %>
+                <%= link_to "Tests Page", tests_path , class: "small-text" %>
               </p>
               <%= form_tag destroy_user_session_path, method: :delete, class: "nav-link" do %>
                 <%= submit_tag "Sign out" %>

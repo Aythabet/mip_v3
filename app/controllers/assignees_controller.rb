@@ -1,6 +1,7 @@
 class AssigneesController < ApplicationController
 
   def index
+    breadcrumbs.add "Assignees", assignees_path
     @assignees = Assignee
     .select('assignees.*, subquery.task_count')
     .from("(SELECT COUNT(*) AS task_count, assignee_id FROM tasks GROUP BY assignee_id) subquery")
@@ -34,6 +35,8 @@ class AssigneesController < ApplicationController
 
   def edit
     @assignee = Assignee.find(params[:id])
+    breadcrumbs.add "Admin view: #{@assignee.name}", assignee_profile_path(@assignee)
+
   end
 
   def update
@@ -47,6 +50,7 @@ class AssigneesController < ApplicationController
 
   def show
     @assignee = Assignee.find(params[:id])
+    breadcrumbs.add "Prod view: #{@assignee.name}", assignees_path(@assignee)
     @assignee_tasks = Task.where(assignee: @assignee).order(last_jira_update: :desc)
     generate_cr(Date.today)
     assignee_unique_projects_list
@@ -59,6 +63,7 @@ class AssigneesController < ApplicationController
 
   def assignee_profile
     @assignee = Assignee.find(params[:id])
+    breadcrumbs.add "Admin view: #{@assignee.name}", assignee_profile_path(@assignee)
     @assignees_projects = Project.joins(:tasks).where(tasks: { assignee_id: @assignee.id })
     .select("projects.*, SUM(tasks.time_spent) AS total_time_spent")
     .group("projects.id")

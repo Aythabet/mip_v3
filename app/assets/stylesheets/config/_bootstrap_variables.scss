@@ -24,3 +24,21 @@ $border-radius-lg: 2px;
 $border-radius-sm: 2px;
 
 // Override other variables below!
+$accordion-padding-y:                     1rem;
+$accordion-padding-x:                     1.25rem;
+$accordion-color:                         $body-color;
+$accordion-bg:                            $body-bg;
+$accordion-border-color:                  $dark-gray;
+$accordion-border-radius:                 $border-radius;
+
+$accordion-body-padding-y:                $accordion-padding-y;
+$accordion-body-padding-x:                $accordion-padding-x;
+
+$accordion-button-active-bg:              $light-gray;
+$accordion-button-active-color:           $dark-gray;
+
+$accordion-button-padding-y:              $accordion-padding-y;
+$accordion-button-padding-x:              $accordion-padding-x;
+$accordion-button-color:                  $black;
+$accordion-button-bg:                     $accordion-bg;
+$accordion-button-active-color:           shade-color($primary, 10%);
