@@ -96,6 +96,7 @@ class TasksJob
       is_task_subtask: fields&.[]('issuetype')&.[]('subtask')
     )
     pp(added_task)
+    pp("Worklog entries imported count: #{retrieve_worklog_info(url, jira_id).count}")
     added_task.save
   end
 
@@ -175,4 +176,65 @@ class TasksJob
     duration << "#{hours} hour#{'s' if hours > 1}" if hours.positive?
     duration.join(' and ')
   end
+
+  def retrieve_worklog_info(url, jira_id)
+    worklog_url = "#{url}/worklog"
+    task = Task.find_by(jira_id: jira_id)
+    worklog_response = call_jira_api(worklog_url)
+    return [] unless worklog_response.code == '200'
+
+    worklogs = JSON.parse(worklog_response.body)['worklogs']
+    worklog_info = []
+
+    worklogs.each do |worklog|
+      existing_worklog = TaskWorklog.find_by(worklog_entry_id: worklog['id'])
+
+      if existing_worklog.nil?
+        TaskWorklog.create!(
+          author: worklog['author']['displayName'],
+          duration: worklog['timeSpent'],
+          created: worklog['created'],
+          updated: worklog['updated'],
+          started: worklog['started'],
+          status: task.status,
+          task_id: task.id,
+          worklog_entry_id: worklog['id']
+        )
+
+        worklog_info << {
+          author: worklog['author']['displayName'],
+          duration: worklog['timeSpent'],
+          created: worklog['created'],
+          updated: worklog['updated'],
+          started: worklog['started'],
+          status: task.status,
+          task_id: task.id,
+          worklog_entry_id: worklog['id']
+        }
+      elsif existing_worklog.updated != worklog['updated']
+        existing_worklog.update!(
+          author: worklog['author']['displayName'],
+          duration: worklog['timeSpent'],
+          created: worklog['created'],
+          updated: worklog['updated'],
+          started: worklog['started'],
+          status: task.status
+        )
+
+        worklog_info << {
+          author: worklog['author']['displayName'],
+          duration: worklog['timeSpent'],
+          created: worklog['created'],
+          updated: worklog['updated'],
+          started: worklog['started'],
+          status: task.status,
+          task_id: task.id,
+          worklog_entry_id: worklog['id']
+        }
+      end
+    end
+
+    worklog_info
+  end
+
 end

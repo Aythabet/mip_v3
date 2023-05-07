@@ -1,10 +1,15 @@
 <div class="hover-content">
-  <p> Tasks done today: <%= Date.today %></p>
+  <p>Tasks done today: <%= Date.today %></p>
   <% @assignee_todays_tasks.each do |task| %>
-    <ul>
-      <li><%= task.jira_id %> - 
-        <%= task.status %> - <%= my_helper_format_duration(task.time_spent) %>
-      </li>
-    </ul>
+    <% task.task_worklogs.each do |worklog| %>
+      <% if worklog.created.to_date == Date.today || worklog.updated.to_date == Date.today %>
+        <ul>
+          <li><%= Task.find_by(id: worklog.task_id).jira_id %>
+            <%= worklog.duration %>
+            <%= worklog.status %>
+          </li>
+        </ul>
+      <% end %>
+    <% end %>
   <% end %>
 </div>

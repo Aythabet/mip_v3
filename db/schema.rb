@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_07_082222) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_07_110303) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -57,6 +57,20 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_07_082222) do
     t.string "link"
     t.string "currency"
     t.index ["project_id"], name: "index_quotes_on_project_id"
+  end
+
+  create_table "task_worklogs", force: :cascade do |t|
+    t.string "author"
+    t.string "duration"
+    t.datetime "created"
+    t.datetime "updated"
+    t.datetime "started"
+    t.string "status"
+    t.bigint "task_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "worklog_entry_id"
+    t.index ["task_id"], name: "index_task_worklogs_on_task_id"
   end
 
   create_table "tasks", force: :cascade do |t|
@@ -110,6 +124,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_07_082222) do
   end
 
   add_foreign_key "quotes", "projects"
+  add_foreign_key "task_worklogs", "tasks"
   add_foreign_key "tasks", "assignees"
   add_foreign_key "tasks", "projects"
   add_foreign_key "vacations", "assignees"
