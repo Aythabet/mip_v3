@@ -2,7 +2,7 @@
   <div class="list-group pt-4 w-50">
     <h3>Assignees in vacations today:</h3>
     <% @active_vacations.each do |vacation| %>
-      <a href="#" class="list-group-item list-group-item-action">
+      <a href=<%= assignee_vacations_path(vacation.assignee) %> class="list-group-item list-group-item-action">
         <div class="d-flex w-100 justify-content-between">
           <div>
             <h5 class="mb-1"><%= vacation.assignee.name %></h5>
@@ -29,7 +29,7 @@
   <div class="list-group pt-4 w-50  ">
     <h3>Upcoming Vacations:</h3>
     <% @upcoming_vacations.each do |vacation| %>
-      <a href="#" class="list-group-item list-group-item-action">
+      <a href= <%= assignee_vacations_path(vacation.assignee) %> class="list-group-item list-group-item-action">
         <div class="d-flex w-100 justify-content-between">
           <div>
             <h5 class="mb-1"><%= vacation.assignee.name %></h5>

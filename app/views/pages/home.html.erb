@@ -1,25 +1,19 @@
-<div class="container py-4">
   <!-- Dashboard Metrics -->
-  <div class="row justify-content-center mt-4">
-    <div class="col-md-3 text-center">
-      <p class="text-muted">Number of projects</p>
-      <h3><%= link_to @total_number_of_projects, projects_path %></h3>
-    </div>
-    <div class="col-md-3 text-center">
-      <p class="text-muted">Number of assignees</p>
-      <h3><%= link_to @total_number_of_assignees, assignees_path %></h3>
-    </div>
-    <div class="col-md-3 text-center">
-      <p class="text-muted">Number of tickets</p>
-      <h3><%= link_to @total_number_of_tasks, tasks_path %></h3>
-    </div>
+<div class="row justify-content-center mt-2">
+  <div class="col-md-2 text-center">
+    <p class="text-muted">Total Active Tasks</p>
+    <h3><%= @in_progress_tasks_count %></h3>
+  </div>
+  <div class="col-md-2 text-center">
+    <p class="text-muted">Tasks On Hold</p>
+    <h3><%= @on_hold_tasks_count %></h3>
+  </div>
+  <div class="col-md-2 text-center">
+    <p class="text-muted">Number of tickets</p>
+    <h3><%= link_to @total_number_of_tasks, tasks_path %></h3>
   </div>
 </div>
-<div style="display: flex;">
-  <div style="width: 75%;">
-    <%= render partial: 'active_tickets'%>
-  </div>
-  <div style="width: 25%;">
-    <%= render partial: 'all_status_count'%>
-  </div>
-</div>
+<%= render partial: 'projects_accordion'%>
+<span class="small-text text-muted">
+  Last update: <%= distance_of_time_in_words(@last_jira_update.created_at, Time.current, include_seconds: true) %> ago
+</span>

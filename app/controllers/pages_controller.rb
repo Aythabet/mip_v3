@@ -4,15 +4,11 @@ class PagesController < ApplicationController
   def home
     basic_stats_projects_assignees_tasks
     active_tickets_partial
+    @last_jira_update = JobsLog.where(title: ["TasksJob", "ImportTasksScheduler"]).order(created_at: :desc).first
   end
 
   def tests
     breadcrumbs.add "Tests", tests_path
-
-    basic_stats_projects_assignees_tasks
-    active_tickets_partial
-
-    @last_jira_update = JobsLog.where(title: ["TasksJob", "ImportTasksScheduler"]).order(created_at: :desc).first
   end
 
   private
