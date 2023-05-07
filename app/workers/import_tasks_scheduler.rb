@@ -6,6 +6,7 @@ class ImportTasksScheduler
   DEFAULT_PORJECT_ID = 1
 
   def perform
+    job_start_time = Time.now
     entity = "agenceinspire"
     jira_ids = collect_all_task_jira_ids(entity)
     i = 0
@@ -14,8 +15,8 @@ class ImportTasksScheduler
       i += 1
       pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~")
     end
-
-    JobsLog.create!(title: "ImportTasksScheduler")
+    job_end_time = Time.now
+    JobsLog.create!(title: "TasksJob", execution_time: (job_end_time - job_start_time))
   end
 
   private
@@ -56,7 +57,6 @@ class ImportTasksScheduler
       total_issues_count = JSON.parse(response.body)['total']
       total_pages = 2 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
-      p("Calculating your waiting time...")
 
       (1..total_pages).each do
         tasks = JSON.parse(response.body)
@@ -67,7 +67,6 @@ class ImportTasksScheduler
     end
     number_of_tasks_to_import = max_results.to_i * total_pages.to_i
     p("Total issues to import is #{number_of_tasks_to_import}...")
-    p("It will take #{format_duration(number_of_tasks_to_import)}")
     jira_ids.flatten
   end
 
@@ -97,6 +96,7 @@ class ImportTasksScheduler
       is_task_subtask: fields&.[]('issuetype')&.[]('subtask')
     )
     pp(added_task)
+    pp("Worklog entries imported count: #{retrieve_worklog_info(url, jira_id).count}")
     added_task.save
   end
 
@@ -176,4 +176,65 @@ class ImportTasksScheduler
     duration << "#{hours} hour#{'s' if hours > 1}" if hours.positive?
     duration.join(' and ')
   end
+
+  def retrieve_worklog_info(url, jira_id)
+    worklog_url = "#{url}/worklog"
+    task = Task.find_by(jira_id: jira_id)
+    worklog_response = call_jira_api(worklog_url)
+    return [] unless worklog_response.code == '200'
+
+    worklogs = JSON.parse(worklog_response.body)['worklogs']
+    worklog_info = []
+
+    worklogs.each do |worklog|
+      existing_worklog = TaskWorklog.find_by(worklog_entry_id: worklog['id'])
+
+      if existing_worklog.nil?
+        TaskWorklog.create!(
+          author: worklog['author']['displayName'],
+          duration: worklog['timeSpent'],
+          created: worklog['created'],
+          updated: worklog['updated'],
+          started: worklog['started'],
+          status: task.status,
+          task_id: task.id,
+          worklog_entry_id: worklog['id']
+        )
+
+        worklog_info << {
+          author: worklog['author']['displayName'],
+          duration: worklog['timeSpent'],
+          created: worklog['created'],
+          updated: worklog['updated'],
+          started: worklog['started'],
+          status: task.status,
+          task_id: task.id,
+          worklog_entry_id: worklog['id']
+        }
+      elsif existing_worklog.updated != worklog['updated']
+        existing_worklog.update!(
+          author: worklog['author']['displayName'],
+          duration: worklog['timeSpent'],
+          created: worklog['created'],
+          updated: worklog['updated'],
+          started: worklog['started'],
+          status: task.status
+        )
+
+        worklog_info << {
+          author: worklog['author']['displayName'],
+          duration: worklog['timeSpent'],
+          created: worklog['created'],
+          updated: worklog['updated'],
+          started: worklog['started'],
+          status: task.status,
+          task_id: task.id,
+          worklog_entry_id: worklog['id']
+        }
+      end
+    end
+
+    worklog_info
+  end
+
 end
