@@ -1,0 +1,18 @@
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Created At</th>
+      <th>Execution Time</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% JobsLog.all.order(created_at: :desc).each do |joblog| %>
+      <tr>
+        <td><%= joblog.title %></td>
+        <td><%= joblog.created_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+        <td><%= joblog.execution_time %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -4,6 +4,8 @@ class DbTaskCleanerScheduler
   include Sidekiq::Worker
 
   def perform
+    job_start_time = Time.now
+
     entity_name = "agenceinspire"
     jira_ids_in_database = Task.pluck(:jira_id)
     jira_keys_in_jira = collect_keys_from_api(entity_name)
@@ -25,7 +27,8 @@ class DbTaskCleanerScheduler
     puts "NOK count: #{nok_count}, these are deleted."
     puts "We are up to date with source"
 
-    JobsLog.create!(title: "DbTaskCleanerScheduler")
+    job_end_time = Time.now
+    JobsLog.create!(title: "DbTaskCleanerScheduler", execution_time: (job_end_time - job_start_time))
   end
 
   private

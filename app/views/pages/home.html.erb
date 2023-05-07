@@ -14,7 +14,9 @@
   </div>
 </div>
 <%= render partial: 'projects_accordion'%>
-<span class="small-text text-muted">
-  Last update: <strong><%= distance_of_time_in_words(@last_jira_update.created_at, Time.current, include_seconds: true) %> ago</strong>
-  it lasted: <strong><%= number_with_precision(@last_jira_update.execution_time, precision: 1) %> s</strong>
-</span>
+<% if !@last_jira_update.nil? %>
+  <span class="small-text text-muted">
+    Last update: <strong><%= distance_of_time_in_words(@last_jira_update.created_at, Time.current, include_seconds: true) %> ago</strong>
+    it lasted: <strong><%= number_with_precision(@last_jira_update.execution_time, precision: 1) %> s</strong>
+  </span>
+<% end %>

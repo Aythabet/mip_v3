@@ -16,7 +16,7 @@ class ImportTasksScheduler
       pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~")
     end
     job_end_time = Time.now
-    JobsLog.create!(title: "TasksJob", execution_time: (job_end_time - job_start_time))
+    JobsLog.create!(title: "ImportTasksScheduler", execution_time: (job_end_time - job_start_time))
   end
 
   private
