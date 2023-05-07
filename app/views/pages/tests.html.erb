@@ -1,1 +1,16 @@
+  <!-- Dashboard Metrics -->
+<div class="row justify-content-center mt-2">
+  <div class="col-md-2 text-center">
+    <p class="text-muted">Total Active Tasks</p>
+    <h3><%= @in_progress_tasks_count %></h3>
+  </div>
+  <div class="col-md-2 text-center">
+    <p class="text-muted">Tasks On Hold</p>
+    <h3><%= @on_hold_tasks_count %></h3>
+  </div>
+  <div class="col-md-2 text-center">
+    <p class="text-muted">Number of tickets</p>
+    <h3><%= link_to @total_number_of_tasks, tasks_path %></h3>
+  </div>
+</div>
 <%= render partial: 'projects_accordion'%>
