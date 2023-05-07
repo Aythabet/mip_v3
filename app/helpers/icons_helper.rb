@@ -10,7 +10,6 @@ module IconsHelper
     end
   end
 
-
   def status_icon(status)
     case status
     when "Waiting"
