@@ -20,9 +20,12 @@ class DbTaskCleanerScheduler
       end
     end
 
+    puts "Checking tasks and comparing with source...."
     puts "OK count: #{ok_count}"
     puts "NOK count: #{nok_count}, these are deleted."
     puts "We are up to date with source"
+
+    JobsLog.create!(title: "DbTaskCleanerScheduler")
   end
 
   private

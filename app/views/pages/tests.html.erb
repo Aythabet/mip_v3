@@ -14,3 +14,6 @@
   </div>
 </div>
 <%= render partial: 'projects_accordion'%>
+<span class="small-text text-muted">
+  Last update: <%= distance_of_time_in_words(@last_jira_update.created_at, Time.current, include_seconds: true) %> ago
+</span>

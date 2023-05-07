@@ -4,6 +4,7 @@ class TasksJob
   DEFAULT_PORJECT_ID = 1
 
   def perform
+    job_start_time = Time.now
     entity = "agenceinspire"
     jira_ids = collect_all_task_jira_ids(entity)
     i = 0
@@ -12,6 +13,8 @@ class TasksJob
       i += 1
       pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~")
     end
+    job_end_time = Time.now
+    JobsLog.create!(title: "TasksJob", execution_time: job_end_time - job_start_time)
   end
 
   private
@@ -44,13 +47,13 @@ class TasksJob
   def collect_all_task_jira_ids(entity)
     jira_ids = []
     start_at = 0
-    max_results = 50
+    max_results = 10
 
     response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 2 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 1 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
       p("Calculating your waiting time...")
 

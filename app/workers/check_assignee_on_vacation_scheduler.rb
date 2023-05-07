@@ -13,4 +13,5 @@ class CheckAssigneeOnVacationScheduler
       assignee.update(on_vacation: active_vacations.any?)
     end
   end
+  JobsLog.create!(title: "CheckAssigneeOnVacationScheduler")
 end

@@ -14,6 +14,8 @@ class ImportTasksScheduler
       i += 1
       pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~")
     end
+
+    JobsLog.create!(title: "ImportTasksScheduler")
   end
 
   private

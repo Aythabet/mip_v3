@@ -11,6 +11,8 @@ class PagesController < ApplicationController
 
     basic_stats_projects_assignees_tasks
     active_tickets_partial
+
+    @last_jira_update = JobsLog.where(title: ["TasksJob", "ImportTasksScheduler"]).order(created_at: :desc).first
   end
 
   private

@@ -9,4 +9,5 @@ class AddVacationDaysScheduler
       assignees.update_all("vacation_days_available = vacation_days_available + 2")
     end
   end
+  JobsLog.create!(title: "AddVacationDaysScheduler")
 end
