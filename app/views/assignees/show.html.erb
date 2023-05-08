@@ -20,7 +20,9 @@
         <span class="hover-text"><%= Date.today.strftime("%e %B %Y") %></span>
       </br>
       <span class="hover-text"><%= (Date.today - 1).strftime("%e %B %Y") %></span>
-      <%= button_to 'DEV: Mailer', send_data_to_assignee_assignee_path, method: :post, class: "btn btn-danger btn-sm mb-0 text-light" %></br>
+      <% if current_user.admin? %>
+        <%= button_to 'DEV: Mailer', send_data_to_assignee_assignee_path, method: :post, class: "btn btn-danger btn-sm mb-0 text-light" %></br>
+    <% end %>
   </div>
 </div>
 <!-- Team / Filtres -->
