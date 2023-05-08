@@ -28,7 +28,7 @@ Rails.application.routes.draw do
 
 
   # Projects Routes
-  resources :projects, only: [:index, :show, :edit, :update] do
+  resources :projects do
     resources :quotes, only: [:new, :create, :index, :edit, :update]
   end
 

@@ -24,6 +24,19 @@ class ProjectsController < ApplicationController
     redirect_to projects_path
   end
 
+  def new
+    @project = Project.new
+  end
+  
+  def create
+    @project = Project.new(project_params)
+    if @project.save
+      redirect_to projects_path
+    else
+      render :new
+    end
+  end
+
   def show
     @project = Project.find(params[:id])
     breadcrumbs.add "Projects", projects_path
