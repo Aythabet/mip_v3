@@ -34,16 +34,16 @@ class ApplicationController < ActionController::Base
     hours = hours.round(1)
 
     duration = []
-    duration << "#{days} day#{'s' if days > 1}" if days.positive?
-    duration << "#{hours} hour#{'s' if hours > 1}" if hours.positive?
-    duration.join(' and ')
+    duration << "#{days} day#{"s" if days > 1}" if days.positive?
+    duration << "#{hours} hour#{"s" if hours > 1}" if hours.positive?
+    duration.join(" and ")
   end
 
   def call_jira_api(url)
     uri = URI.parse(url)
     headers = {
-      'Authorization' => "Basic #{ENV['JIRA_API_TOKEN']}",
-      'Content-Type' => 'application/json'
+      "Authorization" => "Basic #{ENV["JIRA_API_TOKEN"]}",
+      "Content-Type" => "application/json",
     }
     request = Net::HTTP::Get.new(uri, headers)
     Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
@@ -52,14 +52,14 @@ class ApplicationController < ActionController::Base
   end
 
   def format_name(text)
-    formatted_str = text.gsub(/[^a-zA-Z]/, ' ')
-    words = formatted_str.split(' ')
-    words.map(&:capitalize).join(' ')
+    formatted_str = text.gsub(/[^a-zA-Z]/, " ")
+    words = formatted_str.split(" ")
+    words.map(&:capitalize).join(" ")
   end
 
   def format_email(assignee_name)
-    domain = 'inspiregroup.io'
-    email_prefix = assignee_name.sub(/\s/, '.').delete(' ').downcase
+    domain = "inspiregroup.io"
+    email_prefix = assignee_name.sub(/\s/, ".").delete(" ").downcase
     assignee_email = "#{email_prefix}@#{domain}"
     return assignee_email
   end
@@ -69,5 +69,4 @@ class ApplicationController < ActionController::Base
   def add_initial_breadcrumbs
     breadcrumbs.add "Home", root_path
   end
-
 end

@@ -4,15 +4,15 @@ class ProjectsController < ApplicationController
 
     # Get projects with active tasks and order by number of active tasks
     active_projects = Project
-    .joins(:tasks)
-    .where('tasks.status = ?', 'In Progress')
-    .group('projects.id')
-    .order(Arel.sql('COUNT(DISTINCT tasks.id) DESC'))
+      .joins(:tasks)
+      .where("tasks.status = ?", "In Progress")
+      .group("projects.id")
+      .order(Arel.sql("COUNT(DISTINCT tasks.id) DESC"))
 
     # Get remaining projects and concatenate the two lists
     inactive_projects = Project.where.not(id: active_projects)
     @projects = Kaminari.paginate_array(active_projects.to_a + inactive_projects.to_a)
-    .page(params[:page])
+      .page(params[:page])
 
     # Get the total count of projects
     @projects_count = Project.count
@@ -50,13 +50,13 @@ class ProjectsController < ApplicationController
     breadcrumbs.add "Prod view: #{@project.name}", project_path(@project)
 
     @projects_assignees = Assignee.joins(tasks: :project)
-    .select("assignees.*, SUM(tasks.time_spent) AS total_time_spent")
-    .where(tasks: { project_id: @project.id })
-    .group("assignees.id")
+      .select("assignees.*, SUM(tasks.time_spent) AS total_time_spent")
+      .where(tasks: { project_id: @project.id })
+      .group("assignees.id")
 
     @project_total_internal_cost = Task.joins(:assignee)
-    .where(project: @project)
-    .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
+      .where(project: @project)
+      .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
 
     @revenue_from_project = @project.total_selling_price - @project_total_internal_cost
   end
@@ -72,14 +72,13 @@ class ProjectsController < ApplicationController
       respond_to do |format|
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
-            'selling_price',
-            partial: 'projects/edit',
-            locals: { project: @project }
+            "selling_price",
+            partial: "projects/edit",
+            locals: { project: @project },
           )
         end
         format.html { redirect_to project_details_path(@project) }
       end
-
     else
       render :edit
     end
@@ -99,7 +98,7 @@ class ProjectsController < ApplicationController
   def get_projects_data_with_pagination(startat)
     url = "https://agenceinspire.atlassian.net/rest/api/3/project/search?startAt=#{startat}&maxResults=50&expand=lead"
     response = call_jira_api(url)
-    return unless response.code == '200'
+    return unless response.code == "200"
 
     json_projects = JSON.parse(response.body)
     collect_projects_information(json_projects)
@@ -107,11 +106,11 @@ class ProjectsController < ApplicationController
 
   def collect_projects_information(json_projects)
     i = 0
-    json = json_projects['values']
+    json = json_projects["values"]
     while i < json.length
-      project_name = json[i]['name']
-      project_jira_id = json[i]['key']
-      project_lead = json[i]['lead']['displayName']
+      project_name = json[i]["name"]
+      project_jira_id = json[i]["key"]
+      project_lead = json[i]["lead"]["displayName"]
       find_or_create_project(project_name, project_jira_id, project_lead)
       i += 1
     end
@@ -129,10 +128,10 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
 
     # Load all the unique assignees for the project's tasks
-    assignee_names = @project.tasks.select(:assignee_id).distinct.joins(:assignee).pluck('assignees.name')
+    assignee_names = @project.tasks.select(:assignee_id).distinct.joins(:assignee).pluck("assignees.name")
 
     # Extract the full names from the array of names
-    @projects_unique_assignees = assignee_names.map { |name| name.split(' ').map(&:capitalize).join(' ') }
+    @projects_unique_assignees = assignee_names.map { |name| name.split(" ").map(&:capitalize).join(" ") }
 
     @assignee_task_counts = {}
     @project.tasks.group(:assignee_id).count.each do |assignee_id, task_count|
@@ -196,7 +195,6 @@ class ProjectsController < ApplicationController
     { in_time: { count: in_time_tasks, percentage: in_time_percentage },
       early: { count: early_tasks, percentage: early_percentage },
       delayed: { count: delayed_tasks, percentage: delayed_percentage },
-      no_data: {count: no_data_tasks, percentage: no_data_percentage }}
+      no_data: { count: no_data_tasks, percentage: no_data_percentage } }
   end
-
 end

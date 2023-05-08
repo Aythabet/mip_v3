@@ -4,7 +4,6 @@ class VacationsController < ApplicationController
     @assignee = Assignee.find(params[:assignee_id])
     @vacations = Vacation.where(assignee_id: @assignee).order(created_at: :desc)
     breadcrumbs.add "Admin view: #{@assignee.name}", assignee_profile_path(@assignee)
-
   end
 
   def new
@@ -26,9 +25,9 @@ class VacationsController < ApplicationController
           format.html { redirect_to assignee_vacations_path(@assignee), notice: "Quote created successfully." }
           format.turbo_stream do
             render turbo_stream: turbo_stream.replace(
-              'vacation-modal',
-              partial: 'vacations/form',
-              locals: { vacation: @vacation, assignee: @assignee }
+              "vacation-modal",
+              partial: "vacations/form",
+              locals: { vacation: @vacation, assignee: @assignee },
             )
           end
         end
@@ -37,9 +36,9 @@ class VacationsController < ApplicationController
           format.html { render :new }
           format.turbo_stream do
             render turbo_stream: turbo_stream.replace(
-              'vacation-modal',
-              partial: 'vacations/form',
-              locals: { vacation: @vacation, assignee: @assignee }
+              "vacation-modal",
+              partial: "vacations/form",
+              locals: { vacation: @vacation, assignee: @assignee },
             )
           end
         end

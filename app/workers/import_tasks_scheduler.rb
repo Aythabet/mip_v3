@@ -16,7 +16,7 @@ class ImportTasksScheduler
       pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~")
     end
     job_end_time = Time.now
-    JobsLog.create!(title: "ImportTasksScheduler", execution_time: (job_end_time - job_start_time))
+    JobsLog.create!(title: "ImportTasksScheduler", execution_time: job_end_time - job_start_time)
   end
 
   private
@@ -55,7 +55,7 @@ class ImportTasksScheduler
 
     if response.code == '200'
       total_issues_count = JSON.parse(response.body)['total']
-      total_pages = 2 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 2 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
 
       (1..total_pages).each do
@@ -65,8 +65,6 @@ class ImportTasksScheduler
         response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
       end
     end
-    number_of_tasks_to_import = max_results.to_i * total_pages.to_i
-    p("Total issues to import is #{number_of_tasks_to_import}...")
     jira_ids.flatten
   end
 
@@ -77,28 +75,34 @@ class ImportTasksScheduler
 
     json_task = JSON.parse(response.body)
     fields = json_task['fields']
-    added_task = Task.where(jira_id:).first_or_create
-    added_task.update(
-      project_id: determine_the_project_id(json_task),
-      assignee_id: determine_the_user_id(json_task),
-      time_forecast: fields['timeoriginalestimate'],
-      status: fields&.[]('status')&.[]('name'),
-      created_at: fields['created'],
-      last_jira_update: fields['updated'],
-      summary: fields['summary'],
-      priority: fields&.[]('priority')&.[]('name'),
-      epic: fields&.[]('parent')&.[]('fields')&.[]('summary'),
-      time_spent: retrieve_time_spent(url),
-      labels: retrive_labels(json_task),
-      status_change_date: fields['statuscategorychangedate'],
-      due_date: fields['duedate'],
-      task_type: fields&.[]('issuetype')&.[]('name'),
-      is_task_subtask: fields&.[]('issuetype')&.[]('subtask')
-    )
-    pp(added_task)
-    pp("Worklog entries imported count: #{retrieve_worklog_info(url, jira_id).count}")
-    added_task.save
+    added_task = Task.where(jira_id: jira_id).first_or_create
+    last_jira_update = fields['updated']
+
+    if added_task.last_jira_update != last_jira_update
+      added_task.update(
+        project_id: determine_the_project_id(json_task),
+        assignee_id: determine_the_user_id(json_task),
+        time_forecast: fields['timeoriginalestimate'],
+        status: fields&.[]('status')&.[]('name'),
+        created_at: fields['created'],
+        last_jira_update: last_jira_update,
+        summary: fields['summary'],
+        priority: fields&.[]('priority')&.[]('name'),
+        epic: fields&.[]('parent')&.[]('fields')&.[]('summary'),
+        time_spent: retrieve_time_spent(url),
+        labels: retrive_labels(json_task),
+        status_change_date: fields['statuscategorychangedate'],
+        due_date: fields['duedate'],
+        task_type: fields&.[]('issuetype')&.[]('name'),
+        is_task_subtask: fields&.[]('issuetype')&.[]('subtask')
+      )
+
+      pp(added_task)
+      pp("Worklog entries imported count: #{retrieve_worklog_info(url, jira_id).count}")
+      added_task.save
+    end
   end
+
 
   def determine_the_user_id(json_task)
     fields = json_task['fields']

@@ -1,26 +1,25 @@
 class AssigneesController < ApplicationController
-
   def index
     breadcrumbs.add "Assignees", assignees_path
     @assignees = Assignee
-    .select('assignees.*, subquery.task_count')
-    .from("(SELECT COUNT(*) AS task_count, assignee_id FROM tasks GROUP BY assignee_id) subquery")
-    .joins('INNER JOIN assignees ON assignees.id = subquery.assignee_id')
-    .order('subquery.task_count DESC, assignees.name')
-    .page(params[:page])
+      .select("assignees.*, subquery.task_count")
+      .from("(SELECT COUNT(*) AS task_count, assignee_id FROM tasks GROUP BY assignee_id) subquery")
+      .joins("INNER JOIN assignees ON assignees.id = subquery.assignee_id")
+      .order("subquery.task_count DESC, assignees.name")
+      .page(params[:page])
 
     @assignees_count = Assignee.count
   end
 
   def retrieve_assignees
-    url = 'https://agenceinspire.atlassian.net/rest/api/3/user/search?query=+&maxResults=1000'
+    url = "https://agenceinspire.atlassian.net/rest/api/3/user/search?query=+&maxResults=1000"
     response = call_jira_api(url)
-    return unless response.code == '200'
+    return unless response.code == "200"
 
     json_assignee = JSON.parse(response.body)
     json_assignee.each do |assignee|
-      assignee_name = assignee['displayName']
-      assignee_email = assignee['emailAddress']
+      assignee_name = assignee["displayName"]
+      assignee_email = assignee["emailAddress"]
       find_or_create_assignee(assignee_name, assignee_email)
     end
 
@@ -30,13 +29,12 @@ class AssigneesController < ApplicationController
   def send_data_to_assignee
     assignee = Assignee.find(params[:id])
     ReportMailer.send_data_to_user(assignee).deliver_now
-    redirect_to assignee_path, notice: 'Data sent to assignee'
+    redirect_to assignee_path, notice: "Data sent to assignee"
   end
 
   def edit
     @assignee = Assignee.find(params[:id])
     breadcrumbs.add "Admin view: #{@assignee.name}", assignee_profile_path(@assignee)
-
   end
 
   def update
@@ -65,8 +63,8 @@ class AssigneesController < ApplicationController
     @assignee = Assignee.find(params[:id])
     breadcrumbs.add "Admin view: #{@assignee.name}", assignee_profile_path(@assignee)
     @assignees_projects = Project.joins(:tasks).where(tasks: { assignee_id: @assignee.id })
-    .select("projects.*, SUM(tasks.time_spent) AS total_time_spent")
-    .group("projects.id")
+      .select("projects.*, SUM(tasks.time_spent) AS total_time_spent")
+      .group("projects.id")
   end
 
   def destroy_all
@@ -91,12 +89,12 @@ class AssigneesController < ApplicationController
 
   def generate_cr(day)
     @assignee_todays_tasks = Task.where(assignee: @assignee)
-    .where("DATE(last_jira_update) = ? OR DATE(created_at) = ?", day, day)
-    .order(last_jira_update: :desc)
+      .where("DATE(last_jira_update) = ? OR DATE(created_at) = ?", day, day)
+      .order(last_jira_update: :desc)
 
     @assignee_yesterday_tasks = Task.where(assignee: @assignee)
-    .where("DATE(last_jira_update) = ? OR DATE(created_at) = ?", day - 1, day - 1)
-    .order(last_jira_update: :desc)
+      .where("DATE(last_jira_update) = ? OR DATE(created_at) = ?", day - 1, day - 1)
+      .order(last_jira_update: :desc)
   end
 
   def assignee_unique_projects_list
@@ -139,7 +137,7 @@ class AssigneesController < ApplicationController
     { in_time: { count: in_time_tasks, percentage: in_time_percentage },
       early: { count: early_tasks, percentage: early_percentage },
       delayed: { count: delayed_tasks, percentage: delayed_percentage },
-      no_data: {count: no_data_tasks, percentage: no_data_percentage }}
+      no_data: { count: no_data_tasks, percentage: no_data_percentage } }
   end
 
   def calculate_time_statistics

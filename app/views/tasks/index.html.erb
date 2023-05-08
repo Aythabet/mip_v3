@@ -8,14 +8,6 @@
   <!-- pagination -->
   <div align="right" style="font-size: 80%"><%= page_entries_info @tasks, entry_name: 'task' %></div>
   <span class="d-flex flex-row-reverse"><%= link_to_next_page @tasks, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @tasks, 'Previous' %></span>
-  <!-- search -->
-  <%= form_with(url: tasks_path, method: :get, data: {turbo_frame: "tasks", turbo_action: "advance"}) do |form| %>
-    <%= form.label :query, "Search by JIRA ID:", class: "block mb-2" %>
-    <div class="">
-      <%= form.text_field :query, class: "" %>
-      <%= form.submit 'Search', class: "" %>
-    </div>
-  <% end %>
 </br>
 <%= render partial: "tasks", locals: { tasks: @tasks } %>
 </div>

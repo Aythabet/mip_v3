@@ -5,7 +5,6 @@ class QuotesController < ApplicationController
     @quotes = Quote.where(project: @project).order(created_at: :desc)
 
     breadcrumbs.add "Admin view: #{@project.name}", project_details_path(@project)
-
   end
 
   def new
@@ -23,18 +22,18 @@ class QuotesController < ApplicationController
         format.html { redirect_to project_quotes_path(@project), notice: "Quote created successfully." }
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
-            'quote-modal',
-            partial: 'quotes/form',
-            locals: { quote: @quote, project: @project }
+            "quote-modal",
+            partial: "quotes/form",
+            locals: { quote: @quote, project: @project },
           )
         end
       else
         format.html { render :new }
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
-            'quote-modal',
-            partial: 'quotes/form',
-            locals: { quote: @quote, project: @project }
+            "quote-modal",
+            partial: "quotes/form",
+            locals: { quote: @quote, project: @project },
           )
         end
       end
