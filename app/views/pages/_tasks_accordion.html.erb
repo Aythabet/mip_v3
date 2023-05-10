@@ -5,12 +5,12 @@
       <div class="card active-task-card m-1">
         <div class="card-body-active-card">
           <div class="d-flex justify-content-between align-items-center">
-            <span class="badge bg-secondary">
-              <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank", class: "links_on_active_tasks_cards" %>
-              <% if task.is_task_subtask == "t" %>
-                &nbsp;<span><i class="bi bi-subtract"></i></span>
-              <% end %>
-            </span>
+            <div class="fw-bold text-muted">
+              <%= task.status %>: <%= link_to task.jira_id, task_path(task) %>
+              &nbsp;<a href="https://agenceinspire.atlassian.net/browse/<% task.jira_id %>" target="_blank">
+                <span><i class="bi bi-box-arrow-up-right"></i></span>
+              </a>
+            </div>
             <%= link_to truncate(task.assignee.name, length: 20), assignee_path(task.assignee) %>
             <span class="text-muted small-text"> <%= task.status %></span>
           </div>

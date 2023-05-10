@@ -27,4 +27,10 @@ class TasksController < ApplicationController
     flash.notice = "All the tasks will be deleted."
     redirect_to tasks_path
   end
+
+  def show
+    @task = Task.find(params[:id])
+    @task_changelog = TaskChangelog.where(task_id: @task.id).order(created_at: :desc)
+    @task_worklog = TaskWorklog.where(task_id: @task.id).order(created_at: :desc)
+  end
 end

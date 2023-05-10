@@ -38,7 +38,7 @@ Rails.application.routes.draw do
   post 'projects/destroy_all'
 
   # Tasks Routes
-  resources :tasks, only: [:index]
+  resources :tasks, only: [:index, :show]
   post 'tasks/retrieve_tasks'
   post 'tasks/destroy_all'
 

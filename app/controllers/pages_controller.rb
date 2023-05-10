@@ -40,7 +40,7 @@ class PagesController < ApplicationController
     @on_hold_tasks_count = 0
     projects.each do |project|
       @in_progress_tasks_count += project.tasks.where(status: ["In Progress", "En cours", "en cours"]).count
-      @on_hold_tasks_count += project.tasks.where(status: ["En attente", "En Pause", "On Hold", ""]).count
+      @on_hold_tasks_count += project.tasks.where(status: ["En attente", "En Pause", "On Hold"]).count
     end
   end
 end

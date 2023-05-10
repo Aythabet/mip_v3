@@ -1,0 +1,15 @@
+<div class="card compact-card">
+  <div class="card-body">
+    <% @task_changelog.each do |changelog| %>
+      <p><%= changelog.sentence %></p>
+    <% end %>
+  </div>
+</div>
+<br>
+<div class="card compact-card">
+  <div class="card-body">
+    <% @task_worklog.each do |worklog| %>
+      <p><%= worklog.sentence %></p>
+    <% end %>
+  </div>
+</div>

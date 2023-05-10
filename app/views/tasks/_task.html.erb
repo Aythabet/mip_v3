@@ -2,7 +2,10 @@
   <div class="card card-task border-0 h-100">
     <div class="card-header d-flex justify-content-between align-items-center">
       <div class="fw-bold text-muted">
-        <%= task.status %>: <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank" %>
+        <%= task.status %>: <%= link_to task.jira_id, task_path(task) %>
+        &nbsp;<a href="https://agenceinspire.atlassian.net/browse/<% task.jira_id %>" target="_blank">
+          <span><i class="bi bi-box-arrow-up-right"></i></span>
+        </a>
       </div>
       <div class="d-flex align-items-center">
         <span class="me-2"><%= priority_icon(task.priority) %></span>
