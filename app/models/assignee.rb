@@ -14,8 +14,8 @@ class Assignee < ApplicationRecord
   private
 
   def set_assignee_vacation_days
-    if self.vacation_days_available.nil?
-      self.vacation_days_available = 2
+    if self.vacation_days_available.nil? || vacation_days_available.negative?
+      self.vacation_days_available = 0
     end
   end
 

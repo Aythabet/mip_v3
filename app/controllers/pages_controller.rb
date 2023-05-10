@@ -9,6 +9,8 @@ class PagesController < ApplicationController
 
   def tests
     breadcrumbs.add "Tests", tests_path
+
+    @all_changelogs = TaskChangelog.all.order(created_at: :desc)
   end
 
   private

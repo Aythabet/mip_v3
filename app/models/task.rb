@@ -2,6 +2,7 @@ class Task < ApplicationRecord
   belongs_to :project
   belongs_to :assignee
   has_many :task_worklogs
+  has_many :task_changelogs
 
   paginates_per 15
 
