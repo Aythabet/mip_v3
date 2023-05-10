@@ -1,0 +1,29 @@
+.log-box {
+    background-color: white;
+    color: black;
+    padding: 10px;
+    height: 300px;
+    overflow: hidden;
+  }
+
+  .log-container {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .log-sentence {
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    opacity: 1;
+    transition: opacity 0.5s;
+  }
+
+  .log-sentence.fade-out {
+    opacity: 0;
+    height: 0;
+    padding: 0;
+  }

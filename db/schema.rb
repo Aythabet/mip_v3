@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_09_104701) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_10_133612) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -138,8 +138,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_09_104701) do
   end
 
   add_foreign_key "quotes", "projects"
-  add_foreign_key "task_changelogs", "tasks"
-  add_foreign_key "task_worklogs", "tasks"
+  add_foreign_key "task_changelogs", "tasks", on_delete: :cascade
+  add_foreign_key "task_worklogs", "tasks", on_delete: :cascade
   add_foreign_key "tasks", "assignees"
   add_foreign_key "tasks", "projects"
   add_foreign_key "vacations", "assignees"

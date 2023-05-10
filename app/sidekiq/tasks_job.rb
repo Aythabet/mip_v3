@@ -11,7 +11,7 @@ class TasksJob
     jira_ids.each do |jira_id|
       collect_and_save_task_information(entity, jira_id)
       i += 1
-      pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~")
+      pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~~")
     end
     job_end_time = Time.now
     JobsLog.create!(title: "TasksJob", execution_time: job_end_time - job_start_time)
@@ -47,13 +47,13 @@ class TasksJob
   def collect_all_task_jira_ids(entity)
     jira_ids = []
     start_at = 0
-    max_results = 50
+    max_results = 5
 
     response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == "200"
       total_issues_count = JSON.parse(response.body)["total"]
-      total_pages = (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 1 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
 
       (1..total_pages).each do
@@ -97,7 +97,7 @@ class TasksJob
       )
 
       pp(added_task)
-      pp("~~~ #{retrieve_worklog_info(url, jira_id).count} Worklogs imported ~~~ ")
+      pp("~~~~~~~~~ Importing next task's infos: #{retrieve_worklog_info(url, jira_id).count} Worklogs imported ~~~~~~~~~ ")
       added_task.save
     end
     retrieve_task_changelogs(jira_id)
@@ -274,6 +274,6 @@ class TasksJob
         end
       end
     end
-    pp("~~~~~~ #{i} Changelog(s) imported ~~~~~~ ") if i > 0
+    pp("~~~~~~~~~ Importing next task's infos: #{i} Changelog(s) imported ~~~~~~~~~ ") if i > 0
   end
 end

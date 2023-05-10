@@ -1,45 +1,14 @@
-<style>
-  .log-box {
-    background-color: white;
-    color: black;
-    padding: 10px;
-    height: 300px;
-    overflow: hidden;
-  }
-
-  .log-container {
-    display: flex;
-    flex-direction: column-reverse;
-  }
-
-  .log-sentence {
-    margin: 0;
-    padding: 0;
-    font-size: 12px;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    opacity: 1;
-    transition: opacity 0.5s;
-  }
-
-  .log-sentence.fade-out {
-    opacity: 0;
-    height: 0;
-    padding: 0;
-  }
-</style>
-
 <div class="log-box">
   <div class="log-container">
     <% @all_changelogs.select { |changelog| changelog.timestamp.to_date == Date.today }
                      .sort_by(&:timestamp)
-                     .each.with_index.reverse_each.take(25).each do |changelog, index| %>
+                     .last(30)
+                     .reverse
+                     .each.with_index do |changelog, index| %>
       <p class="log-sentence<%= index >= 25 ? ' fade-out' : '' %>"><%= changelog.sentence %></p>
     <% end %>
   </div>
 </div>
-
 <script>
   const logContainer = document.querySelector('.log-container');
   const logSentences = logContainer.querySelectorAll('.log-sentence');
