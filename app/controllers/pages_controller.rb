@@ -10,7 +10,42 @@ class PagesController < ApplicationController
   def tests
     breadcrumbs.add "Tests", tests_path
 
-    @all_changelogs = TaskChangelog.all.order(created_at: :desc)
+    url = "https://agenceinspire.atlassian.net/rest/api/3/issue/RB-10/comment"
+    uri = URI.parse(url)
+
+    body_data = {
+      "body": {
+        "content": [
+          {
+            "content": [
+              {
+                "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eget venenatis elit. Duis eu justo eget augue iaculis fermentum. Sed semper quam laoreet nisi egestas at posuere augue semper.",
+                "type": "text",
+              },
+            ],
+            "type": "paragraph",
+          },
+        ],
+        "type": "doc",
+        "version": 1,
+      },
+    }.to_json
+
+    headers = {
+      "Authorization" => "Basic #{ENV["JIRA_API_TOKEN"]}",
+      "Content-Type" => "application/json",
+    }
+
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+
+    request = Net::HTTP::Post.new(uri.path, headers)
+    request.body = body_data
+
+    @response = http.request(request)
+
+    puts "Response: #{@response.code} #{@response.message}"
+    puts @response.body
   end
 
   private

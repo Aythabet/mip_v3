@@ -1,36 +1,4 @@
-<div class="log-box">
-  <div class="log-container">
-    <% @all_changelogs.select { |changelog| changelog.timestamp.to_date == Date.today }
-                     .sort_by(&:timestamp)
-                     .last(30)
-                     .reverse
-                     .each.with_index do |changelog, index| %>
-      <p class="log-sentence<%= index >= 25 ? ' fade-out' : '' %>"><%= changelog.sentence %></p>
-    <% end %>
-  </div>
-</div>
-<script>
-  const logContainer = document.querySelector('.log-container');
-  const logSentences = logContainer.querySelectorAll('.log-sentence');
-  let totalHeight = 0;
-
-  logSentences.forEach((sentence) => {
-    totalHeight += sentence.offsetHeight + 10;
-  });
-
-  const logBox = document.querySelector('.log-box');
-  const logBoxHeight = logBox.offsetHeight;
-
-  if (totalHeight > logBoxHeight) {
-    const fadeOutSentences = logContainer.querySelectorAll('.log-sentence.fade-out');
-    let removedHeight = 0;
-
-    fadeOutSentences.forEach((sentence) => {
-      removedHeight += sentence.offsetHeight + 10;
-      sentence.addEventListener('transitionend', () => {
-        sentence.remove();
-        logContainer.style.transform = `translateY(calc(${removedHeight}px - 100% - 10px))`;
-      });
-    });
-  }
-</script>
+<br>
+<%= @response.code %>
+<%= @response.message %>
+<%= @response.body %>
