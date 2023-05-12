@@ -5,9 +5,9 @@
       <div class="card active-task-card m-1">
         <div class="card-body-active-card">
           <div class="d-flex justify-content-between align-items-center">
-            <div class="fw-bold text-muted">
+            <div class="fw-bold text-muted small-text">
               <%= task.status %>: <%= link_to task.jira_id, task_path(task) %>
-              &nbsp;<a href="https://agenceinspire.atlassian.net/browse/<% task.jira_id %>" target="_blank">
+              &nbsp;<a href="https://agenceinspire.atlassian.net/browse/<%= task.jira_id %>" target="_blank">
                 <span><i class="bi bi-box-arrow-up-right"></i></span>
               </a>
             </div>

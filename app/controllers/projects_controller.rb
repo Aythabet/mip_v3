@@ -38,8 +38,8 @@ class ProjectsController < ApplicationController
   end
 
   def show
-    @project = Project.find(params[:id])
     breadcrumbs.add "Projects", projects_path
+    @project = Project.find(params[:id])
 
     @project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
     @project_tasks_paginated = Task.where(project: @project).order(last_jira_update: :desc).page params[:page]

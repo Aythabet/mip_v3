@@ -1,15 +1,21 @@
 <div class="card compact-card">
-  <div class="card-body">
-    <% @task_changelog.each do |changelog| %>
-      <p><%= changelog.sentence %></p>
-    <% end %>
+  <div class="card-header pb-0">
+    <h5>Worklog for: <%= Task.find_by(id: @task_worklog&.first&.task_id)&.jira_id %></h5>
   </div>
+  <% @task_worklog&.each do |worklog| %>
+    <div class="card-body">
+      <p><%= worklog.sentence %></p>
+    </div>
+  <% end %>
 </div>
 <br>
 <div class="card compact-card">
-  <div class="card-body">
-    <% @task_worklog.each do |worklog| %>
-      <p><%= worklog.sentence %></p>
-    <% end %>
+  <div class="card-header pb-0">
+    <h5>Changelog for: <%= Task.find_by(id: @task_changelog&.first&.task_id)&.jira_id %></h5>
   </div>
+  <% @task_changelog&.each do |changelog| %>
+    <div class="card-body">
+      <p><%= changelog.sentence %></p>
+    </div>
+  <% end %>
 </div>

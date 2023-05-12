@@ -47,7 +47,7 @@ class TasksJob
   def collect_all_task_jira_ids(entity)
     jira_ids = []
     start_at = 0
-    max_results = 5
+    max_results = 1
 
     response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
@@ -101,6 +101,9 @@ class TasksJob
       added_task.save
     end
     retrieve_task_changelogs(jira_id)
+    if check_task_forecast_and_time_spent(added_task)
+      pp("#{added_task.jira_id} ===> #{check_task_forecast_and_time_spent(added_task)} - A comment can be sent for this issue")
+    end
   end
 
   def determine_the_user_id(json_task)
@@ -275,5 +278,75 @@ class TasksJob
       end
     end
     pp("~~~~~~~~~ Importing next task's infos: #{i} Changelog(s) imported ~~~~~~~~~ ") if i > 0
+  end
+
+  def post_comment_to_task(task)
+    task_comment_information = retrieve_task_assignee_name_and_account_id_to_comment(task.jira_id)
+    displayName = task_comment_information[0]
+    account_id = task_comment_information[1]
+    url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{task.jira_id}/comment"
+    uri = URI.parse(url)
+
+    body_data = {
+      "body": {
+        "type": "doc",
+        "version": 1,
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Hello ",
+              },
+              {
+                "type": "mention",
+                "attrs": {
+                  "id": "#{account_id}",
+                  "text": "@#{displayName}",
+                  "userType": "DEFAULT",
+                },
+              },
+              {
+                "type": "text",
+                "text": ": Merci de saisir l'estimation et le suivi temporel",
+              },
+            ],
+          },
+        ],
+      },
+    }
+
+    body_data_json = body_data.to_json  # Convert to JSON format
+    headers = {
+      "Authorization" => "Basic #{ENV["JIRA_API_TOKEN"]}",
+      "Content-Type" => "application/json",
+    }
+
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+
+    request = Net::HTTP::Post.new(uri.path, headers)
+    request.body = body_data_json  # Assign the JSON string
+
+    @response = http.request(request)
+
+    puts "Response: #{@response.code} #{@response.message}"
+  end
+
+  def retrieve_task_assignee_name_and_account_id_to_comment(jira_id)
+    url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{jira_id}"
+    response = call_jira_api(url)
+    return unless response.code == "200"
+
+    task_json_body = JSON.parse(response.body)
+    displayName = task_json_body["fields"]["assignee"]["displayName"]
+    account_id = task_json_body["fields"]["assignee"]["accountId"]
+
+    task_comment_information = [displayName, account_id]
+  end
+
+  def check_task_forecast_and_time_spent(task)
+    (task.time_forecast.nil? || task.time_spent.nil?) && ["In Progress", "On hold"].include?(task.status)
   end
 end

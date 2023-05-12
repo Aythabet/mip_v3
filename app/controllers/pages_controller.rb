@@ -10,42 +10,7 @@ class PagesController < ApplicationController
   def tests
     breadcrumbs.add "Tests", tests_path
 
-    url = "https://agenceinspire.atlassian.net/rest/api/3/issue/RB-10/comment"
-    uri = URI.parse(url)
-
-    body_data = {
-      "body": {
-        "content": [
-          {
-            "content": [
-              {
-                "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eget venenatis elit. Duis eu justo eget augue iaculis fermentum. Sed semper quam laoreet nisi egestas at posuere augue semper.",
-                "type": "text",
-              },
-            ],
-            "type": "paragraph",
-          },
-        ],
-        "type": "doc",
-        "version": 1,
-      },
-    }.to_json
-
-    headers = {
-      "Authorization" => "Basic #{ENV["JIRA_API_TOKEN"]}",
-      "Content-Type" => "application/json",
-    }
-
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-
-    request = Net::HTTP::Post.new(uri.path, headers)
-    request.body = body_data
-
-    @response = http.request(request)
-
-    puts "Response: #{@response.code} #{@response.message}"
-    puts @response.body
+    post_comment_to_task(task)
   end
 
   private
@@ -53,6 +18,7 @@ class PagesController < ApplicationController
   def basic_stats_projects_assignees_tasks
     @total_number_of_projects = Project.count
     @total_number_of_tasks = Task.count
+    @total_number_of_tasks_today = Task.where(created_at: Date.today.all_day).count
     @total_number_of_assignees = Assignee.count
   end
 
@@ -78,4 +44,6 @@ class PagesController < ApplicationController
       @on_hold_tasks_count += project.tasks.where(status: ["En attente", "En Pause", "On Hold"]).count
     end
   end
+
+ 
 end

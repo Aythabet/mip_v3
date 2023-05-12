@@ -95,51 +95,10 @@
   <div align="right" style="font-size: 80%"><%= page_entries_info @project_tasks_paginated, entry_name: 'task' %></div>
   <span class="d-flex flex-row-reverse"><%= link_to_next_page @project_tasks_paginated, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @project_tasks_paginated, 'Previous' %></span>
   <!-- Tickets - Cards -->
-  <div class="row row-cols-1 row-cols-md-3 g-2">
-    <% @project_tasks_paginated.each do |task| %>
-      <div class="col">
-        <div class="card card-task border-0 h-100">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <div class="fw-bold text-muted">
-              <%= task.status %>: <%= link_to task.jira_id, task_path(task) %>
-              &nbsp;<a href="https://agenceinspire.atlassian.net/browse/<% task.jira_id %>" target="_blank">
-                <span><i class="bi bi-box-arrow-up-right"></i></span>
-              </a>
-            </div>
-            <div class="d-flex align-items-center">
-              <span class="me-2"><%= priority_icon(task.priority) %></span>
-            </div>
-          </div>
-          <span class="badge bg-secondary"><%= task.epic %></span>
-          <div class="card-body">
-            <span class="pb-0 pt-0 mt-0 mb-0"><%= link_to task.assignee.name , task.assignee %></span>
-            <h5 class="card-title pt-0 pb-0 mt-0 mb-0"><%= link_to task.project.name, task.project %></h5>
-            <p class="card-text pt-0 pb-0 mt-0 mb-0">Time Estimation: <%= my_helper_format_duration(task.time_forecast) %></p>
-            <p class="card-text pt-0 pb-0 mt-0 mb-0">Time spent: <%= my_helper_format_duration(task.time_spent) %> </p>
-            <p class="card-text pt-0 pb-0 mt-0 mb-0">Summary: <%= task.summary %> </p>
-            <% task.labels&.split&.each do |label| %>
-              <span class="badge rounded-pill bg-primary pb-0 mb-0"><%= label.gsub(/[^a-zA-Z\s]/, '') %></span>
-            <% end %>
-          </div>
-          <div class="small-text text-end text-muted me-1">
-            <% if task.due_date.present? %>
-              <div>Start date: <%= task.status_change_date.strftime("%e %B %Y")  %></div>
-              <div>Due Date: <%= task.due_date.strftime("%e %B %Y") %></div>
-            <% else %>
-              No Data
-            <% end %>
-          </div>
-          <div class="card-footer bg-light">
-            <small class="text-muted">
-              Created at: <%= task.created_at %>
-            </small>
-          </br>
-          <small class="text-muted">
-            Updated at: <%= task.last_jira_update %>
-          </small>
-        </div>
-      </div>
+  <%= turbo_frame_tag "tasks" do %>
+    <div class="row row-cols-1 row-cols-md-3 g-2">
+      <% @project_tasks_paginated.each do |task| %>
+        <%= render partial: "/tasks/task", locals: { task: task } %>
+      <% end %>
     </div>
   <% end %>
-</div>
-</div>

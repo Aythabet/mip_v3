@@ -1,7 +1,7 @@
   <!-- Dashboard Metrics -->
 <div class="row justify-content-center mt-2">
   <div class="col-md-2 text-center">
-    <p class="text-muted">Total Active Tasks</p>
+    <p class="text-muted">"In Progress" Tasks</p>
     <h3><%= @in_progress_tasks_count %></h3>
   </div>
   <div class="col-md-2 text-center">
@@ -10,7 +10,16 @@
   </div>
   <div class="col-md-2 text-center">
     <p class="text-muted">Number of tickets</p>
-    <h3><%= link_to @total_number_of_tasks, tasks_path %></h3>
+    <div class="position-relative">
+      <%= link_to tasks_path, class: "d-inline-block position-relative" do %>
+        <h3 class="d-inline"><%= @total_number_of_tasks %></h3>
+        <% if !@total_number_of_tasks_today.nil? %>
+          <span class="position-absolute top-0 start-100 ms-3 translate-middle badge rounded-pill bg-success text-dark"  style="transform: translate(50%, -50%); font-size: 0.7em;">
+            +<%= @total_number_of_tasks_today %>
+          </span>
+        <% end %>
+      <% end %>
+    </div>
   </div>
 </div>
 <%= render partial: 'projects_accordion'%>
