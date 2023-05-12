@@ -9,8 +9,6 @@ class PagesController < ApplicationController
 
   def tests
     breadcrumbs.add "Tests", tests_path
-
-    post_comment_to_task(task)
   end
 
   private
@@ -44,6 +42,4 @@ class PagesController < ApplicationController
       @on_hold_tasks_count += project.tasks.where(status: ["En attente", "En Pause", "On Hold"]).count
     end
   end
-
- 
 end
