@@ -82,9 +82,10 @@ GEM
     bindex (0.8.1)
     bootsnap (1.16.0)
       msgpack (~> 1.2)
-    bootstrap-sass (3.4.1)
-      autoprefixer-rails (>= 5.2.1)
-      sassc (>= 2.0.0)
+    bootstrap (5.2.3)
+      autoprefixer-rails (>= 9.1.0)
+      popper_js (>= 2.11.6, < 3)
+      sassc-rails (>= 2.0.0)
     breadcrumbs (0.3.0)
       actionview
       activesupport
@@ -138,9 +139,6 @@ GEM
       rails (>= 6.0.0)
     i18n (1.13.0)
       concurrent-ruby (~> 1.0)
-    importmap-rails (1.1.6)
-      actionpack (>= 6.0.0)
-      railties (>= 6.0.0)
     io-console (0.6.0)
     irb (1.6.4)
       reline (>= 0.3.0)
@@ -221,9 +219,7 @@ GEM
       omniauth (~> 2.0)
     orm_adapter (0.5.0)
     pg (1.5.3)
-    pg_search (2.3.6)
-      activerecord (>= 5.2)
-      activesupport (>= 5.2)
+    popper_js (2.11.7)
     public_suffix (5.0.1)
     puma (5.6.5)
       nio4r (~> 2.0)
@@ -356,7 +352,7 @@ DEPENDENCIES
   actionmailer (~> 7.0)
   autoprefixer-rails
   bootsnap
-  bootstrap-sass
+  bootstrap
   breadcrumbs
   capybara
   debug
@@ -364,7 +360,6 @@ DEPENDENCIES
   dotenv-rails
   font-awesome-sass (~> 6.1)
   hotwire-livereload (~> 1.2)
-  importmap-rails (~> 1.1)
   jbuilder
   jsbundling-rails
   json (~> 2.6, >= 2.6.3)
@@ -375,7 +370,6 @@ DEPENDENCIES
   omniauth-google-oauth2
   omniauth-rails_csrf_protection
   pg
-  pg_search
   puma (~> 5.0)
   rails (~> 7.0.4, >= 7.0.4.2)
   redis
@@ -385,7 +379,6 @@ DEPENDENCIES
   sidekiq (~> 7.0)
   sidekiq-scheduler
   simple_form!
-  sprockets-rails
   stimulus-rails
   turbo-rails
   tzinfo-data

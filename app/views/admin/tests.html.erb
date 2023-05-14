@@ -1,0 +1,23 @@
+<div class="container py-4">
+  <div class="row">
+    <% Task.where(flagged: true).each do |task| %>
+      <div class="col-md-4">
+        <div class="card mb-3">
+          <div class="card-header">
+            <%= task.jira_id %>
+          </div>
+          <div class="card-body">
+            <% task.attributes.each do |attribute, value| %>
+              <% next unless value.nil? || value.blank? %>
+              <p class="card-text">
+                <strong><%= attribute %>:</strong> Missing
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <!-- Add your action icon or button here -->
+              </p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

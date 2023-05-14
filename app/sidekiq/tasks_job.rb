@@ -47,24 +47,24 @@ class TasksJob
   def collect_all_task_jira_ids(entity)
     jira_ids = []
     start_at = 0
-    max_results = 1
+    max_results = 10
 
-    response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
+    loop do
+      response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
+      break unless response.code == "200"
 
-    if response.code == "200"
-      total_issues_count = JSON.parse(response.body)["total"]
+      tasks = JSON.parse(response.body)
+      jira_ids.concat(tasks["issues"].map { |issue| issue["key"] })
+
+      total_issues_count = tasks["total"]
       total_pages = 1 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
 
-      (1..total_pages).each do
-        tasks = JSON.parse(response.body)
-        jira_ids << tasks["issues"].map { |issue| issue["key"] }
-        start_at += max_results
-        response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
-      end
+      start_at += max_results
+      break if start_at >= total_pages
     end
 
-    jira_ids.flatten
+    jira_ids
   end
 
   def collect_and_save_task_information(entity, jira_id)
@@ -74,26 +74,27 @@ class TasksJob
 
     json_task = JSON.parse(response.body)
     fields = json_task["fields"]
-    added_task = Task.where(jira_id: jira_id).first_or_create
+    added_task = Task.find_or_initialize_by(jira_id: jira_id)
     last_jira_update = fields["updated"]
 
     if added_task.last_jira_update != last_jira_update
-      added_task.update(
+      added_task.assign_attributes(
         project_id: determine_the_project_id(json_task),
         assignee_id: determine_the_user_id(json_task),
         time_forecast: fields["timeoriginalestimate"],
-        status: fields&.[]("status")&.[]("name"),
+        status: fields&.dig("status", "name"),
         created_at: fields["created"],
         last_jira_update: last_jira_update,
         summary: fields["summary"],
-        priority: fields&.[]("priority")&.[]("name"),
-        epic: fields&.[]("parent")&.[]("fields")&.[]("summary"),
+        priority: fields&.dig("priority", "name"),
+        epic: fields&.dig("parent", "fields", "summary"),
         time_spent: retrieve_time_spent(url),
         labels: retrive_labels(json_task),
         status_change_date: fields["statuscategorychangedate"],
         due_date: fields["duedate"],
-        task_type: fields&.[]("issuetype")&.[]("name"),
-        is_task_subtask: fields&.[]("issuetype")&.[]("subtask"),
+        task_type: fields&.dig("issuetype", "name"),
+        is_task_subtask: fields&.dig("issuetype", "subtask"),
+        flagged: false,
       )
 
       pp(added_task)
@@ -101,7 +102,9 @@ class TasksJob
       added_task.save
     end
     retrieve_task_changelogs(jira_id)
+
     if check_task_forecast_and_time_spent(added_task)
+      added_task.update!(flagged: true)
       pp("#{added_task.jira_id} ===> #{check_task_forecast_and_time_spent(added_task)} - A comment can be sent for this issue")
     end
   end

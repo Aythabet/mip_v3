@@ -7,10 +7,6 @@ class PagesController < ApplicationController
     @last_jira_update = JobsLog.where(title: ["TasksJob", "ImportTasksScheduler"]).order(created_at: :desc).first
   end
 
-  def tests
-    breadcrumbs.add "Tests", tests_path
-  end
-
   private
 
   def basic_stats_projects_assignees_tasks

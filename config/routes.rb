@@ -1,45 +1,44 @@
-require 'sidekiq/web'
+require "sidekiq/web"
 
 Rails.application.routes.draw do
-
   authenticate :user, ->(user) { user.admin? } do
-    mount Sidekiq::Web => '/sidekiq'
+    mount Sidekiq::Web => "/sidekiq"
   end
 
   devise_for :users, controllers: {
-    omniauth_callbacks: 'users/omniauth_callbacks',
-    sessions: 'users/sessions',
-    registrations: 'users/registrations'
-  }
+            omniauth_callbacks: "users/omniauth_callbacks",
+            sessions: "users/sessions",
+            registrations: "users/registrations",
+          }
 
   root to: "pages#home"
-  get '/tests', to: 'pages#tests', as: 'tests', constraints: lambda { |request| request.env['warden'].user.admin? }
-
 
   # Assignees Routes
   resources :assignees, only: [:index, :show, :edit, :update] do
-    post 'send_data_to_assignee', on: :member, as: :send_data_to_assignee
+    post "send_data_to_assignee", on: :member, as: :send_data_to_assignee
     resources :vacations, only: [:index, :new, :create, :edit, :update, :destroy]
   end
 
   get '/assignee_profile/:id', to: 'assignees#assignee_profile', as: 'assignee_profile', constraints: lambda { |request| request.env['warden'].user.admin? }
   post 'assignees/retrieve_assignees'
 
-
   # Projects Routes
   resources :projects do
     resources :quotes, only: [:new, :create, :index, :edit, :update]
   end
 
-  get '/project_details/:id', to: 'projects#project_details', as: 'project_details', constraints: lambda { |request| request.env['warden'].user.admin? }
+  get "/project_details/:id", to: "projects#project_details", as: "project_details", constraints: lambda { |request| request.env["warden"].user.admin? }
 
 
   # Tasks Routes
   resources :tasks, only: [:index, :show]
-  post 'tasks/retrieve_tasks'
-  post 'tasks/destroy_all'
-
+  
   # Admin Routes
-  get '/all_vacations', to: 'admin#all_vacations', as: 'all_vacations', constraints: lambda { |request| request.env['warden'].user.admin? }
-
+  resources :admin, only: [:index]
+  
+  post "admin/retrieve_tasks"
+  post "admin/destroy_all"
+  get "/all_vacations", to: "admin#all_vacations", as: "all_vacations", constraints: lambda { |request| request.env["warden"].user.admin? }
+  get "/tests", to: "admin#tests", as: "tests", constraints: lambda { |request| request.env["warden"].user.admin? }
+  get "/sidekiq_logs", to: "admin#sidekiq_logs", as: "sidekiq_logs", constraints: lambda { |request| request.env["warden"].user.admin? }
 end
