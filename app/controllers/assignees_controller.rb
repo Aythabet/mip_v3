@@ -67,11 +67,6 @@ class AssigneesController < ApplicationController
       .group("projects.id")
   end
 
-  def destroy_all
-    Assignee.destroy_all("id != ?", 1)
-    redirect_to assignees_path
-  end
-
   private
 
   def assignee_params
