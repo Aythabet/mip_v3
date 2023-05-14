@@ -1,10 +1,4 @@
 <div class="container py-4">
-  <% if current_user.admin? %>
-    <div class="d-flex justify-content-start">
-      <%= button_to "Import tasks from JIRA", { action: "retrieve_tasks" }, method: :post, class: "btn btn-success mb-4" %>
-      <%= button_to "Delete all tasks", { action: "destroy_all" }, method: :post, class: "btn btn-warning mb-4 ml-2" %>
-    </div>
-  <% end %>
   <!-- pagination -->
   <div align="right" style="font-size: 80%"><%= page_entries_info @tasks, entry_name: 'task' %></div>
   <span class="d-flex flex-row-reverse"><%= link_to_next_page @tasks, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @tasks, 'Previous' %></span>

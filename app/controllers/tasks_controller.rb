@@ -14,20 +14,6 @@ class TasksController < ApplicationController
     @tasks_count = Task.count
   end
 
-  def retrieve_tasks
-    TasksJob.set(queue: :critical).perform_async
-
-    flash.notice = "The import started, come back in few minutes!"
-    redirect_to tasks_path
-  end
-
-  def destroy_all
-    DestroyTasksJob.set(queue: :critical).perform_async
-
-    flash.notice = "All the tasks will be deleted."
-    redirect_to tasks_path
-  end
-
   def show
     @task = Task.find(params[:id])
     @task_changelog = TaskChangelog.where(task_id: @task.id).order(created_at: :desc)
