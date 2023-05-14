@@ -1,18 +1,22 @@
-<div class="container py-4">
+<div class="container py-2">
   <div class="row">
-    <% Task.where(flagged: true).each do |task| %>
-      <div class="col-md-4">
-        <div class="card mb-3">
-          <div class="card-header">
-            <%= task.jira_id %>
+    <div class="text-small"><%= @tasks.count %> tasks</div>
+    <% @tasks.order(updated_at: :desc).each do |task| %>
+      <div class="col-md-2 mb-1 px-1">
+        <div class="card" style="height: 100%;">
+          <div class="card-header d-flex align-items-center justify-content-between py-0">
+            <h6 class="mb-0" style="font-size: 14px;"><%= task.jira_id %></h6>
+            <a href="<%= start_slack_message_job_path(task) %>" class="btn btn-link p-0" data-method="post">
+              <i class="bi bi-envelope-fill"></i>
+            </a>
           </div>
-          <div class="card-body">
+          <div class="card-body py-1" style="font-size: 12px;">
+            <p class="mb-0"><%= task.assignee.name %></p>
             <% task.attributes.each do |attribute, value| %>
               <% next unless value.nil? || value.blank? %>
-              <p class="card-text">
+              <p class="card-text mb-0">
                 <strong><%= attribute %>:</strong> Missing
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <!-- Add your action icon or button here -->
+                <a href="#"><i class="bi bi-exclamation-triangle-fill"></i></a>
               </p>
             <% end %>
           </div>

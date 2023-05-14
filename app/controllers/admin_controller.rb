@@ -42,5 +42,12 @@ class AdminController < ApplicationController
 
   def tests
     breadcrumbs.add "Tests", tests_path
+    @tasks = Task.where(flagged: true).where("last_jira_update >= ?", 1.month.ago)
   end
+
+  def start_slack_message_job
+    pp("========> PARAMS ======> #{params[:id]}")
+    FlaggedTasksSlackMessageJob.set(queue: :critical).perform_async(params[:task_id])
+    redirect_to tests_path, notice: "Slack message job started successfully."
+  end  
 end

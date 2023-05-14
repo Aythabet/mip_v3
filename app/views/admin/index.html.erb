@@ -3,7 +3,7 @@
     <div class="btn-group" role="group" aria-label="button-group-pages">
       <%= button_to('Vacations', all_vacations_path, method: :get, class: 'btn btn-success ms-1') %>
       <%= button_to('Sidekiq Logs', sidekiq_logs_path, method: :get, class: 'btn btn-success ms-1') %>
-      <%= button_to('Tests Page', tests_path, method: :get, class: 'btn btn-success ms-1') %>
+      <%= button_to('Flagged Tasks - Slack Test', tests_path, method: :get, class: 'btn btn-secondary ms-1') %>
     </div>
     <div class="btn-group mt-1" role="group" aria-label="button-group-actions">
       <%= button_to "Import tasks from JIRA", { action: "retrieve_tasks" }, method: :post, class: "btn btn-warning ms-1" %>
