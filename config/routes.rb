@@ -24,7 +24,6 @@ Rails.application.routes.draw do
 
   get '/assignee_profile/:id', to: 'assignees#assignee_profile', as: 'assignee_profile', constraints: lambda { |request| request.env['warden'].user.admin? }
   post 'assignees/retrieve_assignees'
-  post 'assignees/destroy_all'
 
 
   # Projects Routes
@@ -34,8 +33,6 @@ Rails.application.routes.draw do
 
   get '/project_details/:id', to: 'projects#project_details', as: 'project_details', constraints: lambda { |request| request.env['warden'].user.admin? }
 
-  post 'projects/retrieve_projects'
-  post 'projects/destroy_all'
 
   # Tasks Routes
   resources :tasks, only: [:index, :show]

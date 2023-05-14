@@ -18,12 +18,6 @@ class ProjectsController < ApplicationController
     @projects_count = Project.count
   end
 
-  def retrieve_projects
-    get_projects_data_with_pagination(0)
-    get_projects_data_with_pagination(50)
-    redirect_to projects_path
-  end
-
   def new
     @project = Project.new
   end
@@ -95,11 +89,6 @@ class ProjectsController < ApplicationController
     else
       render :edit
     end
-  end
-
-  def destroy_all
-    Project.destroy_all
-    redirect_to projects_path
   end
 
   private
