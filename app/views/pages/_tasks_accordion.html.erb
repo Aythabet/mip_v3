@@ -27,8 +27,7 @@
                             end %>
             <div class="progress mt-2">
               <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: <%= (task.time_spent / task.time_forecast) * 100 %>%;" aria-valuenow=<% task.time_spent %> aria-valuemin="0" aria-valuemax=<% task.time_forecast %>>
-                <span class="sr-only"><%= "#{my_helper_format_duration(task.time_spent)} / #{my_helper_format_duration(task.time_forecast)}" %></span>
-                <span class="<%= status_class %> remaining-time" style="color:black !important;"><%= "#{my_helper_format_duration(remaining_time)} remaining..." %></span>
+                <span class="<%= status_class %> remaining-time" style="color:white !important;"><%= "#{my_helper_format_duration(remaining_time)} remaining..." %></span>
               </div>
             </div>
           <% end %>

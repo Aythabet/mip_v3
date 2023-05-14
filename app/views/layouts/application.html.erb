@@ -15,10 +15,9 @@
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
-    <title>Production Dashboard - Inspire Group</title>
     <%= favicon_link_tag asset_path('favicon.png') %>
-    <%= javascript_importmap_tags %>
     <%= hotwire_livereload_tags if Rails.env.development? %>
+    <title>Production Dashboard - Inspire Group</title>
   </head>
   <body>
     <div class="container">

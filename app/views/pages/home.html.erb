@@ -14,7 +14,7 @@
       <%= link_to tasks_path, class: "d-inline-block position-relative" do %>
         <h3 class="d-inline"><%= @total_number_of_tasks %></h3>
         <% if !@total_number_of_tasks_today.nil? %>
-          <span class="position-absolute top-0 start-100 ms-3 translate-middle badge rounded-pill bg-success text-dark"  style="transform: translate(50%, -50%); font-size: 0.7em;">
+          <span class="position-absolute top-0 start-100 ms-3 translate-middle badge rounded-pill bg-success text-light" style="transform: translate(50%, -50%); font-size: 1em; width: 2em;">
             +<%= @total_number_of_tasks_today %>
           </span>
         <% end %>

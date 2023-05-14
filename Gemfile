@@ -24,28 +24,26 @@ group :production do
 end
 
 gem "rails", "~> 7.0.4", ">= 7.0.4.2"
-gem "sprockets-rails"
 gem "pg"
 gem "puma", "~> 5.0"
-gem "jsbundling-rails"
+
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "jbuilder"
 gem "redis"
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 gem "bootsnap", require: false
-gem "sassc-rails"
-gem 'bootstrap-sass'
+
 gem 'uri'
 gem "sidekiq", "~> 7.0"
 gem 'sidekiq-scheduler'
-gem "importmap-rails", "~> 1.1"
 gem "hotwire-livereload", "~> 1.2"
 gem 'json', '~> 2.6', '>= 2.6.3'
 gem 'net-http'
 gem "devise"
 gem "autoprefixer-rails"
-gem "font-awesome-sass", "~> 6.1"
+gem 'bootstrap'
+
 gem 'kaminari'
 gem "simple_form", github: "heartcombo/simple_form"
 gem "omniauth"
@@ -53,3 +51,6 @@ gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 gem 'actionmailer', '~> 7.0'
 gem "breadcrumbs"
+gem "sassc-rails"
+gem 'font-awesome-sass', '~> 6.1'
+gem "jsbundling-rails"
