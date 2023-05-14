@@ -19,9 +19,8 @@ Rails.application.routes.draw do
     resources :vacations, only: [:index, :new, :create, :edit, :update, :destroy]
   end
 
-  get "/assignee_profile/:id", to: "assignees#assignee_profile", as: "assignee_profile", constraints: lambda { |request| request.env["warden"].user.admin? }
-  post "assignees/retrieve_assignees"
-  post "assignees/destroy_all"
+  get '/assignee_profile/:id', to: 'assignees#assignee_profile', as: 'assignee_profile', constraints: lambda { |request| request.env['warden'].user.admin? }
+  post 'assignees/retrieve_assignees'
 
   # Projects Routes
   resources :projects do
@@ -30,8 +29,6 @@ Rails.application.routes.draw do
 
   get "/project_details/:id", to: "projects#project_details", as: "project_details", constraints: lambda { |request| request.env["warden"].user.admin? }
 
-  post "projects/retrieve_projects"
-  post "projects/destroy_all"
 
   # Tasks Routes
   resources :tasks, only: [:index, :show]
