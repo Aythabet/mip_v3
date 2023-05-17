@@ -10,9 +10,10 @@ class FlaggedTasksSlackMessageJob
     nil_attributes = task.attributes.select { |_, value| value.nil? }.keys
 
     if nil_attributes.any?
-      message = "Hello again, #{user}!\n"
-      message += "The following fields are empty for the task #{jira_id}:\n"
-      nil_attributes.each { |attribute| message += "- #{attribute}\n" }
+      message = "Hello, #{user}!\n"
+      message += "You have some missing fields in this task: <https://agenceinspire.atlassian.net/browse/#{jira_id}|#{jira_id}>\n"
+      message += "Please fill them in and remember to update all yours ongoing tasks!\n"
+      message += "Thanks  :sunglasses:  \n"
       send_slack_message(message, user)
     end
   end
@@ -53,7 +54,6 @@ class FlaggedTasksSlackMessageJob
 
       user_id = variations.map { |name| names.find { |member| member[:name] == name }&.dig(:id) }.compact.first
     end
-    pp("===================#{username}: #{user_id}")
     user_id
   end
 end

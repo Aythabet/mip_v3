@@ -3,6 +3,7 @@ class TasksJob
   DEFAULT_USER_ID = 1
   DEFAULT_PORJECT_ID = 1
 
+
   def perform
     job_start_time = Time.now
     entity = "agenceinspire"
@@ -11,7 +12,7 @@ class TasksJob
     jira_ids.each do |jira_id|
       collect_and_save_task_information(entity, jira_id)
       i += 1
-      pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~~")
+      pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~")
     end
     job_end_time = Time.now
     JobsLog.create!(title: "TasksJob", execution_time: job_end_time - job_start_time)
@@ -49,22 +50,22 @@ class TasksJob
     start_at = 0
     max_results = 10
 
-    loop do
-      response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
-      break unless response.code == "200"
+    response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
-      tasks = JSON.parse(response.body)
-      jira_ids.concat(tasks["issues"].map { |issue| issue["key"] })
-
-      total_issues_count = tasks["total"]
+    if response.code == "200"
+      total_issues_count = JSON.parse(response.body)["total"]
       total_pages = 1 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
 
-      start_at += max_results
-      break if start_at >= total_pages
+      (1..total_pages).each do
+        tasks = JSON.parse(response.body)
+        jira_ids << tasks["issues"].map { |issue| issue["key"] }
+        start_at += max_results
+        response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
+      end
     end
 
-    jira_ids
+    jira_ids.flatten
   end
 
   def collect_and_save_task_information(entity, jira_id)
@@ -105,7 +106,7 @@ class TasksJob
 
     if check_task_forecast_and_time_spent(added_task)
       added_task.update!(flagged: true)
-      pp("#{added_task.jira_id} ===> #{check_task_forecast_and_time_spent(added_task)} - A comment can be sent for this issue")
+      pp("~~~~~~~~~  #{added_task.jira_id} has been flagged! ~~~~~~~~~")
     end
   end
 
@@ -189,16 +190,19 @@ class TasksJob
   def retrieve_worklog_info(url, jira_id)
     worklog_url = "#{url}/worklog"
     task = Task.find_by(jira_id: jira_id)
+    
+    return [] unless task && task.status # Check if task exists and status is not nil
+  
     worklog_response = call_jira_api(worklog_url)
     return [] unless worklog_response.code == "200"
-
+  
     worklogs = JSON.parse(worklog_response.body)["worklogs"]
     worklog_info = []
-
+  
     worklogs.each do |worklog|
-      existing_worklog = TaskWorklog.find_by(worklog_entry_id: worklog["id"])
-
-      if existing_worklog.nil?
+      existing_worklog = TaskWorklog.find_or_initialize_by(worklog_entry_id: worklog["id"])
+  
+      if existing_worklog.new_record?
         TaskWorklog.create!(
           author: worklog["author"]["displayName"],
           duration: worklog["timeSpent"],
@@ -209,7 +213,7 @@ class TasksJob
           task_id: task.id,
           worklog_entry_id: worklog["id"],
         )
-
+  
         worklog_info << {
           author: worklog["author"]["displayName"],
           duration: worklog["timeSpent"],
@@ -229,7 +233,7 @@ class TasksJob
           started: worklog["started"],
           status: task.status,
         )
-
+  
         worklog_info << {
           author: worklog["author"]["displayName"],
           duration: worklog["timeSpent"],
@@ -242,10 +246,10 @@ class TasksJob
         }
       end
     end
-
+    
     worklog_info
   end
-
+  
   def retrieve_task_changelogs(jira_id)
     url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{jira_id}/changelog?maxResults=100&startAt=0"
     response = call_jira_api(url)
@@ -281,72 +285,6 @@ class TasksJob
       end
     end
     pp("~~~~~~~~~ Importing next task's infos: #{i} Changelog(s) imported ~~~~~~~~~ ") if i > 0
-  end
-
-  def post_comment_to_task(task)
-    task_comment_information = retrieve_task_assignee_name_and_account_id_to_comment(task.jira_id)
-    displayName = task_comment_information[0]
-    account_id = task_comment_information[1]
-    url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{task.jira_id}/comment"
-    uri = URI.parse(url)
-
-    body_data = {
-      "body": {
-        "type": "doc",
-        "version": 1,
-        "content": [
-          {
-            "type": "paragraph",
-            "content": [
-              {
-                "type": "text",
-                "text": "Hello ",
-              },
-              {
-                "type": "mention",
-                "attrs": {
-                  "id": "#{account_id}",
-                  "text": "@#{displayName}",
-                  "userType": "DEFAULT",
-                },
-              },
-              {
-                "type": "text",
-                "text": ": Merci de saisir l'estimation et le suivi temporel",
-              },
-            ],
-          },
-        ],
-      },
-    }
-
-    body_data_json = body_data.to_json  # Convert to JSON format
-    headers = {
-      "Authorization" => "Basic #{ENV["JIRA_API_TOKEN"]}",
-      "Content-Type" => "application/json",
-    }
-
-    http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-
-    request = Net::HTTP::Post.new(uri.path, headers)
-    request.body = body_data_json  # Assign the JSON string
-
-    @response = http.request(request)
-
-    puts "Response: #{@response.code} #{@response.message}"
-  end
-
-  def retrieve_task_assignee_name_and_account_id_to_comment(jira_id)
-    url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{jira_id}"
-    response = call_jira_api(url)
-    return unless response.code == "200"
-
-    task_json_body = JSON.parse(response.body)
-    displayName = task_json_body["fields"]["assignee"]["displayName"]
-    account_id = task_json_body["fields"]["assignee"]["accountId"]
-
-    task_comment_information = [displayName, account_id]
   end
 
   def check_task_forecast_and_time_spent(task)

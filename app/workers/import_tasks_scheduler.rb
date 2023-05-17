@@ -49,13 +49,13 @@ class ImportTasksScheduler
   def collect_all_task_jira_ids(entity)
     jira_ids = []
     start_at = 0
-    max_results = 25
+    max_results = 50
 
     response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == "200"
       total_issues_count = JSON.parse(response.body)["total"]
-      total_pages = 1 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 2 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
 
       (1..total_pages).each do
@@ -76,26 +76,27 @@ class ImportTasksScheduler
 
     json_task = JSON.parse(response.body)
     fields = json_task["fields"]
-    added_task = Task.where(jira_id: jira_id).first_or_create
+    added_task = Task.find_or_initialize_by(jira_id: jira_id)
     last_jira_update = fields["updated"]
 
     if added_task.last_jira_update != last_jira_update
-      added_task.update(
+      added_task.assign_attributes(
         project_id: determine_the_project_id(json_task),
         assignee_id: determine_the_user_id(json_task),
         time_forecast: fields["timeoriginalestimate"],
-        status: fields&.[]("status")&.[]("name"),
+        status: fields&.dig("status", "name"),
         created_at: fields["created"],
         last_jira_update: last_jira_update,
         summary: fields["summary"],
-        priority: fields&.[]("priority")&.[]("name"),
-        epic: fields&.[]("parent")&.[]("fields")&.[]("summary"),
+        priority: fields&.dig("priority", "name"),
+        epic: fields&.dig("parent", "fields", "summary"),
         time_spent: retrieve_time_spent(url),
         labels: retrive_labels(json_task),
         status_change_date: fields["statuscategorychangedate"],
         due_date: fields["duedate"],
-        task_type: fields&.[]("issuetype")&.[]("name"),
-        is_task_subtask: fields&.[]("issuetype")&.[]("subtask"),
+        task_type: fields&.dig("issuetype", "name"),
+        is_task_subtask: fields&.dig("issuetype", "subtask"),
+        flagged: false,
       )
 
       pp(added_task)
@@ -103,6 +104,11 @@ class ImportTasksScheduler
       added_task.save
     end
     retrieve_task_changelogs(jira_id)
+
+    if check_task_forecast_and_time_spent(added_task)
+      added_task.update!(flagged: true)
+      pp("~~~~~~~~~  #{added_task.jira_id} has been flagged! ~~~~~~~~~")
+    end
   end
 
   def determine_the_user_id(json_task)
@@ -185,16 +191,19 @@ class ImportTasksScheduler
   def retrieve_worklog_info(url, jira_id)
     worklog_url = "#{url}/worklog"
     task = Task.find_by(jira_id: jira_id)
+    
+    return [] unless task && task.status # Check if task exists and status is not nil
+  
     worklog_response = call_jira_api(worklog_url)
     return [] unless worklog_response.code == "200"
-
+  
     worklogs = JSON.parse(worklog_response.body)["worklogs"]
     worklog_info = []
-
+  
     worklogs.each do |worklog|
-      existing_worklog = TaskWorklog.find_by(worklog_entry_id: worklog["id"])
-
-      if existing_worklog.nil?
+      existing_worklog = TaskWorklog.find_or_initialize_by(worklog_entry_id: worklog["id"])
+  
+      if existing_worklog.new_record?
         TaskWorklog.create!(
           author: worklog["author"]["displayName"],
           duration: worklog["timeSpent"],
@@ -205,7 +214,7 @@ class ImportTasksScheduler
           task_id: task.id,
           worklog_entry_id: worklog["id"],
         )
-
+  
         worklog_info << {
           author: worklog["author"]["displayName"],
           duration: worklog["timeSpent"],
@@ -225,7 +234,7 @@ class ImportTasksScheduler
           started: worklog["started"],
           status: task.status,
         )
-
+  
         worklog_info << {
           author: worklog["author"]["displayName"],
           duration: worklog["timeSpent"],
@@ -238,10 +247,10 @@ class ImportTasksScheduler
         }
       end
     end
-
+    
     worklog_info
   end
-
+  
   def retrieve_task_changelogs(jira_id)
     url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{jira_id}/changelog?maxResults=100&startAt=0"
     response = call_jira_api(url)
@@ -277,5 +286,9 @@ class ImportTasksScheduler
       end
     end
     pp("~~~~~~~~~ Importing next task's infos: #{i} Changelog(s) imported ~~~~~~~~~ ") if i > 0
+  end
+
+  def check_task_forecast_and_time_spent(task)
+    (task.time_forecast.nil? || task.time_spent.nil?) && ["In Progress", "On hold"].include?(task.status)
   end
 end

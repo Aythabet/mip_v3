@@ -4,6 +4,13 @@ class AdminController < ApplicationController
   def index
   end
 
+  def db_task_cleaner
+    DbTaskCleanerJob.set(queue: :critical).perform_async
+
+    flash.notice = "Checking tasks... this will take a minute!"
+    redirect_to admin_index_path
+  end
+
   def retrieve_tasks
     TasksJob.set(queue: :critical).perform_async
 
@@ -42,12 +49,18 @@ class AdminController < ApplicationController
 
   def tests
     breadcrumbs.add "Tests", tests_path
-    @tasks = Task.where(flagged: true).where("last_jira_update >= ?", 1.month.ago)
+    @tasks = Task.where(flagged: true)
+      .where("status = ? OR status = ? OR status = ?", "In Progress", "Done", "Réalisé")
+      .where("last_jira_update >= ?", 1.month.ago)
   end
 
   def start_slack_message_job
-    pp("========> PARAMS ======> #{params[:id]}")
     FlaggedTasksSlackMessageJob.set(queue: :critical).perform_async(params[:task_id])
-    redirect_to tests_path, notice: "Slack message job started successfully."
-  end  
+    redirect_to tests_path, notice: "Slack message sent!"
+  end
+
+  def start_jira_issue_comment_job
+    FlaggedTasksJiraIssueCommentJob.set(queue: :critical).perform_async(params[:task_id])
+    redirect_to tests_path, notice: "Jira comment sent!"
+  end
 end
