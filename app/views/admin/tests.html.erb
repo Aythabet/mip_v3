@@ -5,7 +5,9 @@
       <div class="col-md-2 mb-1 px-1">
         <div class="card" style="height: 100%;">
           <div class="card-header d-flex align-items-center justify-content-between py-0">
-            <h6 class="mb-0" style="font-size: 14px;"><%= task.jira_id %></h6>
+            <h6 class="mb-0" style="font-size: 14px;">
+              <%= link_to task.jira_id, "https://agenceinspire.atlassian.net/browse/#{task.jira_id}", target: "_blank" %>
+            </h6>
             <div>
               <a href="<%= start_jira_issue_comment_job_path(task) %>" class="btn btn-link p-0" data-method="post">
                 <i class="bi bi-chat-dots" style="color: black;"></i>
@@ -16,14 +18,8 @@
             </div>
           </div>
           <div class="card-body py-1" style="font-size: 12px;">
-            <p class="mb-0"><%= task.assignee.name %></p>
-            <% task.attributes.each do |attribute, value| %>
-              <% next unless value.nil? || value.blank? %>
-              <p class="card-text mb-0">
-                <strong><%= attribute %>:</strong> Missing
-                <a href="#"><i class="bi bi-exclamation-triangle-fill"></i></a>
-              </p>
-            <% end %>
+            <p class="mb-0"><strong>Assignee: </strong><%= task.assignee.name %></p>
+            <p class="mb-0"><strong>Lead: </strong><%= task.reporter %></p>
           </div>
         </div>
       </div>

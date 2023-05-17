@@ -95,6 +95,7 @@ class TasksJob
         due_date: fields["duedate"],
         task_type: fields&.dig("issuetype", "name"),
         is_task_subtask: fields&.dig("issuetype", "subtask"),
+        reporter: fields&.dig("reporter", "displayName"),
         flagged: false,
       )
 

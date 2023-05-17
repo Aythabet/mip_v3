@@ -96,6 +96,7 @@ class ImportTasksScheduler
         due_date: fields["duedate"],
         task_type: fields&.dig("issuetype", "name"),
         is_task_subtask: fields&.dig("issuetype", "subtask"),
+        reporter: fields&.dig("reporter", "displayName"),
         flagged: false,
       )
 
@@ -191,18 +192,18 @@ class ImportTasksScheduler
   def retrieve_worklog_info(url, jira_id)
     worklog_url = "#{url}/worklog"
     task = Task.find_by(jira_id: jira_id)
-    
+
     return [] unless task && task.status # Check if task exists and status is not nil
-  
+
     worklog_response = call_jira_api(worklog_url)
     return [] unless worklog_response.code == "200"
-  
+
     worklogs = JSON.parse(worklog_response.body)["worklogs"]
     worklog_info = []
-  
+
     worklogs.each do |worklog|
       existing_worklog = TaskWorklog.find_or_initialize_by(worklog_entry_id: worklog["id"])
-  
+
       if existing_worklog.new_record?
         TaskWorklog.create!(
           author: worklog["author"]["displayName"],
@@ -214,7 +215,7 @@ class ImportTasksScheduler
           task_id: task.id,
           worklog_entry_id: worklog["id"],
         )
-  
+
         worklog_info << {
           author: worklog["author"]["displayName"],
           duration: worklog["timeSpent"],
@@ -234,7 +235,7 @@ class ImportTasksScheduler
           started: worklog["started"],
           status: task.status,
         )
-  
+
         worklog_info << {
           author: worklog["author"]["displayName"],
           duration: worklog["timeSpent"],
@@ -247,10 +248,10 @@ class ImportTasksScheduler
         }
       end
     end
-    
+
     worklog_info
   end
-  
+
   def retrieve_task_changelogs(jira_id)
     url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{jira_id}/changelog?maxResults=100&startAt=0"
     response = call_jira_api(url)

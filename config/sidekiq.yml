@@ -18,6 +18,6 @@
       class: 'CheckAssigneeOnVacationScheduler'
       queue: default
     db_task_cleaner:
-      cron: '0 * * * *'
+      cron: '*/30 * * * *'
       class: 'DbTaskCleanerScheduler'
       queue: critical
