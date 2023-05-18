@@ -1,27 +1,40 @@
 class ProjectsController < ApplicationController
   def index
     breadcrumbs.add "Projects", projects_path
-
-    # Get projects with active tasks and order by number of active tasks
-    active_projects = Project
-      .joins(:tasks)
-      .where("tasks.status = ?", "In Progress")
+    @projects = Project
+      .left_joins(:tasks)
+      .select("projects.*, COUNT(tasks.id) AS tasks_count")
       .group("projects.id")
-      .order(Arel.sql("COUNT(DISTINCT tasks.id) DESC"))
+      .order("COUNT(tasks.id) DESC")
 
-    # Get remaining projects and concatenate the two lists
-    inactive_projects = Project.where.not(id: active_projects)
-    @projects = Kaminari.paginate_array(active_projects.to_a + inactive_projects.to_a)
-      .page(params[:page])
+    if params[:project_lead].present?
+      project_lead = Assignee.find_by(name: params[:project_lead])
+      if project_lead.present?
+        @projects = @projects.where(lead: project_lead.name)
+      else
+        @projects = @projects.where(lead: params[:project_lead])
+      end
+    end
 
-    # Get the total count of projects
-    @projects_count = Project.count
+    if params[:search_term].present?
+      search_term = params[:search_term].strip.downcase  # Convert search term to lowercase
+      @projects = @projects.where("LOWER(projects.name) LIKE ? OR LOWER(projects.jira_id) LIKE ?", "%#{search_term}%", "%#{search_term}%")
+    end
+
+    @projects = @projects.page(params[:page])
+    @projects_count = @projects.total_count
+
+    if @projects.empty?
+      flash.now[:notice] = "No search result"
+    end
+
+    render :index
   end
 
   def new
     @project = Project.new
   end
-  
+
   def create
     @project = Project.new(project_params)
     if @project.save
