@@ -20,7 +20,7 @@
     <div class="col-12 col-md-6">
       <div class="d-flex align-items-center">
         <h1 class="mb-2 me-3">Team</h1>
-        <span class="badge bg-dark fs-6"><%= @project_tasks.count %> tickets</span>
+        <span class="badge bg-dark fs-6"><%= @all_project_tasks.count %> tickets</span>
       </div>
       <div class="row small-text">
         <% if @projects_unique_assignees.present? %>
@@ -100,8 +100,8 @@
   <!-- Search / Filtres -->
   <%= render "detail_search_form" %>
   <!-- Pagination -->
-  <div align="right" style="font-size: 80%"><%= page_entries_info @project_tasks_paginated, entry_name: 'task' %></div>
-  <span class="d-flex flex-row-reverse"><%= link_to_next_page @project_tasks_paginated, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @project_tasks_paginated, 'Previous' %></span>
+  <div align="right" style="font-size: 80%"><%= page_entries_info @project_tasks, entry_name: 'task' %></div>
+  <span class="d-flex flex-row-reverse"><%= link_to_next_page @project_tasks, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @project_tasks, 'Previous' %></span>
   <!-- Tickets - Cards -->
   <%= turbo_frame_tag "tasks" do %>
     <div class="row row-cols-1 row-cols-md-3 g-2">

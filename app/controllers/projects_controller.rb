@@ -24,10 +24,6 @@ class ProjectsController < ApplicationController
     @projects = @projects.page(params[:page])
     @projects_count = @projects.total_count
 
-    if @projects.empty?
-      flash.now[:notice] = "No search result"
-    end
-
     render :index
   end
 
@@ -50,25 +46,21 @@ class ProjectsController < ApplicationController
 
     @total_time_estimation = 0
     @total_time_spent = 0
-    all_project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
-    @project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
-    @project_tasks_paginated = Task.where(project: @project).order(last_jira_update: :desc).page params[:page]
+
+    @all_project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
+    @project_tasks = @all_project_tasks
 
     projects_unique_assignees_list
     projects_unique_statuses_list
     @tasks_by_time_status = tasks_by_time_status
 
-    # Filter logic
-    if params[:assignee].present?
-      assignee_filter = Assignee.find_by(name: params[:assignee])
-      @project_tasks = Task.where(project: @project).where(assignee: assignee_filter).order(last_jira_update: :desc)
-    end
+    filter_tasks_by_assignee if params[:assignee].present?
+    filter_tasks_by_search_term if params[:search_term].present?
 
-    all_project_tasks.each do |task|
-      @total_time_estimation += task.time_forecast || 0
-      @total_time_spent += task.time_spent || 0
-      @time_difference = @total_time_estimation - @total_time_spent
-    end
+    calculate_total_time_metrics(@all_project_tasks)
+
+    @project_tasks = @project_tasks.page(params[:page])
+    render :show
   end
 
   def project_details
@@ -217,5 +209,23 @@ class ProjectsController < ApplicationController
       early: { count: early_tasks, percentage: early_percentage },
       delayed: { count: delayed_tasks, percentage: delayed_percentage },
       no_data: { count: no_data_tasks, percentage: no_data_percentage } }
+  end
+
+  def calculate_total_time_metrics(tasks)
+    tasks.each do |task|
+      @total_time_estimation += task.time_forecast || 0
+      @total_time_spent += task.time_spent || 0
+    end
+    @time_difference = @total_time_estimation - @total_time_spent
+  end
+
+  def filter_tasks_by_assignee
+    assignee_filter = Assignee.find_by(name: params[:assignee])
+    @project_tasks = @project_tasks.where(assignee: assignee_filter).order(last_jira_update: :desc)
+  end
+
+  def filter_tasks_by_search_term
+    search_term = params[:search_term].strip.downcase
+    @project_tasks = @project_tasks.where("LOWER(tasks.status) LIKE ? OR LOWER(tasks.summary) LIKE ?", "%#{search_term}%", "%#{search_term}%")
   end
 end

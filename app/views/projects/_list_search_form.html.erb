@@ -8,6 +8,6 @@
     <%= select_tag(:project_lead, options_for_select(Project.distinct.pluck(:lead), params[:lead]), prompt: "Select Lead", class: "form-select") %>
   </div>
   <div class="col-md-2 align-self-end">
-    <%= submit_tag("Search", class: "btn btn-secondary") %>
+    <%= submit_tag("Filter", class: "btn btn-secondary") %>
   </div>
 <% end %>
