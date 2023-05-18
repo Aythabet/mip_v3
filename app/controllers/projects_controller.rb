@@ -48,6 +48,9 @@ class ProjectsController < ApplicationController
     breadcrumbs.add "Projects", projects_path
     @project = Project.find(params[:id])
 
+    @total_time_estimation = 0
+    @total_time_spent = 0
+    all_project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
     @project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
     @project_tasks_paginated = Task.where(project: @project).order(last_jira_update: :desc).page params[:page]
 
@@ -55,10 +58,13 @@ class ProjectsController < ApplicationController
     projects_unique_statuses_list
     @tasks_by_time_status = tasks_by_time_status
 
-    @total_time_estimation = 0
-    @total_time_spent = 0
+    # Filter logic
+    if params[:assignee].present?
+      assignee_filter = Assignee.find_by(name: params[:assignee])
+      @project_tasks = Task.where(project: @project).where(assignee: assignee_filter).order(last_jira_update: :desc)
+    end
 
-    @project_tasks.each do |task|
+    all_project_tasks.each do |task|
       @total_time_estimation += task.time_forecast || 0
       @total_time_spent += task.time_spent || 0
       @time_difference = @total_time_estimation - @total_time_spent
@@ -140,10 +146,10 @@ class ProjectsController < ApplicationController
 
   def projects_unique_assignees_list
     # Load the project by ID
-    @project = Project.find(params[:id])
+    project = Project.find(params[:id])
 
     # Load all the unique assignees for the project's tasks
-    assignee_names = @project.tasks.select(:assignee_id).distinct.joins(:assignee).pluck("assignees.name")
+    assignee_names = project.tasks.select(:assignee_id).distinct.joins(:assignee).pluck("assignees.name")
 
     # Extract the full names from the array of names
     @projects_unique_assignees = assignee_names.map { |name| name.split(" ").map(&:capitalize).join(" ") }
@@ -160,7 +166,7 @@ class ProjectsController < ApplicationController
     end
 
     @assignee_time_spent = {}
-    @project.tasks.joins(:assignee).group("assignees.name").sum(:time_spent).each do |assignee_name, time_spent|
+    project.tasks.joins(:assignee).group("assignees.name").sum(:time_spent).each do |assignee_name, time_spent|
       @assignee_time_spent[assignee_name] = time_spent
     end
 
@@ -170,10 +176,10 @@ class ProjectsController < ApplicationController
 
   def projects_unique_statuses_list
     # Load the project by ID
-    @project = Project.find(params[:id])
+    project = Project.find(params[:id])
 
     # Load all the unique statuses for the project's tasks
-    status_names = @project.tasks.select(:status).distinct.pluck(:status)
+    status_names = project.tasks.select(:status).distinct.pluck(:status)
 
     # Extract the full names from the array of names
     @projects_unique_statuses = status_names.map(&:capitalize)
@@ -181,7 +187,7 @@ class ProjectsController < ApplicationController
     # Get the count and percentage of tasks for each status
     @status_task_counts = {}
     total_tasks = @project.tasks.count
-    @project.tasks.group(:status).count.each do |status, task_count|
+    project.tasks.group(:status).count.each do |status, task_count|
       @status_task_counts[status.capitalize] = task_count
     end
 

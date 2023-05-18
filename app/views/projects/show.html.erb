@@ -22,16 +22,22 @@
         <h1 class="mb-2 me-3">Team</h1>
         <span class="badge bg-dark fs-6"><%= @project_tasks.count %> tickets</span>
       </div>
-      <div class="row">
+      <div class="row small-text">
         <% if @projects_unique_assignees.present? %>
           <% @projects_unique_assignees.each_slice((@projects_unique_assignees.size + 1) / 2.to_i) do |assignees| %>
             <div class="col-6">
               <% assignees.each do |assignee| %>
                 <p class="card-text mb-1">
                   <%= assignee %>
-                  <span class="badge bg-info text-dark"> <%= @assignee_task_counts[assignee] %></span>
-                  <span class="badge bg-primary"> <%= "#{(@assignee_task_percentages[assignee]).round(2)} %" %></span>
-                  <span class="badge bg-warning text-light"> <%= (@assignee_time_spent[assignee] / 3600 ).round(2)%> hours</span>
+                  <span class="badge bg-info text-dark" style="font-size: 0.8em;">
+                    <%= @assignee_task_counts[assignee] %>
+                  </span>
+                  <span class="badge bg-primary" style="font-size: 0.8em;">
+                    <%= "#{(@assignee_task_percentages[assignee]).round(2)} %" %>
+                  </span>
+                  <span class="badge bg-warning text-light" style="font-size: 0.8em;">
+                    <%= (@assignee_time_spent[assignee] / 3600 ).round(2)%> hours
+                  </span>
                 </p>
               <% end %>
             </div>
@@ -42,7 +48,7 @@
       </div>
     </div>
     <!-- Statistics -->
-    <div class="col-12 col-md-12 pt-3">
+    <div class="col-12 col-md-12 pt-3 small-text">
       <h2 class="fw-bold mb-3">Stats</h2>
       <div class="bg-stats border-0">
         <div class="card-body row">
@@ -91,13 +97,15 @@
       </div>
     </div>
   </div>
+  <!-- Search / Filtres -->
+  <%= render "detail_search_form" %>
   <!-- Pagination -->
   <div align="right" style="font-size: 80%"><%= page_entries_info @project_tasks_paginated, entry_name: 'task' %></div>
   <span class="d-flex flex-row-reverse"><%= link_to_next_page @project_tasks_paginated, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @project_tasks_paginated, 'Previous' %></span>
   <!-- Tickets - Cards -->
   <%= turbo_frame_tag "tasks" do %>
     <div class="row row-cols-1 row-cols-md-3 g-2">
-      <% @project_tasks_paginated.each do |task| %>
+      <% @project_tasks.each do |task| %>
         <%= render partial: "/tasks/task", locals: { task: task } %>
       <% end %>
     </div>
