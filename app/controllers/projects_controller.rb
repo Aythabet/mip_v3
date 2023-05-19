@@ -102,6 +102,27 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def generate_pdf_report
+    @project = Project.find(params[:id])
+  
+    pdf = Prawn::Document.new
+    pdf.text "Project Financial Data"
+    pdf.text "Internal Cost: $#{@project.total_internal_cost}"
+    pdf.text "Selling Price: $#{@project.total_selling_price}"
+  
+    # Get the list of assignee names
+    assignee_names = projects_unique_assignees_list
+    pdf.text "Assignees: #{assignee_names.join(', ')}"
+  
+    # Calculate and display cost per assignee
+    assignees_count = assignee_names.length
+    cost_per_assignee = assignees_count > 0 ? @project.total_internal_cost / assignees_count : 0
+    pdf.text "Cost per Assignee: $#{cost_per_assignee}"
+  
+    send_data pdf.render, filename: "report.pdf", type: "application/pdf", disposition: "attachment"
+  end
+  
+
   private
 
   def project_params

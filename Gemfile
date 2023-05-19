@@ -56,3 +56,4 @@ gem 'font-awesome-sass', '~> 6.1'
 gem "jsbundling-rails"
 gem 'slack-ruby-client'
 gem 'ransack', :github => 'activerecord-hackery/ransack', :branch => 'main'
+gem "prawn"

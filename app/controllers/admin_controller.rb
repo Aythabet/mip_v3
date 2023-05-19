@@ -56,11 +56,11 @@ class AdminController < ApplicationController
 
   def start_slack_message_job
     FlaggedTasksSlackMessageJob.set(queue: :critical).perform_async(params[:task_id])
-    redirect_to tests_path, notice: "Slack message sent!"
+    redirect_to flagged_tasks_path, notice: "Slack message sent!"
   end
 
   def start_jira_issue_comment_job
     FlaggedTasksJiraIssueCommentJob.set(queue: :critical).perform_async(params[:task_id])
-    redirect_to tests_path, notice: "Jira comment sent!"
+    redirect_to flagged_tasks_path, notice: "Jira comment sent!"
   end
 end
