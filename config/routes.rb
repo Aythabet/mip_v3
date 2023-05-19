@@ -39,7 +39,7 @@ Rails.application.routes.draw do
   post "admin/retrieve_tasks"
   post "admin/destroy_all"
   get "/all_vacations", to: "admin#all_vacations", as: "all_vacations", constraints: lambda { |request| request.env["warden"].user.admin? }
-  get "/tests", to: "admin#tests", as: "tests", constraints: lambda { |request| request.env["warden"].user.admin? }
+  get "/flagged_tasks", to: "admin#flagged_tasks", as: "flagged_tasks", constraints: lambda { |request| request.env["warden"].user.admin? }
   get "/sidekiq_logs", to: "admin#sidekiq_logs", as: "sidekiq_logs", constraints: lambda { |request| request.env["warden"].user.admin? }
   post "start_slack_message_job/:task_id", to: "admin#start_slack_message_job", as: "start_slack_message_job"
   post "start_jira_issue_comment_job/:task_id", to: "admin#start_jira_issue_comment_job", as: "start_jira_issue_comment_job"
