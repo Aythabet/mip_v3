@@ -25,5 +25,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ujs/1.2.3/rails.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"></script>
+    <script>
+      const inactivityTimeout = 900000; // 15min timer to refresh the page
+            let inactivityTimer;
+
+      function refreshPage() {
+              location.reload();
+            }
+
+      function startInactivityTimer() {
+              clearTimeout(inactivityTimer);
+
+              inactivityTimer = setTimeout(refreshPage, inactivityTimeout);
+            }
+
+      function resetInactivityTimer() {
+              clearTimeout(inactivityTimer);
+              startInactivityTimer();
+            }
+
+      document.addEventListener("mousemove", resetInactivityTimer);
+            document.addEventListener("keydown", resetInactivityTimer);
+            document.addEventListener("touchstart", resetInactivityTimer);
+
+      startInactivityTimer();
+    </script>
   </body>
 </html>

@@ -47,8 +47,8 @@ class AdminController < ApplicationController
     )
   end
 
-  def tests
-    breadcrumbs.add "Tests", tests_path
+  def flagged_tasks
+    breadcrumbs.add "Flagged Tasks", flagged_tasks_path
     @tasks = Task.where(flagged: true)
       .where("status = ? OR status = ? OR status = ?", "In Progress", "Done", "Réalisé")
       .where("last_jira_update >= ?", 1.month.ago)

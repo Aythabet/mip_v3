@@ -1,7 +1,14 @@
 <div class="container py-4">
-  Total projects: <%= @projects_count %></br>
-<div align="right" style="font-size: 80%"><%= page_entries_info @projects, entry_name: 'project' %></div>
-<span class="d-flex flex-row-reverse"><%= link_to_next_page @projects, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @projects, 'Previous' %></span>
+  <div class="row align-items-end">
+    <div class="col-md-8">
+      <%= render "list_search_form" %>
+    </div>
+    <div class="col-md-4">
+      <div align="right" style="font-size: 80%"><%= page_entries_info @projects, entry_name: 'project' %></div>
+      <span class="d-flex flex-row-reverse"><%= link_to_next_page @projects, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @projects, 'Previous' %></span>
+    </span>
+  </div>
+</div>
 <table class="table">
   <thead>
     <tr>

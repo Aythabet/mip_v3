@@ -1,4 +1,14 @@
 GIT
+  remote: https://github.com/activerecord-hackery/ransack.git
+  revision: dbffa8bed3e4cad9d7f51cd9233466ae4b68fb4d
+  branch: main
+  specs:
+    ransack (4.0.0)
+      activerecord (>= 6.1.5)
+      activesupport (>= 6.1.5)
+      i18n
+
+GIT
   remote: https://github.com/heartcombo/simple_form.git
   revision: 921ce9c3fc100e1737125ba1b5a2037c03f2de1b
   specs:
@@ -385,6 +395,7 @@ DEPENDENCIES
   pg
   puma (~> 5.0)
   rails (~> 7.0.4, >= 7.0.4.2)
+  ransack!
   redis
   redis-rack-cache
   sassc-rails

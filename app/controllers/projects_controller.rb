@@ -1,27 +1,36 @@
 class ProjectsController < ApplicationController
   def index
     breadcrumbs.add "Projects", projects_path
-
-    # Get projects with active tasks and order by number of active tasks
-    active_projects = Project
-      .joins(:tasks)
-      .where("tasks.status = ?", "In Progress")
+    @projects = Project
+      .left_joins(:tasks)
+      .select("projects.*, COUNT(tasks.id) AS tasks_count")
       .group("projects.id")
-      .order(Arel.sql("COUNT(DISTINCT tasks.id) DESC"))
+      .order("COUNT(tasks.id) DESC")
 
-    # Get remaining projects and concatenate the two lists
-    inactive_projects = Project.where.not(id: active_projects)
-    @projects = Kaminari.paginate_array(active_projects.to_a + inactive_projects.to_a)
-      .page(params[:page])
+    if params[:project_lead].present?
+      project_lead = Assignee.find_by(name: params[:project_lead])
+      if project_lead.present?
+        @projects = @projects.where(lead: project_lead.name)
+      else
+        @projects = @projects.where(lead: params[:project_lead])
+      end
+    end
 
-    # Get the total count of projects
-    @projects_count = Project.count
+    if params[:search_term].present?
+      search_term = params[:search_term].strip.downcase  # Convert search term to lowercase
+      @projects = @projects.where("LOWER(projects.name) LIKE ? OR LOWER(projects.jira_id) LIKE ?", "%#{search_term}%", "%#{search_term}%")
+    end
+
+    @projects = @projects.page(params[:page])
+    @projects_count = @projects.total_count
+
+    render :index
   end
 
   def new
     @project = Project.new
   end
-  
+
   def create
     @project = Project.new(project_params)
     if @project.save
@@ -35,21 +44,23 @@ class ProjectsController < ApplicationController
     breadcrumbs.add "Projects", projects_path
     @project = Project.find(params[:id])
 
-    @project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
-    @project_tasks_paginated = Task.where(project: @project).order(last_jira_update: :desc).page params[:page]
+    @total_time_estimation = 0
+    @total_time_spent = 0
+
+    @all_project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
+    @project_tasks = @all_project_tasks
 
     projects_unique_assignees_list
     projects_unique_statuses_list
     @tasks_by_time_status = tasks_by_time_status
 
-    @total_time_estimation = 0
-    @total_time_spent = 0
+    filter_tasks_by_assignee if params[:assignee].present?
+    filter_tasks_by_search_term if params[:search_term].present?
 
-    @project_tasks.each do |task|
-      @total_time_estimation += task.time_forecast || 0
-      @total_time_spent += task.time_spent || 0
-      @time_difference = @total_time_estimation - @total_time_spent
-    end
+    calculate_total_time_metrics(@all_project_tasks)
+
+    @project_tasks = @project_tasks.page(params[:page])
+    render :show
   end
 
   def project_details
@@ -127,10 +138,10 @@ class ProjectsController < ApplicationController
 
   def projects_unique_assignees_list
     # Load the project by ID
-    @project = Project.find(params[:id])
+    project = Project.find(params[:id])
 
     # Load all the unique assignees for the project's tasks
-    assignee_names = @project.tasks.select(:assignee_id).distinct.joins(:assignee).pluck("assignees.name")
+    assignee_names = project.tasks.select(:assignee_id).distinct.joins(:assignee).pluck("assignees.name")
 
     # Extract the full names from the array of names
     @projects_unique_assignees = assignee_names.map { |name| name.split(" ").map(&:capitalize).join(" ") }
@@ -147,7 +158,7 @@ class ProjectsController < ApplicationController
     end
 
     @assignee_time_spent = {}
-    @project.tasks.joins(:assignee).group("assignees.name").sum(:time_spent).each do |assignee_name, time_spent|
+    project.tasks.joins(:assignee).group("assignees.name").sum(:time_spent).each do |assignee_name, time_spent|
       @assignee_time_spent[assignee_name] = time_spent
     end
 
@@ -157,10 +168,10 @@ class ProjectsController < ApplicationController
 
   def projects_unique_statuses_list
     # Load the project by ID
-    @project = Project.find(params[:id])
+    project = Project.find(params[:id])
 
     # Load all the unique statuses for the project's tasks
-    status_names = @project.tasks.select(:status).distinct.pluck(:status)
+    status_names = project.tasks.select(:status).distinct.pluck(:status)
 
     # Extract the full names from the array of names
     @projects_unique_statuses = status_names.map(&:capitalize)
@@ -168,7 +179,7 @@ class ProjectsController < ApplicationController
     # Get the count and percentage of tasks for each status
     @status_task_counts = {}
     total_tasks = @project.tasks.count
-    @project.tasks.group(:status).count.each do |status, task_count|
+    project.tasks.group(:status).count.each do |status, task_count|
       @status_task_counts[status.capitalize] = task_count
     end
 
@@ -198,5 +209,23 @@ class ProjectsController < ApplicationController
       early: { count: early_tasks, percentage: early_percentage },
       delayed: { count: delayed_tasks, percentage: delayed_percentage },
       no_data: { count: no_data_tasks, percentage: no_data_percentage } }
+  end
+
+  def calculate_total_time_metrics(tasks)
+    tasks.each do |task|
+      @total_time_estimation += task.time_forecast || 0
+      @total_time_spent += task.time_spent || 0
+    end
+    @time_difference = @total_time_estimation - @total_time_spent
+  end
+
+  def filter_tasks_by_assignee
+    assignee_filter = Assignee.find_by(name: params[:assignee])
+    @project_tasks = @project_tasks.where(assignee: assignee_filter).order(last_jira_update: :desc)
+  end
+
+  def filter_tasks_by_search_term
+    search_term = params[:search_term].strip.downcase
+    @project_tasks = @project_tasks.where("LOWER(tasks.status) LIKE ? OR LOWER(tasks.summary) LIKE ?", "%#{search_term}%", "%#{search_term}%")
   end
 end
