@@ -5,7 +5,7 @@
     <div class="col-12 col-md-6">
       <h1 class="fw-bold mb-3"><%= @project.name %>
         <% if current_user.admin? %>
-          <%= link_to "View Project", project_details_path(@project) , class: "btn btn-light btn-sm mb-0 text-dark" %>
+          <%= link_to "Admin view", project_details_path(@project) , class: "btn btn-dark btn-sm mb-0" %>
         <% end %>
       </h1>
       <% @projects_unique_statuses.each do |status| %>
@@ -22,29 +22,39 @@
         <h1 class="mb-2 me-3">Team</h1>
         <span class="badge bg-dark fs-6"><%= @all_project_tasks.count %> tickets</span>
       </div>
-      <div class="row small-text">
-        <% if @projects_unique_assignees.present? %>
-          <% @projects_unique_assignees.each_slice((@projects_unique_assignees.size + 1) / 2.to_i) do |assignees| %>
-            <div class="col-6">
-              <% assignees.each do |assignee| %>
-                <p class="card-text mb-1">
-                  <%= assignee %>
-                  <span class="badge bg-info text-dark" style="font-size: 0.8em;">
-                    <%= @assignee_task_counts[assignee] %>
-                  </span>
-                  <span class="badge bg-primary" style="font-size: 0.8em;">
-                    <%= "#{(@assignee_task_percentages[assignee]).round(2)} %" %>
-                  </span>
-                  <span class="badge bg-warning text-light" style="font-size: 0.8em;">
-                    <%= (@assignee_time_spent[assignee] / 3600 ).round(2)%> hours
-                  </span>
-                </p>
-              <% end %>
-            </div>
-          <% end %>
-        <% else %>
-          <p>No unique assignees found.</p>
-        <% end %>
+      <div>
+        <div class="row small-text team-container" style="max-height: 210px; overflow: hidden;">
+          <div class="team-content">
+            <% if @projects_unique_assignees.present? %>
+              <div class="col-12">
+                <div class="row">
+                  <% @projects_unique_assignees.each do |assignee| %>
+                    <div class="col-6">
+                      <p class="card-text mb-1">
+                        <%= assignee %>
+                        <span class="badge bg-info text-dark" style="font-size: 0.8em;">
+                          <%= @assignee_task_counts[assignee] %>
+                        </span>
+                        <span class="badge bg-primary" style="font-size: 0.8em;">
+                          <%= "#{(@assignee_task_percentages[assignee]).round(2)} %" %>
+                        </span>
+                        <span class="badge bg-warning text-light" style="font-size: 0.8em;">
+                          <%= (@assignee_time_spent[assignee] / 3600).round(2) %> hours
+                        </span>
+                      </p>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% else %>
+              <p>No unique assignees found.</p>
+            <% end %>
+          </div>
+        </div>
+        <div class="mt-2">
+          <%= link_to "See More", '#', class: "see-more-link text-secondary", style: "display: inline;" %>
+          <%= link_to "See Less", '#', class: "see-less-link text-secondary", style: "display: none;" %>
+        </div>
       </div>
     </div>
     <!-- Statistics -->
@@ -110,3 +120,31 @@
       <% end %>
     </div>
   <% end %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const teamContainer = document.querySelector('.team-container');
+      const teamContent = document.querySelector('.team-content');
+      const seeMoreLink = document.querySelector('.see-more-link');
+      const seeLessLink = document.querySelector('.see-less-link');
+
+      seeMoreLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        teamContainer.style.maxHeight = 'none';
+        seeMoreLink.style.display = 'none';
+        seeLessLink.style.display = 'inline';
+      });
+
+      seeLessLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        teamContainer.style.maxHeight = '210px';
+        seeMoreLink.style.display = 'inline';
+        seeLessLink.style.display = 'none';
+      });
+
+      if (teamContent.scrollHeight > teamContainer.offsetHeight) {
+        seeMoreLink.style.display = 'inline';
+      } else {
+        seeMoreLink.style.display = 'none';
+      }
+    });
+  </script>

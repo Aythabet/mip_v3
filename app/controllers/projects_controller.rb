@@ -103,25 +103,30 @@ class ProjectsController < ApplicationController
   end
 
   def generate_pdf_report
-    @project = Project.find(params[:id])
-  
     pdf = Prawn::Document.new
-    pdf.text "Project Financial Data"
-    pdf.text "Internal Cost: $#{@project.total_internal_cost}"
-    pdf.text "Selling Price: $#{@project.total_selling_price}"
-  
-    # Get the list of assignee names
+    project = Project.find(params[:id])
+
     assignee_names = projects_unique_assignees_list
-    pdf.text "Assignees: #{assignee_names.join(', ')}"
-  
-    # Calculate and display cost per assignee
     assignees_count = assignee_names.length
-    cost_per_assignee = assignees_count > 0 ? @project.total_internal_cost / assignees_count : 0
-    pdf.text "Cost per Assignee: $#{cost_per_assignee}"
-  
+    cost_per_assignee = assignees_count > 0 ? project.total_internal_cost / assignees_count : 0
+
+    project_total_internal_cost = Task.joins(:assignee)
+      .where(project: project)
+      .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
+
+    pdf.text "Project Financial Data: #{project.name}"
+    pdf.text "Project Lead: #{project.lead}"
+    pdf.text "Total tasks: #{project.tasks.count}"
+    pdf.text "\n"
+    pdf.text "Internal Cost: #{project_total_internal_cost} TND"
+    pdf.text "Selling Price: #{project.total_selling_price} TND"
+    pdf.text "Cost per Assignee: #{number_with_precision((cost_per_assignee), precision: 2)} TND"
+    pdf.text "\n"
+    pdf.text "Assignees count: #{assignee_names.count}"
+    pdf.text "Assignees: \n#{assignee_names.join("\n")}"
+
     send_data pdf.render, filename: "report.pdf", type: "application/pdf", disposition: "attachment"
   end
-  
 
   private
 
@@ -168,12 +173,12 @@ class ProjectsController < ApplicationController
     @projects_unique_assignees = assignee_names.map { |name| name.split(" ").map(&:capitalize).join(" ") }
 
     @assignee_task_counts = {}
-    @project.tasks.group(:assignee_id).count.each do |assignee_id, task_count|
+    project.tasks.group(:assignee_id).count.each do |assignee_id, task_count|
       @assignee_task_counts[Assignee.find(assignee_id).name] = task_count
     end
 
     @assignee_task_percentages = {}
-    total_tasks = @project.tasks.count
+    total_tasks = project.tasks.count
     @assignee_task_counts.each do |assignee, task_count|
       @assignee_task_percentages[assignee] = (task_count.to_f / total_tasks * 100).round(2)
     end
