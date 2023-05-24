@@ -1,5 +1,3 @@
-// Configure your import map in config/importmap.rb. Read more: https://github.com/rails/importmap-rails
-
 document.addEventListener("DOMContentLoaded", function () {
   // Modal Add Selling Price for the projects
   $(document).ready(function () {
@@ -67,5 +65,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
-
-// Projects "read more" section

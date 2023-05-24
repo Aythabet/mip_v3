@@ -2,7 +2,7 @@
   "name": "myapp",
   "private": "true",
   "scripts": {
-    "build": "esbuild app/javascript/*.* --bundle --outdir=app/assets/builds"
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets"
   },
   "dependencies": {
     "esbuild": "^0.17.19"
