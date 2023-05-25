@@ -24,9 +24,10 @@ class FlaggedTasksSlackMessageJob
     client = Slack::Web::Client.new
     user_id = find_user_id(username)
     if user_id.nil?
-      pp("User #{username} not found")
+      pp("~~~~~~ User #{username} not found ~~~~~~")
     else
       client.chat_postMessage(channel: user_id, text: message, as_user: true)
+      pp("~~~~~~ User #{username} found and message sent ~~~~~~")
     end
   end
 
@@ -50,7 +51,11 @@ class FlaggedTasksSlackMessageJob
         username.downcase,                 # Lowercase version
         username.split(" ").first,         # First word of the name
         username.split(" ").last,           # Last word of the name
-      ]
+        username.split(" ").last.downcase,  # Lowercase last word of the name
+        username.split(".").first,          # First name before the dot
+        username.split(".").last,            # Last name without the dot
+        username.split(".").last.gsub(".", "") # no dot all name
+      ]  
 
       user_id = variations.map { |name| names.find { |member| member[:name] == name }&.dig(:id) }.compact.first
     end

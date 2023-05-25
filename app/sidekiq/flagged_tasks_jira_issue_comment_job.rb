@@ -73,7 +73,7 @@ class FlaggedTasksJiraIssueCommentJob
 
     @response = http.request(request)
 
-    puts "Response: #{@response.code} #{@response.message}"
+    pp("~~~~~~ Comment posted on JIRA for the task #{task.jira_id} ~~~~~~")
   end
 
   def retrieve_task_assignee_name_and_account_id_to_comment(jira_id)
