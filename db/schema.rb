@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_17_083817) do
+ActiveRecord::Schema[7.0].define(version: 2023_08_07_115434) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -24,6 +24,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_17_083817) do
     t.float "hourly_rate"
     t.float "vacation_days_available"
     t.boolean "on_vacation"
+    t.bigint "account_id"
   end
 
   create_table "jobs_logs", force: :cascade do |t|
