@@ -3,7 +3,6 @@ class TasksJob
   DEFAULT_USER_ID = 1
   DEFAULT_PORJECT_ID = 1
 
-
   def perform
     job_start_time = Time.now
     entity = "agenceinspire"
@@ -12,7 +11,7 @@ class TasksJob
     jira_ids.each do |jira_id|
       collect_and_save_task_information(entity, jira_id)
       i += 1
-      pp("~~~~~~~~~ Task #{i} imported! ~~~~~~~~")
+      pp("~~~~~~~~~ Issue ##{i} imported and added to the database ~~~~~~~~")
     end
     job_end_time = Time.now
     JobsLog.create!(title: "TasksJob", execution_time: job_end_time - job_start_time)
@@ -56,6 +55,7 @@ class TasksJob
       total_issues_count = JSON.parse(response.body)["total"]
       total_pages = 5 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
+      p("We're preparing the data for #{total_pages} pages... Please wait!")
 
       (1..total_pages).each do
         tasks = JSON.parse(response.body)
@@ -99,8 +99,8 @@ class TasksJob
         flagged: false,
       )
 
-      pp(added_task)
-      pp("~~~~~~~~~ Importing next task's infos: #{retrieve_worklog_info(url, jira_id).count} Worklogs imported ~~~~~~~~~ ")
+      # pp("~~~~~~~~~ #{added_task.jira_id}: #{added_task.assignee.name} - Report to #{added_task.reporter}~~~~~~~~~")
+      # pp("~~~~~~~~~ Importing next task's infos: #{retrieve_worklog_info(url, jira_id).count} Worklogs imported ~~~~~~~~~ ")
       added_task.save
     end
     retrieve_task_changelogs(jira_id)
@@ -113,15 +113,24 @@ class TasksJob
 
   def determine_the_user_id(json_task)
     fields = json_task["fields"]
+    account_id = fields&.[]("assignee")&.[]("accountId")
     assignee_name = fields&.[]("assignee")&.[]("displayName")
-    if assignee_name.nil? || assignee_name.empty?
-      DEFAULT_USER_ID
+
+    if assignee_name.nil?
+      assignee_name = "Inspire #{(0..999).to_a.sample}"
+      assignee_email = "No Email"
+      # pp("~~~~~~~~~  No name found for this assignee, default values assigned: #{assignee_name} ~~~~~~~~~")
     else
       assignee_name = format_name(assignee_name)
       assignee_email = format_email(assignee_name)
-      assignee = Assignee.find_or_create_by(name: assignee_name, email: assignee_email)
-      assignee.id || DEFAULT_USER_ID
     end
+
+    assignee = Assignee.find_or_create_by(name: assignee_name) do |assignee|
+      assignee.account_id = account_id
+      assignee.email = assignee_email
+    end
+
+    assignee.id || DEFAULT_USER_ID
   end
 
   def determine_the_project_id(json_task)
@@ -191,18 +200,18 @@ class TasksJob
   def retrieve_worklog_info(url, jira_id)
     worklog_url = "#{url}/worklog"
     task = Task.find_by(jira_id: jira_id)
-    
+
     return [] unless task && task.status # Check if task exists and status is not nil
-  
+
     worklog_response = call_jira_api(worklog_url)
     return [] unless worklog_response.code == "200"
-  
+
     worklogs = JSON.parse(worklog_response.body)["worklogs"]
     worklog_info = []
-  
+
     worklogs.each do |worklog|
       existing_worklog = TaskWorklog.find_or_initialize_by(worklog_entry_id: worklog["id"])
-  
+
       if existing_worklog.new_record?
         TaskWorklog.create!(
           author: worklog["author"]["displayName"],
@@ -214,7 +223,7 @@ class TasksJob
           task_id: task.id,
           worklog_entry_id: worklog["id"],
         )
-  
+
         worklog_info << {
           author: worklog["author"]["displayName"],
           duration: worklog["timeSpent"],
@@ -234,7 +243,7 @@ class TasksJob
           started: worklog["started"],
           status: task.status,
         )
-  
+
         worklog_info << {
           author: worklog["author"]["displayName"],
           duration: worklog["timeSpent"],
@@ -247,10 +256,10 @@ class TasksJob
         }
       end
     end
-    
+
     worklog_info
   end
-  
+
   def retrieve_task_changelogs(jira_id)
     url = "https://agenceinspire.atlassian.net/rest/api/3/issue/#{jira_id}/changelog?maxResults=100&startAt=0"
     response = call_jira_api(url)
@@ -285,7 +294,7 @@ class TasksJob
         end
       end
     end
-    pp("~~~~~~~~~ Importing next task's infos: #{i} Changelog(s) imported ~~~~~~~~~ ") if i > 0
+    # pp("~~~~~~~~~ Importing next task's infos: #{i} Changelog(s) imported ~~~~~~~~~ ") if i > 0
   end
 
   def check_task_forecast_and_time_spent(task)

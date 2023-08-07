@@ -6,7 +6,7 @@
 :scheduler:
   :schedule:
     import_tasks:
-      cron: '*/15 * * * *'
+      cron: '0 0 1 * *'
       class: 'ImportTasksScheduler'
       queue: low
     add_vacation_days:
@@ -14,10 +14,35 @@
       class: 'AddVacationDaysScheduler'
       queue: default
     check_assignee_on_vacation:
-      cron: '*/30 * * * *'
+      cron: '0 0 1 * *'
       class: 'CheckAssigneeOnVacationScheduler'
       queue: default
     db_task_cleaner:
-      cron: '*/30 * * * *'
+      cron: '0 0 1 * *'
       class: 'DbTaskCleanerScheduler'
       queue: critical
+
+
+# :queues:
+#   - critical
+#   - default
+#   - low
+
+# :scheduler:
+#   :schedule:
+#     import_tasks:
+#       cron: '*/15 * * * *'
+#       class: 'ImportTasksScheduler'
+#       queue: low
+#     add_vacation_days:
+#       cron: '0 0 1 * *'
+#       class: 'AddVacationDaysScheduler'
+#       queue: default
+#     check_assignee_on_vacation:
+#       cron: '*/30 * * * *'
+#       class: 'CheckAssigneeOnVacationScheduler'
+#       queue: default
+#     db_task_cleaner:
+#       cron: '*/30 * * * *'
+#       class: 'DbTaskCleanerScheduler'
+#       queue: critical
