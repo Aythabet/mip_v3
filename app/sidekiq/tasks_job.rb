@@ -47,14 +47,14 @@ class TasksJob
 
   def collect_all_task_jira_ids(entity)
     jira_ids = []
-    start_at = 0
+    start_at = 2350 # Change this if you need to update the starting point
     max_results = 50
 
     response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == "200"
       total_issues_count = JSON.parse(response.body)["total"]
-      total_pages = 5 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
 
       (1..total_pages).each do
@@ -120,6 +120,7 @@ class TasksJob
       assignee_name = format_name(assignee_name)
       assignee_email = format_email(assignee_name)
       assignee = Assignee.find_or_create_by(name: assignee_name, email: assignee_email)
+      pp("#############################################################################ASSIGNEE NAME #{assignee.name}! ####")
       assignee.id || DEFAULT_USER_ID
     end
   end

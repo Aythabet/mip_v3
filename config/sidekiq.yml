@@ -6,7 +6,7 @@
 :scheduler:
   :schedule:
     import_tasks:
-      cron: '*/15 * * * *'
+      cron: '*/30 * * * *'
       class: 'ImportTasksScheduler'
       queue: low
     add_vacation_days:
@@ -18,6 +18,6 @@
       class: 'CheckAssigneeOnVacationScheduler'
       queue: default
     db_task_cleaner:
-      cron: '*/30 * * * *'
+      cron: '*/59 * * * *'
       class: 'DbTaskCleanerScheduler'
       queue: critical

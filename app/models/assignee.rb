@@ -7,7 +7,7 @@ class Assignee < ApplicationRecord
   validates :name, uniqueness: true
   validates :email, uniqueness: true
 
-  paginates_per 20
+  paginates_per 50
 
   validate :vacation_days_non_negative
 
