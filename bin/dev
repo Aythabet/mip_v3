@@ -5,4 +5,9 @@ if ! gem list foreman -i --silent; then
   gem install foreman
 fi
 
-exec foreman start -f Procfile.dev "$@"
+if [ "$1" = "custom_dev" ]; then
+  shift
+  exec foreman start -f Procfile.custom_dev "$@"
+else
+  exec foreman start -f Procfile.dev "$@"
+fi
