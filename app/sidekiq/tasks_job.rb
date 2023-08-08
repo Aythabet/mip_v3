@@ -46,7 +46,7 @@ class TasksJob
 
   def collect_all_task_jira_ids(entity)
     jira_ids = []
-    start_at = 2350 # Change this if you need to update the starting point
+    start_at = 0 # Change this if you need to update the starting point
     max_results = 50
 
     response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
