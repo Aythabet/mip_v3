@@ -3,13 +3,13 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
 ruby "~> 3.2.0"
 
-group :development, :test, :custom_development do
+group :development, :test do
   gem "debug", platforms: %i[ mri mingw x64_mingw ]
   gem "dotenv-rails"
   gem 'mail_interceptor'
 end
 
-group :development, :custom_development do
+group :development do
   gem "web-console"
 end
 

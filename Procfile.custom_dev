@@ -1,3 +1,0 @@
-custom_dev: unset PORT && bin/rails server -e custom_development
-js: yarn build --watch
-sidekiq: bundle exec sidekiq -C config/sidekiq.yml

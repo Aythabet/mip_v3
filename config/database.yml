@@ -12,12 +12,6 @@ development:
   username: <%= ENV['POSTGRES_USERNAME'] %>
   password: <%= ENV['POSTGRES_PASSWORD'] %>
 
-custom_development:
-  <<: *default
-  database: mip_v3_custom_development
-  username: <%= ENV['POSTGRES_USERNAME'] %>
-  password: <%= ENV['POSTGRES_PASSWORD'] %>
-
 test:
   <<: *default
   database: mip_v3_test
