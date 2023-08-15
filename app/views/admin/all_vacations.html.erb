@@ -54,3 +54,28 @@
     <% end %>
   </div>
 </div>
+<div class="list-group py-4">
+  <h3>Past Vacations:</h3>
+  <% @passed_vacations.each do |vacation| %>
+    <a href=<%= assignee_vacations_path(vacation.assignee) %> class="list-group-item list-group-item-action">
+      <div class="d-flex w-100 justify-content-between">
+        <div class="d-flex flex-column">
+          <p class="mb-0">
+            <strong><%= vacation.assignee.name %></strong> | <%= vacation.reason %> |
+            Starts: <%= vacation.start_date %> | Ends: <%= vacation.end_date %> | 
+            Duration: <% if vacation.duration %>
+              <% if vacation.duration % 1 == 0.5 %>
+                <%= number_with_precision(vacation.duration, precision: 1) %> days
+              <% else %>
+                <%= vacation.duration.to_i %> days
+              <% end %>
+            <% else %>
+              N/A
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </a>
+  <% end %>
+</div>
+

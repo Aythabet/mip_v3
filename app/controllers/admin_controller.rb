@@ -34,7 +34,7 @@ class AdminController < ApplicationController
     @active_vacations = Vacation.where(
       "start_date <= ? AND ? <= (start_date + interval '1 day' * ((duration - 0.5) * 2))",
       Date.today,
-      Date.today
+      Time.current
     )
     @upcoming_vacations = Vacation.where(
       "start_date >= ? AND ? <= (start_date + interval '1 day' * ((duration - 0.5) * 2))",
@@ -45,6 +45,7 @@ class AdminController < ApplicationController
       Date.today,
       Date.today
     )
+    @passed_vacations = Vacation.where("end_date < ?", Date.today).order(start_date: :desc)
   end
 
   def flagged_tasks

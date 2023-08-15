@@ -53,7 +53,7 @@ class TasksJob
 
     if response.code == "200"
       total_issues_count = JSON.parse(response.body)["total"]
-      total_pages = (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 4 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       p("Total issues available at source is #{total_issues_count}...")
       p("We're preparing the data for #{total_pages} pages... Please wait!")
 
