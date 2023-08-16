@@ -102,6 +102,17 @@ class ProjectsController < ApplicationController
     end
   end
 
+  def update_project_status
+    project = Project.find(params[:id])
+    if project.archived_status == false
+      project.update!(archived_status: true)
+    else
+      project.update!(archived_status: false)
+    end
+
+    redirect_to project_details_path(project)
+  end
+
   def generate_pdf_report
     pdf = Prawn::Document.new
     project = Project.find(params[:id])

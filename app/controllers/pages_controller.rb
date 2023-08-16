@@ -27,7 +27,9 @@ class PagesController < ApplicationController
 
     unique_tasks_count = Task.group(:status).count
     @unique_tasks_count = unique_tasks_count.sort_by { |status, count| count }.reverse
-    @projects_with_active_tickets = projects.sort_by { |project| -1 * project.tasks.where(status: ["In Progress", "En cours", "en cours"]).count }
+    @projects_with_active_tickets = projects
+      .where(archived_status: false)
+      .sort_by { |project| -1 * project.tasks.where(status: ["In Progress", "En cours", "en cours"]).count }
   end
 
   def active_and_on_hold_tasks_count(projects)

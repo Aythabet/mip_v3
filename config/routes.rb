@@ -26,9 +26,13 @@ Rails.application.routes.draw do
   resources :projects do
     resources :quotes, only: [:new, :create, :index, :edit, :update]
     post "generate_pdf_report", on: :collection
+    member do
+      post "update_project_status", to: "projects#update_project_status"
+    end
   end
 
   get "/project_details/:id", to: "projects#project_details", as: "project_details", constraints: lambda { |request| request.env["warden"].user.admin? }
+
 
   # Tasks Routes
   resources :tasks, only: [:index, :show]
