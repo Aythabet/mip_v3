@@ -2,9 +2,9 @@
 @import "./components/index";
 @import "./pages/index";
 
-
 // General style
-html, body {
+html,
+body {
   height: 100%;
 }
 
@@ -19,4 +19,20 @@ body {
 
 .footer {
   flex-shrink: 0;
+}
+
+@keyframes flash {
+  0% {
+    color: red;
+  }
+  50% {
+    color: transparent;
+  }
+  100% {
+    color: red;
+  }
+}
+
+.flashing-text {
+  animation: flash 1s infinite;
 }

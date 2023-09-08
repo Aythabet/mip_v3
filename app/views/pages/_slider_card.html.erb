@@ -20,13 +20,19 @@
           </div>
         </div>
         <ul class="list-group list-group-flush small">
-          <li class="list-group-item"><i class="fa fa-envelope float-right"></i><strong>Original Estimate:</strong> <%= my_helper_format_duration(task.time_forecast) %></li>
+          <li class="list-group-item"><i class="fa fa-envelope float-right"></i><strong>Original Estimate: </strong>
+            <% if my_helper_format_duration(task.time_forecast) == "No data" %>
+              <span class="flashing-text">No data</span>
+            <% else %>
+              <%= my_helper_format_duration(task.time_forecast) %>
+            <% end %>
+          </li>
           <% if task.time_forecast.nil? || task.time_spent.nil? %>
-            <li class="list-group-item"><strong>Time remaining:</strong> <span class="text-muted">All the time in the world</span></li>
+            <li class="list-group-item"><strong>Time remaining:</strong> <span class="flashing-text">No data</span></li>
           <% else %>
             <% remaining_time = task.time_forecast - task.time_spent %>
             <li class="list-group-item"><strong>Time remaining:</strong> <%= my_helper_format_duration(remaining_time) %></li>
-          <% end%>
+          <% end %>
         </ul>
         <div class="card-body text-center">
           <% @other_tasks = Task.where(assignee_id: task.assignee).where(status: ["To Do", "A faire", "A faire ce jour"]) %>
