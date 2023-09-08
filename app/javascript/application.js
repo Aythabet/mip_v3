@@ -1,3 +1,11 @@
+
+// Slider homepage timer to move
+$(document).ready(function() {
+  $('#projectSlider').carousel({
+    interval: 5000 // Adjust the interval time (in milliseconds) as needed
+  });
+});
+
 document.addEventListener("DOMContentLoaded", function () {
   // Modal Add Selling Price for the projects
   $(document).ready(function () {

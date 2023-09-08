@@ -9,6 +9,11 @@ class PagesController < ApplicationController
 
   private
 
+  def other_tasks_by_assignee(assignee_id)
+    other_tasks = Task.where(assignee_id: assignee_id)
+    @other_tasks_count = other_tasks.count
+  end
+
   def basic_stats_projects_assignees_tasks
     @total_number_of_projects = Project.count
     @total_number_of_tasks = Task.count

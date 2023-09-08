@@ -1,0 +1,42 @@
+<div class="row py-3">
+  <% project.task_ids.each do |task| %>
+    <% task = Task.find(task) %>
+    <div class="col-md-6 col-xl-3 mb-3">
+      <div class="card card-task">
+        <div class="card-body row">
+          <div class="col-4">
+            <%= link_to root_path, class: "img-fluid rounded-circle" do %>
+              <%= image_tag "neutral_avatar.png", width: 75, height: 75 %>
+            <% end %>
+          </div>
+          <div class="col-8 card-title align-self-center mb-0">
+            <h5 class="text-center"><%= link_to truncate(task.assignee.name, length: 20), assignee_path(task.assignee) %></h5>
+            <p class="text-center m-0">
+              <%= link_to task.jira_id, task_path(task) %>
+              &nbsp;<a href="https://agenceinspire.atlassian.net/browse/<%= task.jira_id %>" target="_blank">
+                <span><i class="bi bi-box-arrow-up-right"></i></span>
+              </a>
+            </p>
+          </div>
+        </div>
+        <ul class="list-group list-group-flush small">
+          <li class="list-group-item"><i class="fa fa-envelope float-right"></i><strong>Original Estimate:</strong> <%= my_helper_format_duration(task.time_forecast) %></li>
+          <% if task.time_forecast.nil? || task.time_spent.nil? %>
+            <li class="list-group-item"><strong>Time remaining:</strong> <span class="text-muted">All the time in the world</span></li>
+          <% else %>
+            <% remaining_time = task.time_forecast - task.time_spent %>
+            <li class="list-group-item"><strong>Time remaining:</strong> <%= my_helper_format_duration(remaining_time) %></li>
+          <% end%>
+        </ul>
+        <div class="card-body text-center">
+          <% @other_tasks = Task.where(assignee_id: task.assignee).where(status: ["To Do", "A faire", "A faire ce jour"]) %>
+          <% if @other_tasks.blank? %>
+            <p class="small m-0">Nothing else planned for <strong><%= task.assignee.name %></strong> <i class="bi bi-emoji-smile text-success"></i></p>
+          <% else %>
+            <p class="small m-0"><strong><%= task.assignee.name %></strong> has <span class="badge bg-secondary display-4"><%= @other_tasks.count %></span> other tasks on their plate</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

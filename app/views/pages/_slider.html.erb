@@ -1,0 +1,20 @@
+<div class="py-3">
+  <div id="projectSlider" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <% @projects_with_active_tickets.each_with_index do |project, index| %>
+        <div class="carousel-item <%= index == 0 ? 'active' : '' %>">
+          <h2><%= project.name %></h2>
+          <%= render partial: 'slider_card', locals: { project: project } %>
+        </div>
+      <% end %>
+    </div>
+    <a class="carousel-control-prev" href="#projectSlider" role="button" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#projectSlider" role="button" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </a>
+  </div>
+</div>
