@@ -44,9 +44,6 @@ class ProjectsController < ApplicationController
     breadcrumbs.add "Projects", projects_path
     @project = Project.find(params[:id])
 
-    @total_time_estimation = 0
-    @total_time_spent = 0
-
     @all_project_tasks = Task.where(project: @project).order(last_jira_update: :desc)
     @project_tasks = @all_project_tasks
 
@@ -57,7 +54,10 @@ class ProjectsController < ApplicationController
     filter_tasks_by_assignee if params[:assignee].present?
     filter_tasks_by_search_term if params[:search_term].present?
 
-    calculate_total_time_metrics(@all_project_tasks)
+    result = calculate_total_time_metrics(@all_project_tasks)
+    @total_time_estimation = result[:total_time_estimation]
+    @total_time_spent = result[:total_time_spent]
+    @time_difference = result[:time_difference]
 
     @project_tasks = @project_tasks.page(params[:page])
     render :show
@@ -116,30 +116,83 @@ class ProjectsController < ApplicationController
   def generate_pdf_report
     pdf = Prawn::Document.new
     project = Project.find(params[:id])
-
     assignee_names = projects_unique_assignees_list
+
     assignees_count = assignee_names.length
     cost_per_assignee = assignees_count > 0 ? project.total_internal_cost / assignees_count : 0
 
-    project_total_internal_cost = Task.joins(:assignee)
-      .where(project: project)
-      .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
+    project_tasks = Task.where(project: project).order(last_jira_update: :desc)
 
-    pdf.text "Project Financial Data: #{project.name}"
+    project_total_internal_cost = calculate_project_total_internal_cost(project)
+    time_metrics = calculate_total_time_metrics(project_tasks) # Calculate time metrics
+
+    pdf.font("Helvetica", size: 24, style: :bold)
+    pdf.text "#{project.name} - #{project.jira_id}"
     pdf.text "Project Lead: #{project.lead}"
-    pdf.text "Total tasks: #{project.tasks.count}"
-    pdf.text "\n"
-    pdf.text "Internal Cost: #{project_total_internal_cost} TND"
-    pdf.text "Selling Price: #{project.total_selling_price} TND"
-    pdf.text "Cost per Assignee: #{number_with_precision((cost_per_assignee), precision: 2)} TND"
+
+    pdf.font("Helvetica", size: 12, style: :normal)
     pdf.text "\n"
     pdf.text "Assignees count: #{assignee_names.count}"
-    pdf.text "Assignees: \n#{assignee_names.join("\n")}"
+    pdf.text "Total tasks: #{project.tasks.count}"
+    pdf.text "Total Time Estimated: #{format_duration(time_metrics[:total_time_estimation])}" # Use time metrics
+    pdf.text "Total Time Spent: #{format_duration(time_metrics[:total_time_spent])}" # Use time metrics
+    pdf.text "Gain / Loss: #{format_duration(time_metrics[:time_difference])}" # Use time metrics
 
-    send_data pdf.render, filename: "report.pdf", type: "application/pdf", disposition: "attachment"
+    pdf.move_down(20) # Add space between sections
+
+    assignee_names.each do |assignee_name|
+      assignee_id = find_assignee_id(assignee_name)
+      number_of_tasks = calculate_assignee_task_count(assignee_id, project)
+      task_percentage = (number_of_tasks.to_f / project.tasks.count * 100).round(2)
+
+      pdf.text "<b>#{assignee_name}</b>:\n <b>Tasks:</b> #{number_of_tasks} - <b>Percentage: </b>#{task_percentage}%", inline_format: true
+    end
+
+    pdf.start_new_page
+
+    add_2023_section(pdf, project, assignee_names)
+
+    send_data pdf.render, filename: "Report #{project.name}.pdf", type: "application/pdf", disposition: "attachment"
   end
 
   private
+
+  # Generate report functions
+
+  def calculate_project_total_internal_cost(project)
+    Task.joins(:assignee)
+        .where(project: project)
+        .sum("tasks.time_spent * (assignees.hourly_rate / 3600)")
+  end
+
+  def find_assignee_id(assignee_name)
+    Assignee.find_by(name: assignee_name).id
+  end
+
+  def calculate_assignee_task_count(assignee_id, project)
+    Task.where(assignee: assignee_id, project: project).count
+  end
+
+  def add_2023_section(pdf, project, assignee_names)
+    pdf.font("Helvetica", size: 24, style: :bold)
+    pdf.text "Year: 2023"
+
+    pdf.move_down(10) # Add space between sections
+
+    pdf.font("Helvetica", size: 12, style: :normal)
+    tasks_2023_count = Task.where(project: project, created_at: "2023-01-01".."2023-12-31").count
+    tasks_total_count = project.tasks.count
+    task_percentage = (tasks_2023_count.to_f / tasks_total_count * 100).round(2)
+
+    pdf.text "Total tasks in 2023: #{tasks_2023_count} - Percentage from total: #{task_percentage}%"
+    assignee_names.each do |assignee_name|
+      assignee_id = find_assignee_id(assignee_name)
+      number_of_tasks_2023 = Task.where(assignee: assignee_id, project: project, created_at: "2023-01-01".."2023-12-31").count
+      task_percentage = (number_of_tasks_2023.to_f / project.tasks.count * 100).round(2)
+
+      pdf.text "\n<b>#{assignee_name}</b>: \n <b>Tasks in 2023: </b>#{number_of_tasks_2023} - <b>Percentage:</b> #{task_percentage}%", inline_format: true
+    end
+  end
 
   def project_params
     params.require(:project).permit(:name, :jira_id, :archived_status, :lead, :total_internal_cost, :total_selling_price)
@@ -249,11 +302,21 @@ class ProjectsController < ApplicationController
   end
 
   def calculate_total_time_metrics(tasks)
+    result = {
+      total_time_estimation: 0,
+      total_time_spent: 0,
+      time_difference: 0,
+    }
+
     tasks.each do |task|
-      @total_time_estimation += task.time_forecast || 0
-      @total_time_spent += task.time_spent || 0
+      # If tasks are empty, skip
+      next if task.time_forecast.nil? || task.time_spent.nil?
+      result[:total_time_estimation] += task.time_forecast || 0
+      result[:total_time_spent] += task.time_spent || 0
     end
-    @time_difference = @total_time_estimation - @total_time_spent
+
+    result[:time_difference] = result[:total_time_estimation] - result[:total_time_spent]
+    result
   end
 
   def filter_tasks_by_assignee

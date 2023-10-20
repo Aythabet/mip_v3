@@ -4,6 +4,7 @@
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=assets"
   },
   "dependencies": {
-    "esbuild": "^0.17.19"
+    "esbuild": "^0.17.19",
+    "watch": "^1.0.2"
   }
 }
