@@ -1,31 +1,31 @@
 <div class="container py-4">
-<div align="right" style="font-size: 80%"><%= page_entries_info @assignees, entry_name: 'assignee' %></div>
-<span class="d-flex flex-row-reverse"><%= link_to_next_page @assignees, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @assignees, 'Previous' %></span>
-<table class="table">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Email</th>
-      <th># Tickets</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @assignees.each do |assignee| %>
+  <div align="right" style="font-size: 80%"><%= page_entries_info @assignees, entry_name: 'assignee' %></div>
+  <span class="d-flex flex-row-reverse"><%= link_to_next_page @assignees, 'Next' %>&nbsp;&nbsp;<%= link_to_previous_page @assignees, 'Previous' %></span>
+  <table class="table">
+    <thead>
       <tr>
-        <td><%= assignee.id %></td>
-        <td><%= assignee.name %></td>
-        <td><%= assignee.email %></td>
-        <td><%= assignee.tasks.count %></td>
-        <td class="text-end">
-          <%= link_to "Prod View", { action: "show", id: assignee.id }, class: "btn btn-secondary btn-sm" %>
-          <% if current_user.admin? %>
-            <%= link_to "Admin View", { action: "assignee_profile", id: assignee.id }, class: "btn btn-warning btn-sm" %>
-          <% end %>
-        </td>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th># Tickets</th>
+        <th></th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @assignees.each do |assignee| %>
+        <tr>
+          <td><%= assignee.id %></td>
+          <td><%= assignee.name %></td>
+          <td><%= assignee.email %></td>
+          <td><%= assignee.tasks.count %></td>
+          <td class="text-end">
+            <%= link_to "Prod View", { action: "show", id: assignee.id }, class: "btn btn-secondary btn-sm" %>
+            <% if current_user.admin? %>
+              <%= link_to "Admin View", { action: "assignee_profile", id: assignee.id }, class: "btn btn-warning btn-sm" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
 </div>

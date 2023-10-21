@@ -10,6 +10,11 @@
     <div class="card-body">
       <h5 class="mb-0">
         <%= @assignee.email %>
+        <div class="d-flex justify-content-end">
+          <%= link_to generate_pdf_report_assignees_path(id: @assignee.id), method: :post, class: 'btn p-0' do %>
+            Generate assignee report <i class="bi bi-database-fill-gear" style="color: black;"></i>
+          <% end %>
+        </div>
       </h5>
       <p class="card-text">
         <div>

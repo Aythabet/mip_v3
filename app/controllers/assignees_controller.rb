@@ -67,7 +67,49 @@ class AssigneesController < ApplicationController
       .group("projects.id")
   end
 
+  def generate_pdf_report
+    pdf = Prawn::Document.new
+    assignee = Assignee.find(params[:id])
+
+    pdf.font("Helvetica", size: 18, style: :bold)
+    pdf.text "#{assignee.name}"
+
+    pdf.font("Helvetica", size: 12, style: :bold)
+    # Calculate total tasks, time estimated, and time spent in 2023
+    total_tasks = assignee.tasks.count
+    total_tasks_2023 = assignee.tasks.where("extract(year from created_at) = ?", 2023).count
+    total_time_estimated = assignee.tasks.where("extract(year from created_at) = ?", 2023).sum(:time_forecast)
+    total_time_spent = assignee.tasks.where("extract(year from created_at) = ?", 2023).sum(:time_spent)
+
+    pdf.text "Total tasks: #{total_tasks}"
+    pdf.text "Total tasks in 2023: #{total_tasks_2023}"
+    pdf.text "Total time estimated in 2023: #{format_duration(total_time_estimated)}"
+    pdf.text "Total time spent in 2023: #{format_duration(total_time_spent)}"
+
+    pdf.font("Helvetica", size: 10, style: :normal)
+    pdf.text "\n"
+
+    projects = list_of_assignee_projects(assignee)
+    projects.each do |project|
+      time_spent = stats_of_unique_project_by_assignee(project, assignee, 2023)
+      pdf.text "#{project.name}: #{format_duration(time_spent)}"
+    end
+
+    pdf.move_down(10) # Add space between sections
+
+    send_data pdf.render, filename: "Report #{assignee.name}.pdf", type: "application/pdf", disposition: "attachment"
+  end
+
   private
+
+  def list_of_assignee_projects(assignee)
+    assignee.tasks.joins(:project).select("distinct projects.*")
+  end
+
+  def stats_of_unique_project_by_assignee(project, assignee, year)
+    tasks = assignee.tasks.where(project: project).where("extract(year from created_at) = ?", year)
+    tasks.sum(:time_spent)
+  end
 
   def assignee_params
     params.require(:assignee).permit(:name, :email, :admin, :salary, :hourly_rate, :vacation_days_available, :on_vacation)

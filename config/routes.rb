@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   # Assignees Routes
   resources :assignees, only: [:index, :show, :edit, :update] do
     post "send_data_to_assignee", on: :member, as: :send_data_to_assignee
+    post "generate_pdf_report", on: :collection
     resources :vacations, only: [:index, :new, :create, :edit, :update, :destroy]
   end
 
@@ -32,7 +33,6 @@ Rails.application.routes.draw do
   end
 
   get "/project_details/:id", to: "projects#project_details", as: "project_details", constraints: lambda { |request| request.env["warden"].user.admin? }
-
 
   # Tasks Routes
   resources :tasks, only: [:index, :show]

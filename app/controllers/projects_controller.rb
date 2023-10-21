@@ -126,26 +126,32 @@ class ProjectsController < ApplicationController
     project_total_internal_cost = calculate_project_total_internal_cost(project)
     time_metrics = calculate_total_time_metrics(project_tasks) # Calculate time metrics
 
-    pdf.font("Helvetica", size: 24, style: :bold)
+    pdf.font("Helvetica", size: 18, style: :bold)
     pdf.text "#{project.name} - #{project.jira_id}"
     pdf.text "Project Lead: #{project.lead}"
 
-    pdf.font("Helvetica", size: 12, style: :normal)
+    pdf.font("Helvetica", size: 10, style: :normal)
     pdf.text "\n"
     pdf.text "Assignees count: #{assignee_names.count}"
     pdf.text "Total tasks: #{project.tasks.count}"
     pdf.text "Total Time Estimated: #{format_duration(time_metrics[:total_time_estimation])}" # Use time metrics
     pdf.text "Total Time Spent: #{format_duration(time_metrics[:total_time_spent])}" # Use time metrics
     pdf.text "Gain / Loss: #{format_duration(time_metrics[:time_difference])}" # Use time metrics
+    pdf.text "Tasks with no data: #{time_metrics[:no_data]}" # Use time metrics
 
     pdf.move_down(20) # Add space between sections
 
     assignee_names.each do |assignee_name|
       assignee_id = find_assignee_id(assignee_name)
-      number_of_tasks = calculate_assignee_task_count(assignee_id, project)
+      number_of_tasks = assignee_tasks_list(assignee_id, project).count
       task_percentage = (number_of_tasks.to_f / project.tasks.count * 100).round(2)
+      assignee_time_metrics = calculate_total_time_metrics(assignee_tasks_list(assignee_id, project)) # Calculate time metrics
 
-      pdf.text "<b>#{assignee_name}</b>:\n <b>Tasks:</b> #{number_of_tasks} - <b>Percentage: </b>#{task_percentage}%", inline_format: true
+      pdf.text "\n<b>#{assignee_name}</b>:\n <b>Tasks:</b> #{number_of_tasks} - <b>Percentage: </b>#{task_percentage}%", inline_format: true
+      pdf.text "<b>Time Estimated:</b> #{format_duration(assignee_time_metrics[:total_time_estimation])}", inline_format: true
+      pdf.text "<b>Time Spent:</b> #{format_duration(assignee_time_metrics[:total_time_spent])}", inline_format: true
+      pdf.text "<b>Gain / Loss:</b> #{format_duration(assignee_time_metrics[:time_difference])}", inline_format: true
+      pdf.text "<b>Tasks with no data:</b> #{assignee_time_metrics[:no_data]}", inline_format: true
     end
 
     pdf.start_new_page
@@ -169,17 +175,17 @@ class ProjectsController < ApplicationController
     Assignee.find_by(name: assignee_name).id
   end
 
-  def calculate_assignee_task_count(assignee_id, project)
-    Task.where(assignee: assignee_id, project: project).count
+  def assignee_tasks_list(assignee_id, project)
+    Task.where(assignee: assignee_id, project: project)
   end
 
   def add_2023_section(pdf, project, assignee_names)
-    pdf.font("Helvetica", size: 24, style: :bold)
+    pdf.font("Helvetica", size: 18, style: :bold)
     pdf.text "Year: 2023"
 
     pdf.move_down(10) # Add space between sections
 
-    pdf.font("Helvetica", size: 12, style: :normal)
+    pdf.font("Helvetica", size: 10, style: :normal)
     tasks_2023_count = Task.where(project: project, created_at: "2023-01-01".."2023-12-31").count
     tasks_total_count = project.tasks.count
     task_percentage = (tasks_2023_count.to_f / tasks_total_count * 100).round(2)
@@ -189,8 +195,13 @@ class ProjectsController < ApplicationController
       assignee_id = find_assignee_id(assignee_name)
       number_of_tasks_2023 = Task.where(assignee: assignee_id, project: project, created_at: "2023-01-01".."2023-12-31").count
       task_percentage = (number_of_tasks_2023.to_f / project.tasks.count * 100).round(2)
+      assignee_time_metrics_2023 = calculate_total_time_metrics(assignee_tasks_list(assignee_id, project)) # Calculate time metrics
 
-      pdf.text "\n<b>#{assignee_name}</b>: \n <b>Tasks in 2023: </b>#{number_of_tasks_2023} - <b>Percentage:</b> #{task_percentage}%", inline_format: true
+      pdf.text "\n<b>#{assignee_name}</b>:\n <b>Tasks:</b> #{number_of_tasks_2023} - <b>Percentage: </b>#{task_percentage}%", inline_format: true
+      pdf.text "<b>Time Estimated:</b> #{format_duration(assignee_time_metrics_2023[:total_time_estimation])}", inline_format: true
+      pdf.text "<b>Time Spent:</b> #{format_duration(assignee_time_metrics_2023[:total_time_spent])}", inline_format: true
+      pdf.text "<b>Gain / Loss:</b> #{format_duration(assignee_time_metrics_2023[:time_difference])}", inline_format: true
+      pdf.text "<b>Tasks with no data:</b> #{assignee_time_metrics_2023[:no_data]}", inline_format: true
     end
   end
 
@@ -306,16 +317,20 @@ class ProjectsController < ApplicationController
       total_time_estimation: 0,
       total_time_spent: 0,
       time_difference: 0,
+      no_data: 0, # Initialize the 'no_data' count
     }
 
     tasks.each do |task|
       # If tasks are empty, skip
-      next if task.time_forecast.nil? || task.time_spent.nil?
-      result[:total_time_estimation] += task.time_forecast || 0
-      result[:total_time_spent] += task.time_spent || 0
+      if task.time_forecast.nil? || task.time_spent.nil?
+        result[:no_data] += 1 # Update the 'no_data' count
+      else
+        result[:total_time_estimation] += task.time_forecast || 0
+        result[:total_time_spent] += task.time_spent || 0
+        result[:time_difference] += task.time_forecast - task.time_spent || 0
+      end
     end
 
-    result[:time_difference] = result[:total_time_estimation] - result[:total_time_spent]
     result
   end
 
