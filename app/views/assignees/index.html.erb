@@ -13,18 +13,25 @@
     </thead>
     <tbody>
       <% @assignees.each do |assignee| %>
-        <tr>
-          <td><%= assignee.id %></td>
-          <td><%= assignee.name %></td>
-          <td><%= assignee.email %></td>
-          <td><%= assignee.tasks.count %></td>
-          <td class="text-end">
-            <%= link_to "Prod View", { action: "show", id: assignee.id }, class: "btn btn-secondary btn-sm" %>
-            <% if current_user.admin? %>
-              <%= link_to "Admin View", { action: "assignee_profile", id: assignee.id }, class: "btn btn-warning btn-sm" %>
-            <% end %>
-          </td>
-        </tr>
+        <% if assignee.active? %>
+          <tr>
+            <td><%= assignee.id %></td>
+            <td><%= assignee.name %></td>
+            <td><%= assignee.email %></td>
+            <td><%= assignee.tasks.count %></td>
+            <td class="text-end">
+              <% if current_user.admin? %>
+                <%= link_to generate_pdf_report_assignees_path(id: assignee.id), method: :post, class: 'btn p-0' do %>
+                  Generate assignee report <i class="bi bi-database-fill-gear" style="color: black;"></i>
+                <% end %>
+              <% end %>
+              <%= link_to "Prod View", { action: "show", id: assignee.id }, class: "btn btn-secondary btn-sm" %>
+              <% if current_user.admin? %>
+                <%= link_to "Admin View", { action: "assignee_profile", id: assignee.id }, class: "btn btn-warning btn-sm" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
       <% end %>
     </tbody>
   </table>

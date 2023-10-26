@@ -2,10 +2,10 @@ class AssigneesController < ApplicationController
   def index
     breadcrumbs.add "Assignees", assignees_path
     @assignees = Assignee
-      .select("assignees.*, subquery.task_count")
-      .from("(SELECT COUNT(*) AS task_count, assignee_id FROM tasks GROUP BY assignee_id) subquery")
-      .joins("INNER JOIN assignees ON assignees.id = subquery.assignee_id")
-      .order("assignees.name ASC")
+      .select("assignees.*, MAX(tasks.last_jira_update)")
+      .joins("LEFT JOIN tasks ON tasks.assignee_id = assignees.id")
+      .group("assignees.id")
+      .order("MAX(tasks.last_jira_update) DESC")
       .page(params[:page])
 
     @assignees_count = Assignee.count
@@ -71,8 +71,8 @@ class AssigneesController < ApplicationController
     pdf = Prawn::Document.new
     assignee = Assignee.find(params[:id])
 
-    pdf.font("Helvetica", size: 18, style: :bold)
-    pdf.text "#{assignee.name}"
+    pdf.font("Helvetica", size: 18)
+    pdf.text "<b>#{assignee.name}</b> - <font size='14'> Brut: #{assignee.salary} TND - Hourly Cost: #{assignee.hourly_rate} TND </font>", :inline_format => true
 
     pdf.font("Helvetica", size: 12, style: :bold)
     # Calculate total tasks, time estimated, and time spent in 2023
@@ -83,16 +83,21 @@ class AssigneesController < ApplicationController
 
     pdf.text "Total tasks: #{total_tasks}"
     pdf.text "Total tasks in 2023: #{total_tasks_2023}"
-    pdf.text "Total time estimated in 2023: #{format_duration(total_time_estimated)}"
-    pdf.text "Total time spent in 2023: #{format_duration(total_time_spent)}"
+    pdf.text "Total time estimated on JIRA in 2023: #{format_duration(total_time_estimated)}"
+    pdf.text "Total time logged on JIRA in 2023: #{format_duration(total_time_spent)} - <font size='12'> #{(assignee.hourly_rate.to_f * (total_time_spent.to_f / 3600.0).round(2)).round(2)} TND </font>", :inline_format => true
 
     pdf.font("Helvetica", size: 10, style: :normal)
     pdf.text "\n"
 
-    projects = list_of_assignee_projects(assignee)
-    projects.each do |project|
+    tasks_per_project = list_of_assignee_tasks_per_project(assignee)
+    tasks_per_project.each do |project|
+      project_cost_2023 = project_cost_2023(project.name)
       time_spent = stats_of_unique_project_by_assignee(project, assignee, 2023)
-      pdf.text "#{project.name}: #{format_duration(time_spent)}"
+      assignee_project_cost = (assignee.hourly_rate.to_f * (time_spent.to_f / 3600.0).round(2)).round(2)
+
+      pdf.text "\n#{project.name}\n Cost in 2023: <b>#{project_cost_2023} TND</b>", :inline_format => true
+      pdf.text "#{assignee.name} logged <b>#{format_duration(time_spent)}</b> on JIRA", :inline_format => true
+      pdf.text "Individual cost <font size='10'> <b>#{assignee_project_cost} TND </b></font> - That's #{(assignee_project_cost.to_f / project_cost_2023.to_f * 100).round(2)} % from total", :inline_format => true
     end
 
     pdf.move_down(10) # Add space between sections
@@ -102,7 +107,13 @@ class AssigneesController < ApplicationController
 
   private
 
-  def list_of_assignee_projects(assignee)
+  def project_cost_2023(project_name)
+    project = Project.where(name: project_name).first
+    total_time_spent_2023 = project.tasks.where("extract(year from created_at) = ?", 2023).sum(:time_spent)
+    (total_time_spent_2023.to_f / 3600.0.round(2) * 25).round(2)
+  end
+
+  def list_of_assignee_tasks_per_project(assignee)
     assignee.tasks.joins(:project).select("distinct projects.*")
   end
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_08_092044) do
+ActiveRecord::Schema[7.0].define(version: 2023_10_26_125622) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -26,6 +26,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_08_092044) do
     t.boolean "on_vacation"
     t.bigint "account_id"
     t.string "avatar_url"
+    t.boolean "active"
   end
 
   create_table "jobs_logs", force: :cascade do |t|

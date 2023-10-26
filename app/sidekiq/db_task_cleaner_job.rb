@@ -6,6 +6,7 @@ class DbTaskCleanerJob
   def perform
     job_start_time = Time.now
 
+    check_if_assignee_is_active
     entity_name = "agenceinspire"
     jira_ids_in_database = Task.pluck(:jira_id)
     jira_keys_in_jira = collect_keys_from_api(entity_name)
@@ -36,8 +37,8 @@ class DbTaskCleanerJob
   def call_jira_api(url)
     uri = URI.parse(url)
     headers = {
-      'Authorization' => "Basic #{ENV['JIRA_API_TOKEN']}",
-      'Content-Type' => 'application/json'
+      "Authorization" => "Basic #{ENV["JIRA_API_TOKEN"]}",
+      "Content-Type" => "application/json",
     }
     request = Net::HTTP::Get.new(uri, headers)
     Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
@@ -54,11 +55,11 @@ class DbTaskCleanerJob
     loop do
       response = call_jira_api("https://#{entity_name}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
-      if response.code == '200'
-        issues = JSON.parse(response.body)['issues']
+      if response.code == "200"
+        issues = JSON.parse(response.body)["issues"]
         break if issues.empty?
 
-        keys += issues.map { |issue| issue['key'] }
+        keys += issues.map { |issue| issue["key"] }
         start_at += max_results
       else
         raise "Failed to fetch Jira issues. Response code: #{response.code}"
@@ -66,5 +67,25 @@ class DbTaskCleanerJob
     end
 
     keys
+  end
+
+  def check_if_assignee_is_active
+    assignees = Assignee.all
+    projects = Project.all
+
+    assignees.each do |assignee|
+      active = false # Default to inactive
+      projects.each do |project|
+        assignees_tasks = Task.where(project_id: project.id, assignee_id: assignee.id)
+          .where("extract(year from created_at) = ?", 2023)
+        if assignees_tasks.any?
+          active = true
+          break # No need to continue searching in other projects
+        end
+      end
+
+      assignee.update(active: active)
+      pp("Assignee #{assignee.name} is #{active ? "active" : "inactive"}")
+    end
   end
 end
