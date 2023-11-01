@@ -64,4 +64,99 @@ class AdminController < ApplicationController
     FlaggedTasksJiraIssueCommentJob.set(queue: :critical).perform_async(params[:task_id])
     redirect_to flagged_tasks_path, notice: "Jira comment sent!"
   end
+
+  def generate_assignees_report
+    assignees = Assignee.where("hourly_rate > 0")
+    pdf = Prawn::Document.new(page_size: [1200, 700]) # Set the page size to a custom width and height
+
+    data = [
+      [
+        "Ressource",
+        "Salaire Brut",
+        "Jours travaillés sur 200 jours",
+        "% de remplissage sur 200 jours",
+        "Coût total selon JIRA",
+        "Revenue total par la ressource",
+      ],
+    ]
+
+    assignees.each do |assignee|
+      total_time_worked = assignee_total_time_worked(assignee, 2023)
+
+      data << [
+        assignee.name,
+        assignee.salary,
+        convert_seconds_to_real_days(total_time_worked),
+        percentage_fill_200_days(total_time_worked),
+        calculate_cost(assignee, total_time_worked),
+        calculate_revenue_share(assignee),
+      ]
+    end
+
+    pdf.table(data, cell_style: { size: 10, padding: 5 }) do
+      row(0).font_style = :bold
+      self.header = true
+      self.row_colors = ["DDDDDD", "FFFFFF"]
+    end
+
+    send_data pdf.render, filename: "Report.pdf", type: "application/pdf", disposition: "attachment"
+  end
+
+  def assignee_total_time_worked(assignee, year)
+    assignee.tasks
+            .where("tasks.created_at >= ? AND tasks.created_at <= ?", Date.new(year, 1, 1), Date.new(year, 12, 31))
+            .sum(:time_spent)
+  end
+
+  def convert_seconds_to_real_days(seconds)
+    hours_per_day = 7
+    seconds_in_a_day = 24 * 60 * 60
+
+    days = seconds.to_f / (hours_per_day * 60 * 60)
+
+    if days >= 1
+      days_str = format("%.1f days", days)
+    else
+      days_str = format("%.1f hours", days * hours_per_day)
+    end
+
+    days_str
+  end
+
+  def percentage_fill_200_days(total_time_worked)
+    percentage = (total_time_worked / (200 * 7 * 60 * 60)) * 100
+    percentage_str = "#{percentage.round(2)} %"
+  end
+
+  def calculate_cost(assignee, seconds)
+    hours_worked = seconds / (60 * 60)
+    cost_str = "#{(hours_worked * assignee.hourly_rate).round(2)} TND"
+  end
+
+  def calculate_revenue_share(assignee)
+    total_revenue = 0
+    project_revenues = []
+
+    projects = Project.joins(:tasks)
+      .where(tasks: { assignee_id: assignee.id })
+      .where("projects.total_selling_price > 0")
+      .distinct
+
+    projects.each do |project|
+      total_time_spent = project.tasks.sum(:time_spent)
+      assignee_time_spent = project.tasks.where(assignee_id: assignee.id).sum(:time_spent)
+
+      if total_time_spent > 0
+        ratio = assignee_time_spent.to_f / total_time_spent
+        revenue_share = project.total_selling_price * ratio
+        total_revenue += revenue_share.round(2)
+        project_revenues << "#{project.name}: #{revenue_share.round(2)} TND | #{(ratio * 100).round(2)} %"
+      end
+    end
+
+    formatted_project_revenues = project_revenues.join("\n")
+    total_revenue_string = "Total: #{total_revenue} TND"
+
+    "#{total_revenue_string}\n#{formatted_project_revenues}"
+  end
 end

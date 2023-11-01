@@ -27,6 +27,9 @@
         <td><%= project.lead %></td>
         <td><%= project.tasks.count %></td>
         <td class="text-end">
+          <%= link_to generate_pdf_report_projects_path(id: project.id), method: :post, class: 'btn p-0' do %>
+            Generate report <i class="bi bi-database-fill-gear" style="color: black;"></i>
+          <% end %>
           <%= link_to "Prod View", { action: "show", id: project.id }, class: "btn btn-secondary btn-sm" %>
           <% if current_user.admin? %>
             <%= link_to "Admin View", { action: "project_details", id: project.id }, class: "btn btn-warning btn-sm" %>

@@ -38,6 +38,7 @@ Rails.application.routes.draw do
   # Admin Routes
   resources :admin, only: [:index]
 
+  post "admin/generate_assignees_report"
   post "admin/db_task_cleaner"
   post "admin/retrieve_tasks"
   post "admin/destroy_all"
