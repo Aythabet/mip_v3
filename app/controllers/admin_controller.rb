@@ -75,8 +75,8 @@ class AdminController < ApplicationController
         "Salaire Brut",
         "Jours travaillés sur 200 jours",
         "% de remplissage sur 200 jours",
-        "Coût total selon JIRA",
-        "Revenue total par la ressource",
+        "Coût total selon JIRA sur 200 jours",
+        "Revenue total par la ressource sur 200 jours",
       ],
     ]
 
@@ -93,13 +93,13 @@ class AdminController < ApplicationController
       ]
     end
 
-    pdf.table(data, cell_style: { size: 10, padding: 5 }) do
+    pdf.table(data, cell_style: { size: 10, padding: 5 }, column_widths: [100, 70, 70, 70, 250, 250]) do
       row(0).font_style = :bold
       self.header = true
       self.row_colors = ["DDDDDD", "FFFFFF"]
     end
 
-    send_data pdf.render, filename: "Report.pdf", type: "application/pdf", disposition: "attachment"
+    send_data pdf.render, filename: "Tableau_Rapport_Ressource_par_projets_pour_2023.pdf", type: "application/pdf", disposition: "attachment"
   end
 
   def assignee_total_time_worked(assignee, year)
@@ -130,7 +130,29 @@ class AdminController < ApplicationController
 
   def calculate_cost(assignee, seconds)
     hours_worked = seconds / (60 * 60)
-    cost_str = "#{(hours_worked * assignee.hourly_rate).round(2)} TND"
+    total_cost = hours_worked * assignee.hourly_rate
+
+    project_costs = []
+
+    projects = Project.joins(:tasks)
+      .where(tasks: { assignee_id: assignee.id })
+      .distinct
+
+    projects.each do |project|
+      project_total_time_spent = project.tasks.sum(:time_spent)
+      assignee_time_spent = project.tasks
+        .where(assignee_id: assignee.id)
+        .where("tasks.created_at >= ? AND tasks.created_at <= ?", Date.new(2023, 1, 1), Date.new(2023, 12, 31))
+        .sum(:time_spent)
+      project_cost = (assignee_time_spent / (60 * 60)) * assignee.hourly_rate
+      next if project_cost == 0  # Skip projects with a cost of 0
+      project_costs << "#{project.name}: #{project_cost.round(2)} TND | #{(assignee_time_spent * 100 / project_total_time_spent).round(2)} %"
+    end
+
+    total_cost_string = "Total Cost: #{total_cost.round(2)} TND"
+    formatted_project_costs = project_costs.join("\n")
+
+    "#{total_cost_string}\n#{formatted_project_costs}\n"
   end
 
   def calculate_revenue_share(assignee)
