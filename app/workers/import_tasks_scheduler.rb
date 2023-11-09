@@ -6,17 +6,25 @@ class ImportTasksScheduler
   DEFAULT_PORJECT_ID = 1
 
   def perform
-    job_start_time = Time.now
     entity = "agenceinspire"
-    jira_ids = collect_all_task_jira_ids(entity)
-    i = 0
-    jira_ids.each do |jira_id|
-      collect_and_save_task_information(entity, jira_id)
-      i += 1
-      pp("~~~~~~~~~ Issue ##{i} imported and added to the database ~~~~~~~~")
+    lock_key = "Import Tasks Job for: #{entity}"
+
+    if Sidekiq.redis { |c| c.set(lock_key, 1, nx: true, ex: 60) }
+      job_start_time = Time.now
+      jira_ids = collect_all_task_jira_ids(entity)
+      i = 0
+      jira_ids.each do |jira_id|
+        collect_and_save_task_information(entity, jira_id)
+        i += 1
+        pp("~~~~~~~~~ Issue ##{i} imported and added to the database ~~~~~~~~")
+      end
+      job_end_time = Time.now
+      JobsLog.create!(title: "TasksJob", execution_time: job_end_time - job_start_time)
+
+      Sidekiq.redis { |c| c.del(lock_key) }
+    else
+      pp("Job is already running for entity: #{entity}.")
     end
-    job_end_time = Time.now
-    JobsLog.create!(title: "TasksJob", execution_time: job_end_time - job_start_time)
   end
 
   private
