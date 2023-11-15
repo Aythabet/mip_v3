@@ -5,6 +5,7 @@
   },
   "dependencies": {
     "esbuild": "^0.17.19",
+    "flatpickr": "^4.6.13",
     "watch": "^1.0.2"
   }
 }

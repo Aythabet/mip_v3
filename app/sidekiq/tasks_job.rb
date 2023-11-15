@@ -52,10 +52,10 @@ class TasksJob
     response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == "200"
-      total_issues_count = JSON.parse(response.body)["total"]
-      total_pages = (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
-      p("Total issues available at source is #{total_issues_count}...")
+      total_pages = 1 # (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_issues_count = max_results * total_pages
       p("We're preparing the data for #{total_pages} pages... Please wait!")
+      p("Total issues to update #{total_issues_count}...")
 
       (1..total_pages).each do
         tasks = JSON.parse(response.body)
@@ -104,6 +104,7 @@ class TasksJob
       added_task.save
     end
     retrieve_task_changelogs(jira_id)
+    retrieve_worklog_info(url, jira_id)
 
     if check_task_forecast_and_time_spent(added_task)
       added_task.update!(flagged: true)
@@ -215,7 +216,7 @@ class TasksJob
       if existing_worklog.new_record?
         TaskWorklog.create!(
           author: worklog["author"]["displayName"],
-          duration: worklog["timeSpent"],
+          duration: worklog["timeSpentSeconds"],
           created: worklog["created"],
           updated: worklog["updated"],
           started: worklog["started"],
@@ -226,7 +227,7 @@ class TasksJob
 
         worklog_info << {
           author: worklog["author"]["displayName"],
-          duration: worklog["timeSpent"],
+          duration: worklog["timeSpentSeconds"],
           created: worklog["created"],
           updated: worklog["updated"],
           started: worklog["started"],
@@ -237,7 +238,7 @@ class TasksJob
       elsif existing_worklog.updated != worklog["updated"]
         existing_worklog.update!(
           author: worklog["author"]["displayName"],
-          duration: worklog["timeSpent"],
+          duration: worklog["timeSpentSeconds"],
           created: worklog["created"],
           updated: worklog["updated"],
           started: worklog["started"],
@@ -246,7 +247,7 @@ class TasksJob
 
         worklog_info << {
           author: worklog["author"]["displayName"],
-          duration: worklog["timeSpent"],
+          duration: worklog["timeSpentSeconds"],
           created: worklog["created"],
           updated: worklog["updated"],
           started: worklog["started"],

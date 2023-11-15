@@ -48,6 +48,10 @@ Rails.application.routes.draw do
   post "start_slack_message_job/:task_id", to: "admin#start_slack_message_job", as: "start_slack_message_job"
   post "start_jira_issue_comment_job/:task_id", to: "admin#start_jira_issue_comment_job", as: "start_jira_issue_comment_job"
 
+  get "/daily_reports", to: "admin#daily_reports", as: "daily_reports", constraints: lambda { |request| request.env["warden"].user.admin? }
+  get "admin/daily_reports", to: "admin#daily_reports", as: "admin_daily_reports"
+  post "admin/daily_reports", to: "admin#daily_reports"
+
   # Home page routes
   root to: "pages#home"
 end
