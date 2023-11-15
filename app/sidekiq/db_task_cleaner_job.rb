@@ -6,6 +6,7 @@ class DbTaskCleanerJob
   def perform
     job_start_time = Time.now
 
+    update_projects_archived_statuses
     check_if_assignee_is_active
     entity_name = "agenceinspire"
     jira_ids_in_database = Task.pluck(:jira_id)
@@ -86,6 +87,19 @@ class DbTaskCleanerJob
 
       assignee.update(active: active)
       pp("Assignee #{assignee.name} is #{active ? "active" : "inactive"}")
+    end
+  end
+
+  def update_projects_archived_statuses
+    projects = Project.all
+
+    projects.each do |project|
+      updated_tasks = project.tasks.where("extract(month from last_jira_update) = ?", Date.today.month)
+
+      archived_status = !updated_tasks.present?
+
+      project.update(archived_status: archived_status)
+      puts "Project #{project.name} is #{archived_status ? "archived" : "still active"}"
     end
   end
 end

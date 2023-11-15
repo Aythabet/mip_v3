@@ -39,6 +39,23 @@ class ApplicationController < ActionController::Base
     duration.join(" and ")
   end
 
+  def parse_duration(duration)
+    case duration
+    when /(\d+)w/
+      $1.to_i * 7 * 24 * 60 * 60
+    when /(\d+)d/
+      $1.to_i * 24 * 60 * 60
+    when /(\d+)h/
+      $1.to_i * 60 * 60
+    when /(\d+)m/
+      $1.to_i * 60
+    when /(\d+)s/
+      $1.to_i
+    else
+      0
+    end
+  end
+
   def call_jira_api(url)
     uri = URI.parse(url)
     headers = {

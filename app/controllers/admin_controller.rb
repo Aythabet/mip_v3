@@ -181,4 +181,24 @@ class AdminController < ApplicationController
 
     "#{total_revenue_string}\n#{formatted_project_revenues}"
   end
+
+  def daily_reports
+    @assignees = Assignee.all # Adjust as needed
+    @active_assignees = Assignee.where(active: true) # Adjust as needed
+
+    if params[:selected_date].present?
+      begin
+        @date_today = Date.parse(params[:selected_date].to_s)
+      rescue ArgumentError
+        # Handle invalid date format
+        @date_today = Date.today
+      end
+    else
+      @date_today = Date.today
+    end
+
+    respond_to do |format|
+      format.html
+    end
+  end
 end

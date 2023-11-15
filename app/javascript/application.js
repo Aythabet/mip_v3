@@ -1,8 +1,16 @@
+import flatpickr from "flatpickr";
+
+document.addEventListener("DOMContentLoaded", function () {
+  flatpickr("#flatpickr-date", {
+    dateFormat: "Y-m-d",
+    maxDate: "today",
+  });
+});
 
 // Slider homepage timer to move
-$(document).ready(function() {
-  $('#projectSlider').carousel({
-    interval: 5000 // Adjust the interval time (in milliseconds) as needed
+$(document).ready(function () {
+  $("#projectSlider").carousel({
+    interval: 5000, // Adjust the interval time (in milliseconds) as needed
   });
 });
 
@@ -72,4 +80,17 @@ document.addEventListener("DOMContentLoaded", function () {
       $("#addVacationDaysModal").modal("hide");
     });
   }
+});
+
+// Get the maximum height among all cards (Daily reports)
+const maxHeight = Math.max(
+  ...Array.from(
+    document.querySelectorAll(".card-custom"),
+    (card) => card.offsetHeight
+  )
+);
+
+// Set the height of all cards to the maximum height
+document.querySelectorAll(".card-custom").forEach((card) => {
+  card.style.height = `${maxHeight}px`;
 });
