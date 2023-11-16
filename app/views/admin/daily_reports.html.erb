@@ -9,7 +9,7 @@
   <% end %>
   <p>Only active team members are shown here<br>
     Total assignees: <%= @assignees.count %> -- Active assignees: <%= @active_assignees.count %></p>
-  <div class="row row-cols-1 row-cols-md-3 g-4">
+  <div class="row row-cols-1 row-cols-md-4 g-4">
     <% @active_assignees.each do |assignee| %>
       <% total_time_spent_today = 0 %>
       <% assignee_worklogs = TaskWorklog.joins(:task)
@@ -21,19 +21,17 @@
           <div class="card-header text-center"><%= assignee.name %></div>
           <div class="card-body text-secondary">
             <h5 class="card-title text-center">Report: <%= @date_today %></h5>
-            <p class="card-text">
-              <ul>
-                <% assignee_worklogs.each do |worklog| %>
-                  <% duration_in_seconds = my_helper_parse_duration(worklog.duration) %>
-                  <li>
-                    <%= "#{worklog.task.jira_id}: #{my_helper_format_duration(duration_in_seconds)}" %> <br>
-                  </li>
-                  <% total_time_spent_today += duration_in_seconds %>
-                <% end %>
-              </ul>
-            </p>
+            <ul class="list-group list-group-flush">
+              <% assignee_worklogs.each do |worklog| %>
+                <% duration_in_seconds = my_helper_parse_duration(worklog.duration) %>
+                <li class="list-group-item">
+                  <%= "#{worklog.task.jira_id}: #{my_helper_format_duration(duration_in_seconds)}" %> <br>
+                </li>
+                <% total_time_spent_today += duration_in_seconds %>
+              <% end %>
+            </ul>
           </div>
-          <div class="text-end pb-2 p-4">
+          <div class="card-footer text-end">
             <h4>Total: <%= my_helper_format_duration(total_time_spent_today) %></h4>
           </div>
         </div>
