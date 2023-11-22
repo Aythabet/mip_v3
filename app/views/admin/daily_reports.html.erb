@@ -23,11 +23,11 @@
             <h5 class="card-title text-center">Report: <%= @date_today %></h5>
             <ul class="list-group list-group-flush">
               <% assignee_worklogs.each do |worklog| %>
-                <% duration_in_seconds = my_helper_parse_duration(worklog.duration) %>
+                <% worklog_duration = worklog.duration.to_i %>
                 <li class="list-group-item">
-                  <%= "#{worklog.task.jira_id}: #{my_helper_format_duration(duration_in_seconds)}" %> <br>
+                  <%= "#{worklog.task.jira_id}: #{my_helper_format_duration(worklog_duration)}" %> <br>
                 </li>
-                <% total_time_spent_today += duration_in_seconds %>
+                <% total_time_spent_today += worklog_duration %>
               <% end %>
             </ul>
           </div>

@@ -190,7 +190,6 @@ class AdminController < ApplicationController
       begin
         @date_today = Date.parse(params[:selected_date].to_s)
       rescue ArgumentError
-        # Handle invalid date format
         @date_today = Date.today
       end
     else

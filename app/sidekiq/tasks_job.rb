@@ -52,7 +52,7 @@ class TasksJob
     response = call_jira_api("https://#{entity}.atlassian.net/rest/api/3/search?jql=ORDER%20BY%20updated&startAt=#{start_at}&maxResults=#{max_results}")
 
     if response.code == "200"
-      total_pages = (total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
+      total_pages = 5 #(total_issues_count / 50.0).ceil # Move under the total_issues_count when done.
       total_issues_count = max_results * total_pages
       p("We're preparing the data for #{total_pages} pages... Please wait!")
       p("Total issues to update #{total_issues_count}...")
