@@ -2,14 +2,12 @@
   <p>Tasks done today: <%= Date.today %></p>
   <% @assignee_yesterday_tasks.each do |task| %>
     <% task.task_worklogs.each do |worklog| %>
-      <% if worklog.created.to_date == Date.today || worklog.updated.to_date == Date.today %>
-        <ul>
-          <li><%= Task.find_by(id: worklog.task_id).jira_id %>
-            <%= worklog.duration %>
-            <%= worklog.status %>
-          </li>
-        </ul>
-      <% end %>
+      <ul>
+        <li><%= Task.find_by(id: worklog.task_id).jira_id %>
+          <%= my_helper_format_duration(worklog.duration.to_i) %>
+          <%= worklog.status %>
+        </li>
+      </ul>
     <% end %>
   <% end %>
 </div>
